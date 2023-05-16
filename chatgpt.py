@@ -1,3 +1,5 @@
+from apikey import OPENAI_API_KEY, RapidAPI_KEY # 보안을 위해, 따로 저장한 apikey
+
 
 # 번역 이전의 검색및 활용 데이터리스트 1개, 번역이 완료된 출력용 데이터리스트 2개를 만들 예정.
 # 데이터리스트 1개는 여행지 제목만을 제공할 것
@@ -7,12 +9,11 @@
 #
 
 ## 검색할 데이터는 받아온다고 가정 ! 테스팅
-topic = "도쿄 쇼핑 여행"
+topic = "도쿄 역사 여행"
 def gpt(topic):
 	#### chatgpt api
 	import openai
 
-	OPENAI_API_KEY = ":p"
 
 	openai.api_key = OPENAI_API_KEY
 
@@ -131,7 +132,7 @@ def gpt(topic):
 	}
 	headers = {
 		"content-type": "application/json",
-		"X-RapidAPI-Key": ":P",
+		"X-RapidAPI-Key": RapidAPI_KEY,
 		"X-RapidAPI-Host": "deepl-translator.p.rapidapi.com"
 	}
 
@@ -156,8 +157,9 @@ def gpt(topic):
 		introduce.append(temp_introduce.strip())
 
 	return [eng_name, name, introduce, PS]
+
+# ! 테스팅
 gpt(topic)
-# # ! 테스팅
-# a,b,c,d = gpt(topic)
-# print(a,b,c,d,sep="\n")
+a,b,c,d = gpt(topic)
+print(a,b,c,d,sep="\n")
 
