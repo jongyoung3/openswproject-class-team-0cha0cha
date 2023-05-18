@@ -258,3 +258,33 @@ __가장 최신본 (//에서 ::으로 변경. 번역시 오류를 줄이기 위�
 > 이를 피하기 위해선, 데이터를 답변하기 전,인용문을 찾도록 지정하고, 
 > 그 인용문을 바탕으로 답변하게 하거나 하는 방식이 좋다.
 > 그런식으로 잘못된 데이터 답변이 일어나지 않게 주의해라.
+
+The Henry Ford Museum(Dearborn, Michigan, USA) :: The Henry Ford Museum in Michigan is an excellent stop on an American car history tour. With over 300 years of transportation history on display, this museum is a fascinating destination. You'll be able to explore the evolution of the automobile, including exhibits on early steam-powered cars, race cars, and contemporary vehicles.
+
+Detroit Historical Museum(Detroit, Michigan, USA) :: The Detroit Historical Museum in Michigan offers a unique perspective on American car culture and its role in shaping the city of Detroit. With exhibits on local car manufacturing plants, the role of women in the industry, and the African American community's contributions to the industry, this is a must-visit destination for car enthusiasts.
+
+Ford Piquette Avenue Plant(Detroit, Michigan, USA) :: Built-in 1904, the Ford Piquette Avenue Plant is the birthplace of the Model T production line. This historic building has been preserved and converted into a museum, offering guided tours of the assembly line and original machines used to produce the famous automobile.
+
+Gilmore Car Museum(Hickory Corners, Michigan, USA) :: The Gilmore Car Museum in Michigan is one of the largest automobile museums in North America, with over 400 cars, motorcycles, and other vehicles on display. Visitors can explore exhibits on classic cars, vintage motorcycles, and the evolution of trucks and buses.
+
+Studebaker National Museum(South Bend, Indiana, USA) :: The Studebaker National Museum in Indiana showcases the history of the Studebaker automobile company, which was one of the earliest and longest-running American car manufacturers. With exhibits on classic Studebaker models, the company's role in wartime production, and the development of the automobile industry, this museum is a must-visit destination.
+
+Indianapolis Motor Speedway(Indianapolis, Indiana, USA) :: The Indianapolis Motor Speedway is home to the famous Indianapolis 500 race, considered one of the most prestigious auto races in the world. Visitors to the speedway can take guided tours, explore the on-site museum, and even experience the thrill of driving a race car themselves.
+
+Corvette Museum(Bowling Green, Kentucky, USA) :: The National Corvette Museum in Kentucky showcases the history of the iconic American-made sports car. With over 80 Corvettes on display, visitors can explore exhibits on the car's design evolution, learn about the racing history of the car, and even see one of the most extensive collections of Corvette memorabilia in the world.
+
+Hershey's Antique Automobile Museum(Hershey, Pennsylvania, USA) :: The Hershey's Antique Automobile Museum in Pennsylvania is dedicated to preserving the history of the American automobile. With over 100 vehicles on display, the museum features exhibits on the early days of car manufacturing, classic American cars, and the evolution of the automobile industry in the United States.
+
+The Auburn Cord Duesenberg Automobile Museum(Auburn, Indiana, USA) :: Located in the historic town of Auburn, Indiana, the Auburn Cord Duesenberg Automobile Museum showcases the beautiful and innovative cars produced by the Auburn Automobile Company in the early 20th century. Visitors can explore exhibits on the company's history, see some of the most iconic vintage cars in the world, and even take a ride in a classic car.
+
+Route 66(Chicago, Illinois to Santa Monica, California, USA) :: Take a historic road trip along Route 66, one of America's original highways. Stretching from Chicago to Santa Monica, California, this iconic route offers a glimpse into the country's car culture and history. Along the way, you'll see vintage roadside attractions, classic diners, and stunning views of the American West.
+
+['The United States is the birthplace of the automobile industry, and automotive history buffs will find plenty to explore on a road trip through the country. From the famous Route 66 to the iconic museums dedicated to the American car industry, there are endless opportunities to experience the evolution of the automobile in the U.S. Prepare to be astounded and inspired by the history of American cars on this unforgettable journey.']
+
+종료 코드 0(으)로 완료된 프로세스
+
+https://developers.google.com/maps/documentation/directions/get-directions?hl=ko#Waypoints의 경유지 최적화 관련 알아보자고 하기
+
+여행지 데이터 이동 경로 chatgpt(여행지명) > 구글 플레이스(여행지명, 좌표) > 구글 맵, 디렉션(최적화된 순서표현 리스트) > gui.
+각 단계서 gui로 각각 한글 번역 데이터 / 여행지 리뷰 등 정보 데이터 / path 띄울 정보 제공.
+gui는 최종적으로 디렉션에서 나온 최적화순서를 참고하여 각 산출물들을 띄움.

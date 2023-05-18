@@ -58,41 +58,105 @@ def gpt(topic):
     }
     """
 
+    prev2 = """
+    {
+    "destinations": [
+        {
+            "name": "Shibuya Crossing",
+            "region": "Tokyo, Japan",
+            "description": "One of the most famous and busiest intersections in Tokyo, Shibuya Crossing is a must-visit destination for any shopper. Featuring a vast array of department stores, boutiques, and specialty shops, it's the perfect place to find the latest fashion trends and unique souvenirs."
+        },
+        {
+            "name": "Ginza",
+            "region": "Chuo City, Tokyo, Japan",
+            "description": "Known as one of the most luxurious shopping districts in the world, Ginza is home to high-end stores like Chanel, Gucci, and Dior. Apart from luxury boutiques, the area is also home to department stores, art galleries, and traditional Japanese craft shops."
+        },
+        {
+            "name": "Shinjuku",
+            "region": "Shinjuku City, Tokyo, Japan",
+            "description": "A shopping mecca, Shinjuku offers an incredible variety of stores, restaurants, and entertainment venues. Its bustling streets and towering skyscrapers house a seemingly endless range of shopping options, from major department stores like Isetan and Takashimaya to unique local boutiques."
+        },
+        {
+            "name": "Harajuku",
+            "region": "Shibuya City, Tokyo, Japan",
+            "description": "Famous for its vibrant street fashion, Harajuku is a haven for shoppers seeking the latest trends. Takeshita-dori street is the place to go for kawaii accessories, while Omotesando Avenue offers high-end designer shops and sleek modern architecture."
+        },
+        {
+            "name": "Ameyoko Market",
+            "region": "Taito City, Tokyo, Japan",
+            "description": "Located beneath the railway tracks near Ueno Station, Ameyoko Market is a bustling location famous for its vibrant street market atmosphere. With over 400 shops selling everything from clothing to seafood, this is the perfect place to discover a unique shopping experience."
+        },
+        {
+            "name": "Nakamise Shopping Street",
+            "region": "Asakusa, Tokyo, Japan",
+            "description": "One of Tokyo's oldest shopping districts, Nakamise Shopping Street is a pedestrian street lined with traditional stores selling sweets, souvenirs, and other Japanese trinkets. Located directly in front of the ancient Senso-ji Temple, this is a destination not to be missed."
+        },
+        {
+            "name": "Odaiba",
+            "region": "Minato City, Tokyo, Japan",
+            "description": "A popular shopping and entertainment district, Odaiba offers something for everyone. From high-end boutiques and gourmet restaurants to family-friendly attractions like Legoland Discovery Center and Sega Joypolis, this futuristic island in Tokyo Bay is a must-visit."
+        },
+        {
+            "name": "Musashi-Kosugi",
+            "region": "Kawasaki, Kanagawa Prefecture, Japan",
+            "description": "Located just outside of Tokyo in the city of Kawasaki, Musashi-Kosugi is a popular destination for shopping and dining. With a large selection of department stores, restaurants, and specialty shops, this bustling area is frequented by both locals and tourists alike."
+        },
+        {
+            "name": "Ikebukuro",
+            "region": "Toshima City, Tokyo, Japan",
+            "description": "One of Tokyo's three major hubs, Ikebukuro is a lively district with abundant shopping and dining options. Featuring several large department stores, specialty shops like the Pokemon Center, and the Sunshine City complex, there's no shortage of things to explore here."
+        },
+        {
+            "name": "Kappabashi-dori",
+            "region": "Taito City, Tokyo, Japan",
+            "description": "Known as the 'Kitchen Town' of Tokyo, Kappabashi-dori is home to over 170 shops selling cooking supplies and equipment. From exquisite Japanese knives to elaborate plastic food replicas, this unique shopping district is a must-visit for any food lover."
+        }
+    ],
+    "topic_introduction": [
+        "Tokyo is known for its unique shopping culture, offering everything from luxury brands to quirky accessories and traditional crafts. Whether you're looking for stylish boutiques or bustling street markets, Tokyo has something for every shopping enthusiast. Don't miss out on the chance to discover the latest trends and bring home one-of-a-kind souvenirs from this vibrant city."
+        ]
+    }
+    """
+    # If you're given a country theme, rather than a specific region, suggest destinations that give an overview of the region, rather than just attractions (places).
+    # In case of a specific region is given,
     systemsay = """
     You are in the middle of a preliminary study to answer the following questions: 
-    Find me Exactly 10 travel destinations related to the topic.
+    Find me Exactly ten of travel destinations related to the topic.
     In the following query, topic will be provided wrapped in triple backticks.
     Topic can be provided in a variety of languages. Translate the topic to English for you.
     Provide the results in the following order : 
     Step 0. Imagine yourself as an expert travel guide AI.
-    Step 1. Follow the following conditions wrapped in angle brackets
-    and find 10 travel destinations related to topic in English : 
-    < destinations must be close each other. >
-    Step 2. write 3 sentences introductions to each destination.
-    Step 3. lastly, write 2 sentences introductions about topic.
-    Step 4. provide the output in English.
+    Step 1. Follow the following conditions wrapped in angle brackets and find 10 travel destinations related to topic in English : 
+    < You must only write places that can be cited and verified on Google Maps. 
+    You should include places that are heavily visited and has high ratings by tourists.
+    destinations must be close each other. So, The distances between all of each travel destinations must be less than 10km.
+    You must write close destinations(destinations in same or close administrative region, district or area) back-to-back.
+    You must arrange the destinations order so that all destinations are visited in an optimal path. >
+    Step 2. Be sure to follow the precautions in Step 1 to ensure that condition is complete at all of each destination and if any of the conditions are not met, fix what you find.
+    Step 3. Find region name where the travel destinations belongs to.
+    Step 4. write 3 sentences introductions and to each destination.
+    Step 5. lastly, write 2 sentences introductions about topic.
+    Step 6. provide the output in English. The order of the output must satisfy the conditions in Step 1.
     Your output should be in json format with two list and have the following fields in first list : 
-     'name', 'description'. first list key is "destinations".
+     'name', 'region', 'description'. first list key is "destinations".
     In second list, You should write only introduction about topic. Second list key is "topic_introduction".
     """
 
     # 아래 오류목록 참고해서, 확인 후 고쳐보고.
     # 혹시 모르니 try except는 요구하고.
 
-    # 개선사항 1. step2와 step3에서 여행지찾는 알고리즘 개선
-    # 2. 주제를 한글로 받으면, 속도가 매우 느려지고, 답변이 한글로 나오기도 함. 그부분 개선
-    # 한글로 받아로 영어로서 인식하고, 답변이 영어로 나오게.
-    # --- 지금은 이제 왔다갔다 함. 근데 답변 속도를 더 개선할 수 있으면 좋을 듯.
-    # name 뒤쪽에 적거나, field로 행정지역명을 하나 더 받자. search에 도움을 줄 수 있도록. ()이런식으로 달아주면..?
-    # 조건으로, 허상을 방지하기 위해 구글지도를 인용하라고 해도 좋을듯. 좌표를 제공해달라던가.
-    # 문장 수 명확하게 개선. 불필요시 할 필요 x
+    # 개선사항 1. step1와 step2에서 여행지찾는 알고리즘 개선
+    # 너무 광범위한 주제를 받았을 때 여행지간 거리 문제와, 최적 경로 순서로 추천하는 부분은 개선이 안 된다.
+    # 최적 경로는 gpt에게 요구하기보다, 구글 맵 api를 활용하는 편이 적절할 수 있음.
+    # 나라와, 특정 지역을 받았을때를 나눠보려했는데, 조금 더 고려해보고 해야겠다.
+    # 다른 부분은 거의 해결
 
     query = f"'''{topic}'''"
 
     messages = [
         {"role": "system", "content": systemsay},
         {"role": "user", "content": train_topic},
-        {"role": "assistant", "content": prev},
+        {"role": "assistant", "content": prev2},
         {"role": "user", "content": query}
     ]
 
@@ -100,9 +164,11 @@ def gpt(topic):
 
     # answer = response['choices'][0]['message']['content']  # 응답 부분
     # answer 테스트 부분
+    # print(response['choices'][0]['message']['content'])
     result = json.loads(response['choices'][0]['message']['content'])
     for i in result["destinations"]:
-        print(i["name"], i["description"], sep=' :: ', end="\n\n")
+        name_with_region = i['name'] + '(' + i['region'] + ')'
+        print(name_with_region, i["description"], sep=' :: ', end="\n\n")
     print(result['topic_introduction'])
 
 
