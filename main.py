@@ -3,7 +3,9 @@ from PyQt5 import QtWebEngineWidgets
 from PyQt5.QtWidgets import QDialog
 
 class Ui_MainWindow(object):
+    #메인창 내용물
     def setupUi(self, MainWindow):
+        #메인창 관련
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
         MainWindow.setMinimumSize(QtCore.QSize(800, 600))
@@ -12,22 +14,23 @@ class Ui_MainWindow(object):
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         
+        #ps창 관련
         self.Psframe = QtWidgets.QFrame(self.centralwidget)
         self.Psframe.setGeometry(QtCore.QRect(410, 460, 371, 81))
         self.Psframe.setFrameShape(QtWidgets.QFrame.Box)
         self.Psframe.setObjectName("Psframe")
         self.PsTitle = QtWidgets.QLabel(self.Psframe)
+        self.PsContents = QtWidgets.QLabel(self.Psframe)
         self.PsTitle.setGeometry(QtCore.QRect(10, 10, 91, 21))
-        
+        self.PsContents.setGeometry(QtCore.QRect(20, 30, 351, 31))
         font = QtGui.QFont()
         font.setFamily("Agency FB")
         font.setPointSize(12)
         self.PsTitle.setFont(font)
         self.PsTitle.setObjectName("PsTitle")
-        self.PsContents = QtWidgets.QLabel(self.Psframe)
-        self.PsContents.setGeometry(QtCore.QRect(20, 30, 351, 31))
         self.PsContents.setObjectName("PsContents")
         
+        #검색창 관련
         self.SearchFrame = QtWidgets.QFrame(self.centralwidget)
         self.SearchFrame.setGeometry(QtCore.QRect(410, 10, 381, 51))
         self.SearchFrame.setFrameShape(QtWidgets.QFrame.Box)
@@ -38,8 +41,14 @@ class Ui_MainWindow(object):
         self.SearchEdit.setObjectName("SearchEdit")
         self.SearchButton = QtWidgets.QPushButton(self.SearchFrame)
         self.SearchButton.setGeometry(QtCore.QRect(330, 10, 41, 31))
+        icon = QtGui.QIcon()
+        
+        #검색 버튼에 아이콘 추가: 링크 맞춰서 넣으심 돼요
+        icon.addPixmap(QtGui.QPixmap("TeamProjects/ClueIcon.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        self.SearchButton.setIcon(icon)
         self.SearchButton.setObjectName("SearchButton")
         
+        #탭 내용 정의 전 틀
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
         self.tabWidget.setGeometry(QtCore.QRect(410, 70, 381, 381))
         self.tabWidget.setDocumentMode(True)
@@ -47,6 +56,7 @@ class Ui_MainWindow(object):
         self.Tab1 = QtWidgets.QWidget()
         self.Tab1.setObjectName("Tab1")
         
+        #스크롤바 관련
         self.scrollArea = QtWidgets.QScrollArea(self.Tab1)
         self.scrollArea.setGeometry(QtCore.QRect(0, 0, 381, 351))
         self.scrollArea.setInputMethodHints(QtCore.Qt.ImhHiddenText)
@@ -61,46 +71,48 @@ class Ui_MainWindow(object):
         
         self.NameLabel1 = QtWidgets.QLabel(self.scrollAreaWidgetContents)
         self.NameLabel1.setGeometry(QtCore.QRect(10, 10, 361, 31))
-        font = QtGui.QFont()
-        font.setFamily("Agency FB")
-        font.setPointSize(16)
-        self.NameLabel1.setFont(font)
-        self.NameLabel1.setObjectName("NameLabel1")
-        self.ContentLabel1 = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-        self.ContentLabel1.setGeometry(QtCore.QRect(20, 40, 351, 131))
-        self.ContentLabel1.setObjectName("ContentLabel1")
-        self.NameLabel3 = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-        self.NameLabel3.setGeometry(QtCore.QRect(10, 350, 361, 31))
-        font = QtGui.QFont()
-        font.setFamily("Agency FB")
-        font.setPointSize(16)
-        self.NameLabel3.setFont(font)
-        self.NameLabel3.setObjectName("NameLabel3")
         self.NameLabel2 = QtWidgets.QLabel(self.scrollAreaWidgetContents)
         self.NameLabel2.setGeometry(QtCore.QRect(10, 180, 361, 31))
+        self.NameLabel3 = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.NameLabel3.setGeometry(QtCore.QRect(10, 350, 361, 31))
+        
+        #로딩될 리뷰들 제목 나오는 큰 글씨
         font = QtGui.QFont()
-        font.setFamily("Agency FB")
+        font.setFamily("한컴산뜻돋움")
         font.setPointSize(16)
+        self.NameLabel1.setFont(font)
         self.NameLabel2.setFont(font)
+        self.NameLabel3.setFont(font)
+        self.NameLabel1.setObjectName("NameLabel1")
         self.NameLabel2.setObjectName("NameLabel2")
+        self.NameLabel3.setObjectName("NameLabel3")
+        
+        #로딩될 리뷰들 내용 나오는 작은 글씨
+        self.ContentLabel1 = QtWidgets.QLabel(self.scrollAreaWidgetContents)
         self.ContentLabel2 = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-        self.ContentLabel2.setGeometry(QtCore.QRect(20, 210, 341, 131))
-        self.ContentLabel2.setObjectName("ContentLabel2")
         self.ContentLabel3 = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.ContentLabel1.setGeometry(QtCore.QRect(20, 40, 351, 131))
+        self.ContentLabel2.setGeometry(QtCore.QRect(20, 210, 341, 131))
         self.ContentLabel3.setGeometry(QtCore.QRect(20, 380, 321, 131))
+        self.ContentLabel1.setObjectName("ContentLabel1")
+        self.ContentLabel2.setObjectName("ContentLabel2")
         self.ContentLabel3.setObjectName("ContentLabel3")
+        
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.tabWidget.addTab(self.Tab1, "")
+        
+        #탭2 추가
         self.Tab2 = QtWidgets.QWidget()
         self.Tab2.setObjectName("Tab2")
-        self.listView = QtWidgets.QListView(self.Tab2)
-        self.listView.setGeometry(QtCore.QRect(0, 0, 371, 351))
-        self.listView.setObjectName("listView")
         self.tabWidget.addTab(self.Tab2, "")
+        
+        #지도 관련
         self.Map = QtWebEngineWidgets.QWebEngineView(self.centralwidget)
         self.Map.setGeometry(QtCore.QRect(10, 10, 381, 531))
         self.Map.setUrl(QtCore.QUrl("file:///C:/Users/31125/Desktop/python_files/TeamProjects/map.html"))
         self.Map.setObjectName("webEngineView")
+        
+        #위에 메뉴바 관련
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -123,22 +135,21 @@ class Ui_MainWindow(object):
         self.menuMenu.addAction(self.actionQuit)
         self.menuBar.addAction(self.menuMenu.menuAction())
 
+        #정의할 것들 다 했고 시그널 등
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
-        self.SearchButton.clicked.connect(self.NameLabel1.deleteLater)
-        self.SearchButton.clicked.connect(self.NameLabel2.deleteLater)
-        self.SearchButton.clicked.connect(self.NameLabel3.deleteLater)
         self.actionAbout.triggered.connect(self.aboutOpen)
         self.actionQuit.triggered.connect(app.quit)
+        self.SearchButton.clicked.connect(self.SearchClicked)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         self.Dialog = QDialog()
-
+    
+    #메인창 내용물에 한글로 글자들 번역해서 넣어줌
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "TripWithGPT"))
         self.PsTitle.setText(_translate("MainWindow", "P.S."))
         self.PsContents.setText(_translate("MainWindow", "GPT의 TMI 설명부분"))
-        self.SearchButton.setText(_translate("MainWindow", "btn"))
         self.NameLabel1.setText(_translate("MainWindow", "NameLabel1"))
         self.ContentLabel1.setText(_translate("MainWindow", "<html><head/><body><p>대충 내용물1</p></body></html>"))
         self.NameLabel3.setText(_translate("MainWindow", "NameLabel3"))
@@ -150,7 +161,8 @@ class Ui_MainWindow(object):
         self.menuMenu.setTitle(_translate("MainWindow", "Menu"))
         self.actionAbout.setText(_translate("MainWindow", "About"))
         self.actionQuit.setText(_translate("MainWindow","Quit"))
-
+    
+    #메뉴바에 about 누르면 창 열리게
     def aboutOpen(self):
         self.Dialog.setObjectName("Dialog")
         self.Dialog.resize(400, 300)
@@ -193,6 +205,7 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(self.Dialog)
         self.Dialog.show()
 
+    #about 창도 한글로 글자들 넣어줌
     def aboutRetranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "About"))
@@ -203,7 +216,13 @@ class Ui_MainWindow(object):
         self.label_2.setText(_translate("Dialog", "<html><head/><body><p>팀원:</p></body></html>"))
         self.CloseButton.setText(_translate("Dialog", "닫기"))
 
-
+    #검색 버튼 누르면 크롤링, API로 나온 내용들 로딩되게 구현할 예정
+    #현재는 NameLabel1이 검색창에 입력한 내용으로 변함
+    def SearchClicked(self):
+        self.text = self.SearchEdit.text()
+        self.NameLabel1.setText(self.text)
+        #apis.APIS(1,self.text)
+        #self.Map.setUrl(QtCore.QUrl("file:///C:/Users/31125/Desktop/python_files/TeamProjects/map.html"))
         
 
 if __name__ == "__main__":
