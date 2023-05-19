@@ -1,7 +1,7 @@
 import os
 import googlemaps
 
-api_key = 'AIzaSyAg-D0M1X87OyIMkyTMmU6rNRJjFTP8ebI'
+api_key = ''
 map_clinet = googlemaps.Client(api_key)
 
 result = []
