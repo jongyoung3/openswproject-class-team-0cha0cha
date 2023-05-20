@@ -2,7 +2,7 @@ import os
 import googlemaps
 import requests
 
-api_key = 'AIzaSyAg-D0M1X87OyIMkyTMmU6rNRJjFTP8ebI'
+api_key = ''
 map_clinet = googlemaps.Client(api_key)
 
 result_list = [] #최종 결과물 리스트
