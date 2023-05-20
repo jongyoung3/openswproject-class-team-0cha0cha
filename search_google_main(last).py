@@ -2,7 +2,7 @@ import os
 import googlemaps
 import requests
 
-api_key = 'YOUR_API_KEY'
+api_key = 'AIzaSyAg-D0M1X87OyIMkyTMmU6rNRJjFTP8ebI'
 map_clinet = googlemaps.Client(api_key)
 
 result_list = [] #최종 결과물 리스트
@@ -31,25 +31,52 @@ result_ex=[] #최종 결과물 리스트 전 단계
 #                   'The British Museum(London, UK)', 'Canterbury Cathedral(Canterbury, UK)', 
 #                   'Stonehenge(Amesbury, UK)', 'Roman Baths(Bath, UK)', "St. Paul's Cathedral(London, UK)", 
 #                   'Edinburgh Castle(Edinburgh, UK)']
-data_locations=[#도쿄 애니메이션 여행
-['Ghibli Museum(Mitaka, Tokyo, Japan)', 'Akihabara(Chiyoda City, Tokyo, Japan)', 'Odaiba(Minato City, Tokyo, Japan)', 'Nakano Broadway(Nakano, Tokyo, Japan)', 'Pokemon Center Tokyo(Chuo City, Tokyo, Japan)', 'J-World Tokyo(Ikebukuro, Tokyo, Japan)', 'Animate Ikebukuro(Toshima City, Tokyo, Japan)', 'Tokyo Anime Center(Chiyoda City, Tokyo, Japan)', 'Otome Road(Ikebukuro, Tokyo, Japan)', 'Shinjuku Wald 9(Shinjuku City, Tokyo, Japan)']
+data_locations=[
+    #도쿄 애니메이션 여행
+    ['Ghibli Museum(Mitaka, Tokyo, Japan)', 'Akihabara(Chiyoda City, Tokyo, Japan)', 
+    'Odaiba(Minato City, Tokyo, Japan)', 'Nakano Broadway(Nakano, Tokyo, Japan)', 
+    'Pokemon Center Tokyo(Chuo City, Tokyo, Japan)', 'J-World Tokyo(Ikebukuro, Tokyo, Japan)', 
+    'Animate Ikebukuro(Toshima City, Tokyo, Japan)', 'Tokyo Anime Center(Chiyoda City, Tokyo, Japan)', 
+    'Otome Road(Ikebukuro, Tokyo, Japan)', 'Shinjuku Wald 9(Shinjuku City, Tokyo, Japan)']
 
-#영국 역사 여행
-,['Tower of London(London, UK)', 'Westminster Abbey(London, UK)', 'Buckingham Palace(London, UK)', 'Churchill War Rooms(London, UK)', 'The British Museum(London, UK)', 'Canterbury Cathedral(Canterbury, UK)', 'Stonehenge(Amesbury, UK)', 'Roman Baths(Bath, UK)', "St. Paul's Cathedral(London, UK)", 'Edinburgh Castle(Edinburgh, UK)']
+    #영국 역사 여행
+    ,['Tower of London(London, UK)', 'Westminster Abbey(London, UK)', 
+    'Buckingham Palace(London, UK)', 'Churchill War Rooms(London, UK)', 
+    'The British Museum(London, UK)', 'Canterbury Cathedral(Canterbury, UK)', 
+    'Stonehenge(Amesbury, UK)', 'Roman Baths(Bath, UK)', 
+    "St. Paul's Cathedral(London, UK)", 'Edinburgh Castle(Edinburgh, UK)']
 
-#한국 자연휴식 여행
-,['Nami Island(Chuncheon, Gangwon-do, South Korea)', 'Seoraksan National Park(Sokcho-si, Gangwon-do, South Korea)', 'Jeju Island(Jeju Province, South Korea)', 'Jirisan National Park(Gurye-gun, Jeollanam-do, South Korea)', 'Bukhansan National Park(Goyang-si, Gyeonggi-do, South Korea)', 'Seorak Waterpia(Sokcho-si, Gangwon-do, South Korea)', 'Gyeongju(Gyeongsangbuk-do, South Korea)', 'Hallasan National Park(Jeju Province, South Korea)', 'Odaesan National Park(Pyeongchang, Gangwon-do, South Korea)', 'Gapyeong(Gyeonggi-do, South Korea)']
+    #한국 자연휴식 여행
+    ,['Nami Island(Chuncheon, Gangwon-do, South Korea)', 'Seoraksan National Park(Sokcho-si, Gangwon-do, South Korea)',
+    'Jeju Island(Jeju Province, South Korea)', 'Jirisan National Park(Gurye-gun, Jeollanam-do, South Korea)', 
+    'Bukhansan National Park(Goyang-si, Gyeonggi-do, South Korea)', 'Seorak Waterpia(Sokcho-si, Gangwon-do, South Korea)', 
+    'Gyeongju(Gyeongsangbuk-do, South Korea)', 'Hallasan National Park(Jeju Province, South Korea)', 
+    'Odaesan National Park(Pyeongchang, Gangwon-do, South Korea)', 'Gapyeong(Gyeonggi-do, South Korea)']
 
-#제주도 여행
-,['Seongsan Ilchulbong(Seongsan-eup, Seogwipo, Jeju Island, South Korea)', 'Jeju Folk Village(Pyoseon-myeon, Seogwipo, Jeju Island, South Korea)', 'Manjanggul Cave(Gujwa-eup, Jeju City, Jeju Island, South Korea)', 'Jusangjeolli Cliff(Daepo-dong, Seogwipo, Jeju Island, South Korea)', 'Museum of Sex and Health(Aewol-eup, Jeju City, Jeju Island, South Korea)', 'Spirited Garden(Gangjeong-dong, Seogwipo, Jeju Island, South Korea)', 'Hallasan National Park(Jeju-do, South Korea)', 'Jeju Loveland(Daejeong-eup, Seogwipo, Jeju Island, South Korea)', 'Beaches of Jeju Island(Jeju-do, South Korea)', 'Jeju Teddy Bear Museum(2829-10, Saekdal-dong, Seogwipo, Jeju Island, South Korea)']
+    #제주도 여행
+    ,['Seongsan Ilchulbong(Seongsan-eup, Seogwipo, Jeju Island, South Korea)', 
+    'Jeju Folk Village(Pyoseon-myeon, Seogwipo, Jeju Island, South Korea)', 
+    'Manjanggul Cave(Gujwa-eup, Jeju City, Jeju Island, South Korea)', 
+    'Jusangjeolli Cliff(Daepo-dong, Seogwipo, Jeju Island, South Korea)', 
+    'Museum of Sex and Health(Aewol-eup, Jeju City, Jeju Island, South Korea)', 
+    'Spirited Garden(Gangjeong-dong, Seogwipo, Jeju Island, South Korea)',
+    'Hallasan National Park(Jeju-do, South Korea)', 'Jeju Loveland(Daejeong-eup, Seogwipo, Jeju Island, South Korea)', 
+    'Beaches of Jeju Island(Jeju-do, South Korea)', 'Jeju Teddy Bear Museum(2829-10, Saekdal-dong, Seogwipo, Jeju Island, South Korea)']
 
-#미국 자동차 역사 여행
-,['Ford Piquette Avenue Plant(Detroit, Michigan, USA)', 'The Henry Ford Museum(Dearborn, Michigan, USA)', 'Gilmore Car Museum(Hickory Corners, Michigan, USA)', 'Studebaker National Museum(South Bend, Indiana, USA)', "Walt Disney's Barn(Griffith Park, Los Angeles, California, USA)", 'Petersen Automotive Museum(Los Angeles, California, USA)', "Bonnie and Clyde's Death Car(Primm, Nevada, USA)", 'Route 66 Museum(Kingman, Arizona, USA)', 'National Automobile Museum(Reno, Nevada, USA)', 'The Auburn Cord Duesenberg Automobile Museum(Auburn, Indiana, USA)']
+    #미국 자동차 역사 여행
+    ,['Ford Piquette Avenue Plant(Detroit, Michigan, USA)', 'The Henry Ford Museum(Dearborn, Michigan, USA)', 
+    'Gilmore Car Museum(Hickory Corners, Michigan, USA)', 'Studebaker National Museum(South Bend, Indiana, USA)', 
+    "Walt Disney's Barn(Griffith Park, Los Angeles, California, USA)", 'Petersen Automotive Museum(Los Angeles, California, USA)',
+    "Bonnie and Clyde's Death Car(Primm, Nevada, USA)", 'Route 66 Museum(Kingman, Arizona, USA)', 
+    'National Automobile Museum(Reno, Nevada, USA)', 'The Auburn Cord Duesenberg Automobile Museum(Auburn, Indiana, USA)']
 
-#남미 오지탐험 여행
-,['Machu Picchu(Cusco, Peru)', 'Galapagos Islands(Ecuador)', 'Iguazu Falls(Misiones Province, Argentina/Brazil)', 'Torres del Paine National Park(Magallanes Region, Chile)', 'Cartagena(Bolívar Department, Colombia)', 'La Paz(Bolivia)', 'Rio de Janeiro(Rio de Janeiro State, Brazil)', 'Salar de Uyuni(Potosi and Oruro Departments, Bolivia)', 'Atacama Desert(Antofagasta Region, Chile)', 'Amazon Rainforest(Brazil, Peru, Colombia)']]
+    #남미 오지탐험 여행
+    ,['Machu Picchu(Cusco, Peru)', 'Galapagos Islands(Ecuador)', 'Iguazu Falls(Misiones Province, Argentina/Brazil)',
+    'Torres del Paine National Park(Magallanes Region, Chile)', 'Cartagena(Bolívar Department, Colombia)', 
+    'La Paz(Bolivia)', 'Rio de Janeiro(Rio de Janeiro State, Brazil)', 'Salar de Uyuni(Potosi and Oruro Departments, Bolivia)',
+    'Atacama Desert(Antofagasta Region, Chile)', 'Amazon Rainforest(Brazil, Peru, Colombia)']
+    ]
 
-#search_locations=['Jeju Island(Jeju Province, South Korea)']
 min_rating = 0  # 최소 평점
 min_reviews = 0  # 최소 리뷰 수
 
@@ -57,7 +84,6 @@ for search_locations in data_locations:
 
     for locations in search_locations:
         response = map_clinet.places(query=locations) # 데이터를 api로 보냄
-        
         #print(response['results'])
         destination = []
         if(response['results']!=[]): #검색데이터 결과가 빈 리스트로 오는 경우(=검색결과가 없을때)를 걸러줌
