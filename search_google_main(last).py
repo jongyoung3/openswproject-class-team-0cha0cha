@@ -2,7 +2,7 @@ import os
 import googlemaps
 import requests
 
-api_key = 'APIKEY'
+api_key = 'YOUR_API_KEY'
 map_clinet = googlemaps.Client(api_key)
 
 result = [] #최종 결과물 리스트
@@ -86,7 +86,27 @@ for locations in search_locations:
                     
             destination.append(locations) # 검색한 지역이름
             destination.extend(attractions)
-    #else:
+    else: #검색데이터 결과가 빈 리스트로 오는 경우(=검색결과가 없을때) 텍스트 검색으로 다시 찾기
+        url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query={locations}&key={api_key}"
+        response = requests.get(url)
+        data = response.json()
+
+        attractions = []
+
+        for result in data['results']:
+            name = result.get('name')
+            rating = result.get('rating')
+            reviews = result.get('user_ratings_total')
+
+            if name is not None and rating is not None and reviews is not None:
+                if rating >= min_rating:
+                    attractions.append((name, rating, reviews))
+
+        #받은 관광명소 내림차순으로 정렬해서 그 중 위의 1개 반환 
+        attractions.sort(key=lambda x: x[1], reverse=True)
+        
+        destination.append(locations) # 검색한 지역이름
+        destination.extend(attractions)
               
     result.append(destination)
 
