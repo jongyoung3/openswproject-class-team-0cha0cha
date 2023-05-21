@@ -133,7 +133,8 @@ def gpt(topic):
     You must write close destinations(destinations in same or close administrative region, district or area) back-to-back.
     You must arrange the destinations order so that all destinations are visited in an optimal path. >
     Step 2. Be sure to follow the precautions in Step 1 to ensure that condition is complete at all of each destination and if any of the conditions are not met, fix what you find.
-    Step 3. Find region name where the travel destinations belongs to.
+    Step 3. Follow the following conditions wrapped in angle brackets and find region name where the travel destinations belongs to. 
+    < If the location is contained within multiple regions, you should find the only one region name that is most representative and core. >
     Step 4. write 3 sentences introductions and to each destination.
     Step 5. lastly, write 2 sentences introductions about topic.
     Step 6. provide the output in English. The order of the output must satisfy the conditions in Step 1.
@@ -166,11 +167,13 @@ def gpt(topic):
     # answer 테스트 부분
     # print(response['choices'][0]['message']['content'])
     result = json.loads(response['choices'][0]['message']['content'])
+    answer = []
     for i in result["destinations"]:
         name_with_region = i['name'] + '(' + i['region'] + ')'
-        print(name_with_region, i["description"], sep=' :: ', end="\n\n")
-    print(result['topic_introduction'])
-
+        answer.append(name_with_region)
+    #     print(name_with_region, i["description"], sep=' :: ', end="\n\n")
+    # print(result['topic_introduction'])
+    print(answer, len(answer),sep='\n')
 
     #
     # ### 영문 여행지명 리스트 생성기
