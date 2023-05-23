@@ -3,7 +3,7 @@ import googlemaps
 import requests
 
 # 오류 고치면 사진 넣기
-api_key = 'YOUR_API_KEY'
+api_key = 'YOUR_APPI_KEY'
 map_clinet = googlemaps.Client(api_key)
 
 result_list = [] #최종 결과물 리스트
@@ -28,25 +28,26 @@ min_reviews = 0  # 최소 리뷰 수
 # 지도에 데이터 보낼 때 좌표로 보내는 걸로 코드 바꾸기(원한다면)
 for locations in search_locations:
     response = map_clinet.places(query=locations) # 데이터를 api로 보냄
-    #print(response)
+    print(response)
     destination = [] 
     
     if(response['status'] !='ZERO_RESULTS'): #검색데이터 결과가 빈 리스트로 오는 경우(=검색결과가 없을때)를 걸러줌
         if('rating' in response['results'][0]): # 인덱스 번호에 따라 영업점 나오는 듯. 기준으로만 일단 만듬
-            # '0'->지역 외의 장소, 평점이 있는 것
-            # [0,'name','rating','user_ratings_total']
-            
-            #사진 요청
-            photo_reference=response['results'][0]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
-            photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=500&photoreference={photo_reference}&key={api_key}"
-            response_photo = requests.get(photo_url)
-            #print(response_photo)
-            
-            destination.append(0)
-            destination.append(response['results'][0]['name'])
-            destination.append(response['results'][0]['rating'])
-            destination.append(response['results'][0]['user_ratings_total'])
-            #destination.append(response_photo)
+            #if(response['results'][0]['business_status']=='OPERATIONAL'): #폐업인 경우 제외
+                # '0'->지역 외의 장소, 평점이 있는 것
+                # [0,'name','rating','user_ratings_total']
+                
+                #사진 요청
+                photo_reference=response['results'][0]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
+                photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=500&photoreference={photo_reference}&key={api_key}"
+                response_photo = requests.get(photo_url)
+                #print(response_photo)
+                
+                destination.append(0)
+                destination.append(response['results'][0]['name'])
+                destination.append(response['results'][0]['rating'])
+                destination.append(response['results'][0]['user_ratings_total'])
+                #destination.append(response_photo)
                     
         else:
             # '1'->지역이름, 여기서 지역이름에 관광명소를 평점높고 리뷰수 많은거 1개 가져오면 됨. 단, 없는건 건너뛰고
