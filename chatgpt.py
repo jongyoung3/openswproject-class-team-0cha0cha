@@ -2,7 +2,7 @@ from apikey import OPENAI_API_KEY, RapidAPI_KEY  # 보안을 위해, 따로 저�
 import json
 
 
-def gpt(topic):
+def gpt(topic, n = 10):
     import openai
 
     openai.api_key = OPENAI_API_KEY
@@ -63,7 +63,7 @@ def gpt(topic):
     "destinations": [
         {
             "name": "Shibuya Crossing",
-            "region": "Tokyo, Japan",
+            "region": "Shibuya, Tokyo, Japan",
             "description": "One of the most famous and busiest intersections in Tokyo, Shibuya Crossing is a must-visit destination for any shopper. Featuring a vast array of department stores, boutiques, and specialty shops, it's the perfect place to find the latest fashion trends and unique souvenirs."
         },
         {
@@ -119,14 +119,14 @@ def gpt(topic):
     """
     # If you're given a country theme, rather than a specific region, suggest destinations that give an overview of the region, rather than just attractions (places).
     # In case of a specific region is given,
-    systemsay = """
+    systemsay = f"""
     You are in the middle of a preliminary study to answer the following questions: 
     Find me Exactly ten of travel destinations related to the topic.
     In the following query, topic will be provided wrapped in triple backticks.
     Topic can be provided in a variety of languages. Translate the topic to English for you.
     Provide the results in the following order : 
-    Step 0. Imagine yourself as an expert travel guide AI.
-    Step 1. Follow the following conditions wrapped in angle brackets and find 10 travel destinations related to topic in English : 
+    Step 0. Imagine yourself as an expert travel guide AI speaking English. Do not say any other languages..
+    Step 1. Follow the following conditions wrapped in angle brackets and find {n} travel destinations related to topic in English : 
     < You must only write places that can be cited and verified on Google Maps. 
     You should include places that are heavily visited and has high ratings by tourists.
     destinations must be close each other. So, The distances between all of each travel destinations must be less than 10km.
@@ -134,7 +134,7 @@ def gpt(topic):
     You must arrange the destinations order so that all destinations are visited in an optimal path. >
     Step 2. Be sure to follow the precautions in Step 1 to ensure that condition is complete at all of each destination and if any of the conditions are not met, fix what you find.
     Step 3. Follow the following conditions wrapped in angle brackets and find region name where the travel destinations belongs to. 
-    < If the location is contained within multiple regions, you should find the only one region name that is most representative and core. >
+    < If the region is multiple, write the only one region that is most representative. >
     Step 4. write 3 sentences introductions and to each destination.
     Step 5. lastly, write 2 sentences introductions about topic.
     Step 6. provide the output in English. The order of the output must satisfy the conditions in Step 1.
@@ -151,8 +151,12 @@ def gpt(topic):
     # 최적 경로는 gpt에게 요구하기보다, 구글 맵 api를 활용하는 편이 적절할 수 있음.
     # 나라와, 특정 지역을 받았을때를 나눠보려했는데, 조금 더 고려해보고 해야겠다.
     # 다른 부분은 거의 해결
+    # 1. 개수 부족하면 추가로 돌도록 코딩하기
+    # 2. 먼거리 추천 에러
+    # 3. 지역명 왔다갔다
+    # 4. 갑자기 한국어로 응답
 
-    query = f"'''{topic}'''"
+    query = f"'''{topic} in English'''"
 
     messages = [
         {"role": "system", "content": systemsay},
@@ -167,6 +171,7 @@ def gpt(topic):
     # answer 테스트 부분
     # print(response['choices'][0]['message']['content'])
     result = json.loads(response['choices'][0]['message']['content'])
+    print(result)
     answer = []
     for i in result["destinations"]:
         name_with_region = i['name'] + '(' + i['region'] + ')'
