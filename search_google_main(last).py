@@ -17,7 +17,7 @@ result_ex=[] #최종 결과물 리스트 전 단계
 #                   'Edinburgh Castle']
 #도쿄 애니메이션 여행
 #search_locations=['Ghibli Museum(Mitaka, Tokyo, Japan)', 'Akihabara(Chiyoda City, Tokyo, Japan)', 'Odaiba(Minato City, Tokyo, Japan)', 'Nakano Broadway(Nakano, Tokyo, Japan)', 'Pokemon Center Tokyo(Chuo City, Tokyo, Japan)', 'J-World Tokyo(Ikebukuro, Tokyo, Japan)', 'Animate Ikebukuro(Toshima City, Tokyo, Japan)', 'Tokyo Anime Center(Chiyoda City, Tokyo, Japan)', 'Otome Road(Ikebukuro, Tokyo, Japan)', 'Shinjuku Wald 9(Shinjuku City, Tokyo, Japan)']
-search_locations=['Roman Baths(Bath, UK)']
+search_locations=['Ghibli Museum(Mitaka, Tokyo, Japan)']
 #도쿄 애니메이션 여행
 #search_locations=['J-World Tokyo(Ikebukuro, Tokyo, Japan)', 'Tokyo Anime Center(Chiyoda City, Tokyo, Japan)', 'Otome Road(Ikebukuro, Tokyo, Japan)']
 
@@ -35,10 +35,18 @@ for locations in search_locations:
         if('rating' in response['results'][0]): # 인덱스 번호에 따라 영업점 나오는 듯. 기준으로만 일단 만듬
             # '0'->지역 외의 장소, 평점이 있는 것
             # [0,'name','rating','user_ratings_total']
+            
+            #사진 요청
+            photo_reference=response['results'][0]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
+            photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=500&photoreference={photo_reference}&key={api_key}"
+            response_photo = requests.get(photo_url)
+            #print(response_photo)
+            
             destination.append(0)
             destination.append(response['results'][0]['name'])
             destination.append(response['results'][0]['rating'])
             destination.append(response['results'][0]['user_ratings_total'])
+            #destination.append(response_photo)
                     
         else:
             # '1'->지역이름, 여기서 지역이름에 관광명소를 평점높고 리뷰수 많은거 1개 가져오면 됨. 단, 없는건 건너뛰고
