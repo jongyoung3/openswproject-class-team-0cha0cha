@@ -2,8 +2,10 @@ import os
 import googlemaps
 import requests
 
-# 오류 고치면 사진 넣기
-api_key = 'YOUR_APPI_KEY'
+# result_list에 사진 값도 추가하긴 했는데 값이 길어서 이건 어떻게 할 건지 정하기
+# 폐업상태 제외하기
+
+api_key = 'YOUR_API_KEY'
 map_clinet = googlemaps.Client(api_key)
 
 result_list = [] #최종 결과물 리스트
@@ -28,7 +30,7 @@ min_reviews = 0  # 최소 리뷰 수
 # 지도에 데이터 보낼 때 좌표로 보내는 걸로 코드 바꾸기(원한다면)
 for locations in search_locations:
     response = map_clinet.places(query=locations) # 데이터를 api로 보냄
-    print(response)
+    #print(response)
     destination = [] 
     
     if(response['status'] !='ZERO_RESULTS'): #검색데이터 결과가 빈 리스트로 오는 경우(=검색결과가 없을때)를 걸러줌
@@ -39,15 +41,17 @@ for locations in search_locations:
                 
                 #사진 요청
                 photo_reference=response['results'][0]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
-                photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=500&photoreference={photo_reference}&key={api_key}"
+                photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo_reference}&key={api_key}"
                 response_photo = requests.get(photo_url)
-                #print(response_photo)
+                res_photo=response_photo.content
+                #print(res_photo)
+                
                 
                 destination.append(0)
                 destination.append(response['results'][0]['name'])
                 destination.append(response['results'][0]['rating'])
                 destination.append(response['results'][0]['user_ratings_total'])
-                #destination.append(response_photo)
+                destination.append(res_photo)
                     
         else:
             # '1'->지역이름, 여기서 지역이름에 관광명소를 평점높고 리뷰수 많은거 1개 가져오면 됨. 단, 없는건 건너뛰고
@@ -97,6 +101,12 @@ for locations in search_locations:
                                     
                 #받은 관광명소 내림차순으로 정렬해서 그 중 위의 1개 반환 
                 #attractions.sort(key=lambda x: (x[1]), reverse=True)
+                #사진 요청
+                photo_reference=res_lo['results'][0]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
+                photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo_reference}&key={api_key}"
+                response_photo = requests.get(photo_url)
+                res_photo=response_photo.content
+                attractions.append(res_photo)
                         
                 destination.append(locations) # 검색한 지역이름
                 destination.extend(attractions)
@@ -138,6 +148,12 @@ for locations in search_locations:
 
                 #받은 관광명소 내림차순으로 정렬해서 그 중 위의 1개 반환 
                 #attractions.sort(key=lambda x: x[1], reverse=True)
+                #사진 요청
+                photo_reference=res_lo['results'][0]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
+                photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo_reference}&key={api_key}"
+                response_photo = requests.get(photo_url)
+                res_photo=response_photo.content
+                attractions.append(res_photo)
                 
                 # 받아온 데이터가 공백리스트가 아닌 경우만 destination 리스트에 추가
                 if(attractions!=[]):
@@ -181,21 +197,39 @@ for locations in search_locations:
             #받은 관광명소 내림차순으로 정렬해서 그 중 위의 1개 반환 
             #attractions.sort(key=lambda x: x[1], reverse=True)
             
+            #사진 요청
+            photo_reference=data['results'][0]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
+            photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo_reference}&key={api_key}"
+            response_photo = requests.get(photo_url)
+            res_photo=response_photo.content
+            attractions.append(res_photo)
+            
             destination.append(locations) # 검색한 지역이름
             destination.extend(attractions)
         else: # 그래도 공백 리스트인 경우
             locations_blank_text=locations.split("(")
             
             response_blank = map_clinet.places(query=locations_blank_text[0]) # 데이터를 api로 보냄
+            
            
             if(response_blank['status'] !='ZERO_RESULTS'): #검색데이터 결과가 빈 리스트로 오는 경우(=검색결과가 없을때)를 걸러줌
                 if('rating' in response_blank['results'][0]): # 인덱스 번호에 따라 영업점 나오는 듯. 기준으로만 일단 만듬
                     # '0'->지역 외의 장소, 평점이 있는 것
                     # [0,'name','rating','user_ratings_total']
                     destination.append(0)
+                    
+                    #사진 요청
+                    photo_reference=response_blank['results'][0]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
+                    photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo_reference}&key={api_key}"
+                    response_photo = requests.get(photo_url)
+                    res_photo=response_photo.content
+                    
+            
                     destination.append(response_blank['results'][0]['name'])
                     destination.append(response_blank['results'][0]['rating'])
                     destination.append(response_blank['results'][0]['user_ratings_total'])
+                    attractions.append(res_photo)
+                    
                             
                 else:
                     # '1'->지역이름, 여기서 지역이름에 관광명소를 평점높고 리뷰수 많은거 1개 가져오면 됨. 단, 없는건 건너뛰고
@@ -251,6 +285,13 @@ for locations in search_locations:
                                             
                         #받은 관광명소 내림차순으로 정렬해서 그 중 위의 1개 반환 
                         #attractions.sort(key=lambda x: (x[1]), reverse=True)
+                        #사진 요청
+                        photo_reference=res_lo['results'][0]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
+                        photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo_reference}&key={api_key}"
+                        response_photo = requests.get(photo_url)
+                        res_photo=response_photo.content
+                        attractions.append(res_photo)
+                        
                                 
                         destination.append(locations) # 검색한 지역이름
                         destination.extend(attractions)
@@ -291,6 +332,13 @@ for locations in search_locations:
 
                         #받은 관광명소 내림차순으로 정렬해서 그 중 위의 1개 반환 
                         #attractions.sort(key=lambda x: x[1], reverse=True)
+                        
+                        #사진 요청
+                        photo_reference=data['results'][0]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
+                        photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo_reference}&key={api_key}"
+                        response_photo = requests.get(photo_url)
+                        res_photo=response_photo.content
+                        attractions.append(res_photo)
                         
                         # 받아온 데이터가 공백리스트가 아닌 경우만 destination 리스트에 추가
                         if(attractions!=[]):
