@@ -23,7 +23,8 @@ class Ui_MainWindow(object):
         self.PsTitle.setGeometry(QtCore.QRect(10, 10, 91, 21))
         
         self.PsContents = QtWidgets.QLabel(self.Psframe)
-        self.PsContents.setGeometry(QtCore.QRect(20, 30, 351, 31))
+        self.PsContents.setGeometry(QtCore.QRect(20, 10, 561, 110))
+        self.PsContents.setWordWrap(True)
         
         
         #검색창 관련
@@ -36,22 +37,15 @@ class Ui_MainWindow(object):
         self.SearchEdit.setGeometry(QtCore.QRect(10, 10, 531, 31))
         
         self.SearchButton = QtWidgets.QPushButton(self.SearchFrame)
-        self.SearchButton.setGeometry(QtCore.QRect(540, 10, 41, 31))
+        self.SearchButton.setGeometry(QtCore.QRect(540, 10, 40, 32))
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("TeamProjects/ClueIcon.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
         self.SearchButton.setIcon(icon)
         
         
-        #탭1 정의
-        self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
-        self.tabWidget.setGeometry(QtCore.QRect(590, 70, 591, 441))
-        self.tabWidget.setDocumentMode(True)
-        self.Tab1 = QtWidgets.QWidget()
-        
-        
         #스크롤바 관련
-        self.scrollArea = QtWidgets.QScrollArea(self.Tab1)
-        self.scrollArea.setGeometry(QtCore.QRect(0, 0, 591, 411))
+        self.scrollArea = QtWidgets.QScrollArea(self.centralwidget)
+        self.scrollArea.setGeometry(QtCore.QRect(590, 100, 591, 411))
         self.scrollArea.setMinimumSize(QtCore.QSize(591, 411))
         self.scrollArea.setMaximumSize(QtCore.QSize(591, 16777215))
         self.scrollArea.setInputMethodHints(QtCore.Qt.ImhHiddenText)
@@ -61,111 +55,23 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(False)
         
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 581, 729))
-        self.scrollAreaWidgetContents.setMinimumSize(QtCore.QSize(411, 0))
-        
-        
-        #제목 로딩될 큰 글씨
-        self.NameLabel1 = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-        self.NameLabel2 = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-        self.NameLabel3 = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-        
-        self.NameLabel1.setGeometry(QtCore.QRect(10, 8, 415, 31))
-        self.NameLabel2.setGeometry(QtCore.QRect(10, 183, 415, 31))
-        self.NameLabel3.setGeometry(QtCore.QRect(10, 357, 415, 31))
-        
-        
-        #내용 로딩될 작은 글씨
-        self.ContentLabel1 = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-        self.ContentLabel2 = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-        self.ContentLabel3 = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-        self.ContentLabel1.setWordWrap(True)
-        self.ContentLabel2.setWordWrap(True)
-        self.ContentLabel3.setWordWrap(True)
-        
-        self.ContentLabel1.setGeometry(QtCore.QRect(150, 60, 420, 110))
-        self.ContentLabel2.setGeometry(QtCore.QRect(150, 235, 420, 110))
-        self.ContentLabel3.setGeometry(QtCore.QRect(150, 410, 420, 110))
-        
-        
-        #사진 나오는 곳: 지금은 landscape 하나만 나오게 해놨음
-        self.image1 = QLabel(self.scrollAreaWidgetContents)
-        self.image2 = QLabel(self.scrollAreaWidgetContents)
-        self.image3 = QLabel(self.scrollAreaWidgetContents)
-        self.image1.resize(130,130)
-        self.image2.resize(130,130)
-        self.image3.resize(130,130)
-        self.image1.setGeometry(10, 42, 130, 130)
-        self.image2.setGeometry(10, 217, 130, 130)
-        self.image3.setGeometry(10, 392, 130, 130)
-        pixmap = QPixmap("TeamProjects/landscape.png")
-        pixmap = pixmap.scaled(130,130)
-        self.image1.setPixmap(QPixmap(pixmap))
-        pixmap = QPixmap("TeamProjects/hotel.png")
-        pixmap = pixmap.scaled(130,130)
-        self.image2.setPixmap(QPixmap(pixmap))
-        pixmap = QPixmap("TeamProjects/night.png")
-        pixmap = pixmap.scaled(130,130)
-        self.image3.setPixmap(QPixmap(pixmap)) 
-        
-        
-        #리뷰의 별점 관련: 지금은 상단 3개만 구현해놓음
-        self.reviewPoint1 = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-        self.reviewPoint2 = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-        self.reviewPoint3 = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-        self.reviewPoint1.setGeometry(QtCore.QRect(146, 40, 51, 17))
-        self.reviewPoint2.setGeometry(QtCore.QRect(146, 215, 51, 17))
-        self.reviewPoint3.setGeometry(QtCore.QRect(146, 390, 51, 17))
-        
-        self.reviewStar1 = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-        self.reviewStar2 = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-        self.reviewStar3 = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-        self.reviewStar1.setGeometry(QtCore.QRect(177, 40, 62, 15))
-        self.reviewStar2.setGeometry(QtCore.QRect(177, 215, 66, 15))
-        self.reviewStar3.setGeometry(QtCore.QRect(177, 390, 49, 15))
-        
-        self.reviews1 = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-        self.reviews2 = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-        self.reviews3 = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-        self.reviews1.setGeometry(QtCore.QRect(260, 40, 101, 16))
-        self.reviews2.setGeometry(QtCore.QRect(260, 215, 101, 16))
-        self.reviews3.setGeometry(QtCore.QRect(260, 390, 101, 16))
-        
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 591, 1770))
+             
         
         #로딩된 곳 삭제 관련
-        self.deleteButton = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
-        self.deleteButton.setGeometry(QtCore.QRect(430, 10, 131, 31))
+        self.deleteButton = QtWidgets.QPushButton(self.centralwidget)
+        self.deleteButton.setGeometry(QtCore.QRect(1050, 65, 131, 31))
         
-        self.trashCan = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
-        self.trashCan.setGeometry(QtCore.QRect(520, 10, 31, 31))
+        self.trashCan = QtWidgets.QPushButton(self.centralwidget)
+        self.trashCan.setGeometry(QtCore.QRect(1150, 65, 31, 31))
         self.trashCan.hide()
         icon1 = QtGui.QIcon()
         icon1.addPixmap(QtGui.QPixmap("TeamProjects/trashcan.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
         self.trashCan.setIcon(icon1)
-        self.trashCan.setIconSize(QtCore.QSize(30, 30))
         
-        self.cancelBtn = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
-        self.cancelBtn.setGeometry(QtCore.QRect(430, 10, 71, 31))
+        self.cancelBtn = QtWidgets.QPushButton(self.centralwidget)
+        self.cancelBtn.setGeometry(QtCore.QRect(1070, 65, 71, 31))
         self.cancelBtn.hide()
-        
-        
-        #deleteButton 클릭시 체크박스로 선택 가능
-        self.checkBox1 = QtWidgets.QCheckBox(self.scrollAreaWidgetContents)
-        self.checkBox2 = QtWidgets.QCheckBox(self.scrollAreaWidgetContents)
-        self.checkBox3 = QtWidgets.QCheckBox(self.scrollAreaWidgetContents)
-        self.checkBox1.setGeometry(13, 0, 130, 55)
-        self.checkBox2.setGeometry(13, 175, 130, 55)
-        self.checkBox3.setGeometry(13, 350, 130, 55)
-        self.checkBox1.hide() 
-        self.checkBox2.hide() 
-        self.checkBox3.hide() 
-        
-        
-        #탭1 정의 완료, 탭2 정의 완료
-        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
-        self.tabWidget.addTab(self.Tab1, "")
-        self.Tab2 = QtWidgets.QWidget()
-        self.tabWidget.addTab(self.Tab2, "")
         
         
         #맵 관련: 지금은 같이 올린 html 파일 주소 입력되어 있음
@@ -195,8 +101,9 @@ class Ui_MainWindow(object):
 
 
         #내용물 정의 완료, 시그널로 제어
+        self.makeReviews()
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.setTexts(MainWindow)
-        self.tabWidget.setCurrentIndex(0)
         self.actionAbout.triggered.connect(self.aboutOpen)
         self.actionQuit.triggered.connect(app.quit)
         self.SearchButton.clicked.connect(self.SearchClicked)
@@ -210,53 +117,74 @@ class Ui_MainWindow(object):
 
     #메인창 내용물에 글자들 넣기
     def setTexts(self, MainWindow):
-        #폰트들 정리
         font = QtGui.QFont()
         font.setFamily("Agency FB")
         font.setPointSize(12)
         self.PsTitle.setFont(font)
         
-        font = QtGui.QFont()
-        font.setFamily("한컴산뜻돋움")
-        font.setPointSize(16)
-        font.setBold(False)
-        font.setWeight(50)
-        self.NameLabel1.setFont(font)
-        self.NameLabel2.setFont(font)
-        self.NameLabel3.setFont(font)
-        
-        font = QtGui.QFont()
-        font.setFamily("돋움")
-        self.reviewPoint1.setFont(font)
-        
-        
         #글자 내용들
         MainWindow.setWindowTitle("TripWithGPT")
         self.PsTitle.setText("P.S.")
-        self.PsContents.setText("GPT의 TMI 설명부분")
-        self.NameLabel1.setText("김용택 / 달이 떴다고 전화를 주시다니요")
-        self.NameLabel2.setText("백석 / 여승")
-        self.NameLabel3.setText("길 / 윤동주")
-        self.ContentLabel1.setText("<html><head/><body><p>달이 떴다고 전화를 주시다니요</p>이 밤 너무나 신나고 근사해요</p><p>내 마음에도 생전 처음 보는</p><p>환한 달이 떠오르고</p><p>산 아래 작은 마을이 그려집니다.</p></body></html>")
-        self.ContentLabel2.setText("<html><head/><body><p>여승은 합장하고 절을 했다.</p><p>가지취의 내음새가 났다.</p><p>쓸쓸한 낯이 옛날같이 늙었다.</p><p>나는 불경처럼 서러워졌다.</p></body></html>")
-        self.ContentLabel3.setText("<html><head/><body><p>잃어버렸습니다</p><p>무얼 어디다 잃었는지 몰라</p><p>두 손이 주머니를 더듬어</p><p>길에 나아갑니다")
+        self.PsContents.setText("일본은 최첨단 기술뿐만 아니라 고대 문화가 풍부한 대조적인 나라로 가득합니다. 상징적인 랜드마크와 번화한 도시부터 산과 바다의 고요한 자연의 아름다움까지, 이 매혹적인 나라에는 모두를 위한 무언가가 있습니다. 전통과 현대의 독특한 조화를 경험할 준비를 하시고 여행 중에 맛있는 현지 요리를 맛보는 것도 잊지 마세요!")
         self.deleteButton.setText("Check to delete")
-        self.reviewPoint1.setText("4.2")
-        self.reviewPoint2.setText("4.7")
-        self.reviewPoint3.setText("3.4")
-        self.reviews1.setText("(9, 487)")
-        self.reviews2.setText("(16, 529)")
-        self.reviews3.setText("(1, 326)")
-        self.reviewStar1.setText("★★★★★")
-        self.reviewStar2.setText("★★★★★")
-        self.reviewStar3.setText("★★★★★")
         self.cancelBtn.setText("Cancel")
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.Tab1), "Tab 1")
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.Tab2), "Tab 2")
         self.menuabout.setTitle("Menu")
         self.actionAbout.setText("About")
         self.actionQuit.setText("Exit")
 
+    #리뷰들에 들어가는 제목, 내용물, 리뷰 별과 갯수, 이미지를 생성
+    def makeReviews(self):
+        self.names = [QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents)]
+        self.contents = [QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents)]
+        self.imgs = [QtWebEngineWidgets.QWebEngineView(self.scrollAreaWidgetContents),QtWebEngineWidgets.QWebEngineView(self.scrollAreaWidgetContents),QtWebEngineWidgets.QWebEngineView(self.scrollAreaWidgetContents),QtWebEngineWidgets.QWebEngineView(self.scrollAreaWidgetContents),QtWebEngineWidgets.QWebEngineView(self.scrollAreaWidgetContents),QtWebEngineWidgets.QWebEngineView(self.scrollAreaWidgetContents),QtWebEngineWidgets.QWebEngineView(self.scrollAreaWidgetContents),QtWebEngineWidgets.QWebEngineView(self.scrollAreaWidgetContents),QtWebEngineWidgets.QWebEngineView(self.scrollAreaWidgetContents),QtWebEngineWidgets.QWebEngineView(self.scrollAreaWidgetContents)]
+        self.reviewPoints = [QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents)]
+        self.reviewStars = [QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents)]
+        self.reviews = [QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents)]
+        self.checkBoxes = [QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents)]
+
+        font = QtGui.QFont()
+        font.setFamily("한컴산뜻돋움")
+        font.setPointSize(14)
+        font.setBold(False)
+        font.setWeight(50)
+
+        for i in range(0,10,1):
+            self.names[i].setGeometry(QtCore.QRect(10, 8+175*i, 415, 31))
+            self.names[i].setFont(font)
+            self.names[i].setText(("%s번째") % str(i+1))
+            
+            self.contents[i].setGeometry(QtCore.QRect(145, 64+175*i, 420, 110))
+            self.contents[i].setText(("%s번째 내용물") % str(i+1))
+            self.contents[i].setWordWrap(True)
+            
+            self.imgs[i].setGeometry(QtCore.QRect(10, 42+175*i, 130, 130))
+            self.reviewPoints[i].setGeometry(QtCore.QRect(144, 44+175*i, 51, 17))
+            self.reviewPoints[i].setText("4.3")
+            self.reviewStars[i].setGeometry(QtCore.QRect(175, 44+175*i, 62, 15))
+            self.reviewStars[i].setText("★★★★★")
+            self.reviews[i].setGeometry(QtCore.QRect(258, 44+175*i, 101, 16))
+            self.reviews[i].setText("1,234")
+            self.checkBoxes[i].setGeometry(13, 0+175*i, 130, 55)
+            self.checkBoxes[i].hide()
+            
+        self.imgs[0].setUrl(QtCore.QUrl("https://lh3.googleusercontent.com/places/ANJU3DuXkXR4mLpUC8HveQxr6Q6xNSxuiaEWj2fTS0wCxhqg37hk_96rjlQyKfH7mD7tk8AwXdqb9ylUc5pdMO7pd2f8rdHD18-yZis=s1600-w400"))
+        self.names[0].setText("도쿄 디즈니랜드(우라야스, 지바현, 일본)")
+        self.names[1].setText("오사카 성(오사카, 일본)")
+        self.names[2].setText("후시미이나리 신사(교토, 일본)")
+        self.contents[0].setText("가족과 디즈니 팬이라면 꼭 방문해야 하는 도쿄 디즈니랜드는 캘리포니아에 있는 오리지널 디즈니랜드의 모든 마법을 체험할 수 있는 곳입니다. 다양한 테마 공간, 화려한 퍼레이드와 쇼, 다양한 캐릭터를 만날 수 있는 도쿄 디즈니랜드는 즐거운 당일치기 여행에 완벽한 장소입니다.")
+        self.contents[1].setText("일본에서 가장 유명한 성 중 하나인 오사카 성은 방문객들에게 일본의 풍부한 역사와 문화를 엿볼 수 있는 곳입니다. 언덕 꼭대기에 위치한 이 성에는 도시의 숨막히는 전경을 감상할 수 있는 박물관과 전망대가 있습니다. 멋진 건축물과 아름다운 정원이 있는 오사카 성은 여유로운 산책을 즐기기에 완벽한 장소입니다.")
+        self.contents[2].setText("수천 개의 밝은 주황색 도리이 문으로 유명한 후시미이나리 신사는 교토의 상징이자 일본의 가장 상징적인 명소 중 하나입니다. 산의 산책로는 계절에 관계없이 신비롭고 고요한 경험을 제공하며 교토의 멋진 전망을 감상할 수 있는 유명한 정상으로 이어집니다. 카메라를 꼭 지참하세요!")
+        self.reviewPoints[0].setText("4.2")
+        self.reviewPoints[1].setText("4.7")
+        self.reviewPoints[2].setText("3.4")
+        self.reviews[0].setText("(9, 487)")
+        self.reviews[1].setText("(16, 529)")
+        self.reviews[2].setText("(1, 326)")
+        self.reviewStars[0].setText("★★★★★")
+        self.reviewStars[1].setText("★★★★★")
+        self.reviewStars[2].setText("★★★★★")
+        
+        
     #메뉴바에 about 누르면 팀 정보창 열리게
     def aboutOpen(self):
         self.Dialog.resize(400, 300)
@@ -302,10 +230,10 @@ class Ui_MainWindow(object):
         self.CloseButton.setText("닫기")
 
     #검색 버튼 누르면 크롤링, API로 나온 내용들 로딩되게 구현할 예정
-    #현재는 NameLabel1이 검색창에 입력한 내용으로 변함
+    #현재는 첫 번째 리뷰 제목이 검색창에 입력한 내용으로 변함
     def SearchClicked(self):
         self.text = self.SearchEdit.text()
-        self.NameLabel1.setText(self.text)
+        self.names[0].setText(self.text)
         #apis.APIS(1,self.text)
         #self.Map.setUrl(QtCore.QUrl("file:///C:/Users/31125/Desktop/python_files/TeamProjects/map.html"))
         
@@ -314,70 +242,39 @@ class Ui_MainWindow(object):
         self.deleteButton.hide()
         self.cancelBtn.show()
         self.trashCan.show()
-        self.checkBox1.show()
-        self.checkBox2.show()
-        self.checkBox3.show()
-        self.NameLabel1.setGeometry(QtCore.QRect(35, 8, 415, 31))
-        self.NameLabel2.setGeometry(QtCore.QRect(35, 183, 415, 31))
-        self.NameLabel3.setGeometry(QtCore.QRect(35, 357, 415, 31))
+        for i in range(0,10,1):
+            self.checkBoxes[i].show()
+            self.names[i].setGeometry(QtCore.QRect(35, 8+175*i, 415, 31))
         
     #cancelBtn 눌렀을 때 체크박스 안보이게 원상복귀, 체크상태 해제
     def removeEnd(self):
         self.deleteButton.show()
         self.trashCan.hide()
         self.cancelBtn.hide()
-        self.checkBox1.hide()
-        self.checkBox2.hide()
-        self.checkBox3.hide()
+        for i in range(0,10,1):
+            self.checkBoxes[i].hide()
+            self.checkBoxes[i].setChecked(False)
+            self.names[i].setGeometry(QtCore.QRect(10, 8+175*i, 415, 31))
         
-        self.checkBox1.setChecked(False)
-        self.checkBox2.setChecked(False)
-        self.checkBox3.setChecked(False)
-        self.NameLabel1.setGeometry(QtCore.QRect(10, 8, 415, 31))
-        self.NameLabel2.setGeometry(QtCore.QRect(10, 183, 415, 31))
-        self.NameLabel3.setGeometry(QtCore.QRect(10, 357, 415, 31))
-        
-    #trashCan 클릭시엔 아이템들 지우고 복구하기: 현재는 기본 세팅된 내용 지워짐
+    #trashCan 클릭시엔 아이템들 지우고 복구하기: 현재는 그 칸의 기본 세팅된 내용 지워짐
     #삭제 후 정렬 기능은 후에 구현 예정
     def removeItems(self):
         self.deleteButton.show()
         self.trashCan.hide()
         self.cancelBtn.hide()
-        
-        if (self.checkBox1.isChecked()):
-            self.NameLabel1.clear()
-            self.ContentLabel1.clear()
-            self.reviewPoint1.clear()
-            self.reviews1.clear()
-            self.reviewStar1.clear()
-            self.image1.hide()
-        
-        if (self.checkBox2.isChecked()):
-            self.NameLabel2.clear()
-            self.ContentLabel2.clear()
-            self.reviewPoint2.clear()
-            self.reviews2.clear()
-            self.reviewStar2.clear()
-            self.image2.hide()
             
-        if (self.checkBox3.isChecked()):
-            self.NameLabel3.clear()
-            self.ContentLabel3.clear()
-            self.reviewPoint3.clear()
-            self.reviews3.clear()
-            self.reviewStar3.clear()
-            self.image3.hide()
+        for i in range(0,10,1):
+            self.checkBoxes[i].hide()
+            self.checkBoxes[i].setChecked(False)
+            self.names[i].setGeometry(QtCore.QRect(10, 8+175*i, 415, 31))
+            if (self.checkBoxes[i].isChecked()):
+                self.names[i].clear()
+                self.contents[i].clear()
+                self.reviewPoints[i].clear()
+                self.reviews[i].clear()
+                self.reviewStars[i].clear()
+                self.imgs[i].hide()
             
-            
-        self.checkBox1.hide()
-        self.checkBox2.hide()
-        self.checkBox3.hide()
-        self.checkBox1.setChecked(False)
-        self.checkBox2.setChecked(False)
-        self.checkBox3.setChecked(False)
-        self.NameLabel1.setGeometry(QtCore.QRect(10, 8, 415, 31))
-        self.NameLabel2.setGeometry(QtCore.QRect(10, 183, 415, 31))
-        self.NameLabel3.setGeometry(QtCore.QRect(10, 357, 415, 31))
 
 from PyQt5 import QtWebEngineWidgets
 
@@ -389,4 +286,3 @@ if __name__ == "__main__":
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
-
