@@ -3,7 +3,7 @@ import json
 
 
 def gpt(topic, n = 10, except_list=[], retry = 0, add = 0):
-    if retry >= 2:
+    if retry >= 3:
         return [] # 다차례 오류 발생시 공백리스트 리턴
     import openai
 
@@ -100,16 +100,16 @@ def gpt(topic, n = 10, except_list=[], retry = 0, add = 0):
 
     # 아래 오류목록 참고해서, 확인 후 고쳐보고.
 
-    # 1. 개수 부족하면 추가로 돌도록 코딩하기 (이제 거의 발생 x. 다만 개수 부족이 아니라, 과잉으로 제공하는 경우도 있다.(재시도 상황 포함, 에러 대비책 필요.)
-    # 특히 재시도상황에서의 해당 문제는 치환시 치명적 문제 일으킬 수 있음. 중요!
 
     # 2. 먼거리 추천 에러 step1 요구사항 3,4,5번 라인
 
 
+
     # 3. 특정 지역 제외 후 재검색 기능 비작동 ( 영국 시계탑 중복 추천 등 일부 chatgpt가 실수하는 경우 있음. 드문 빈도. 다만, 관찰 필요. 무시해도 가능할 정도로 보임.) 주요문제는 x
+
     # 재검색시 지역전체소개는 빼도록 하면 속도개선 가능. (0으로 대충 답변하게 추가는 했지만, 잘 x), 주요기능은 x
 
-
+    #### 현 기준 해결 사항
 
     # 개선사항 1. step1와 step2에서 여행지찾는 알고리즘 개선
     # 너무 광범위한 주제를 받았을 때 여행지간 거리 문제와, 최적 경로 순서로 추천하는 부분은 개선이 안 된다.
@@ -117,7 +117,8 @@ def gpt(topic, n = 10, except_list=[], retry = 0, add = 0):
     # 나라와, 특정 지역을 받았을때를 나눠보려했는데, 조금 더 고려해보고 해야겠다.
     # 다른 부분은 거의 해결
     # chatgpt상에서는 불가능한것으로 보임.
-    #### 현 기준 해결 사항
+    # 1. 개수 부족하면 추가로 돌도록 코딩하기 (이제 거의 발생 x. 다만 개수 부족이 아니라, 과잉으로 제공하는 경우도 있다.(재시도 상황 포함, 에러 대비책 필요.)
+    # 특히 재시도상황에서의 해당 문제는 치환시 치명적 문제 일으킬 수 있음. 중요!
     # 맨위에서 언급했듯, gpt는 예상할 수 없기 때문에, 항상 try except를 활용하게 해야겠다.
     # 6. 갑자기 json 로드가 안되는 치명적 오류 발생! 해결해야함(갑자기 안남! 계속 관찰 필요) 원인확인원료. json 앞뒤로 ```이 붙는 이상한 오류 발생. 발생 이제 거의 x ok
     # 3. 지역명 왔다갔다(상당히 명확해짐. 이정도면 그냥 뽑아도 될듯.) ok
@@ -162,34 +163,44 @@ def gpt(topic, n = 10, except_list=[], retry = 0, add = 0):
     try:
         result = json.loads(response['choices'][0]['message']['content'])
     except:
-        print("re-try")
+        print("re-try\n\n")
+        print(response['choices'][0]['message']['content'])
         retry += 1
         return gpt(topic,n,except_list, retry)
-    print(result)
-    answer = []
-    for i in result["destinations"]:
-        name_with_region = i['name'] + '(' + i['region'] + ')'
-        answer.append(name_with_region)
+    # print(result)
+    # answer = []
+    # for i in result["destinations"]:
+    #     name_with_region = i['name'] + '(' + i['region'] + ')'
+    #     answer.append(name_with_region)
     #     print(name_with_region, i["description"], sep=' :: ', end="\n\n")
     # print(result['topic_introduction'])
-    print(answer, len(answer), sep='\n')
-    return answer
+    # print(answer, len(answer), sep='\n')
+    # return answer
 
-    # ### 개수 점검기
-    # # 초과하는 케이스 우선
-    # if len(result['destinations']) > n:
-    #     # result에 len개만큼만 남기도록 하고 뒤로 넘김
-    # elif len(result['destinations']) < n: # 미만인 케이스
-    #     # new_except_list에 현재 검색한 양만큼 추가 후, new_n 은 n-len으로 맞춘 후, gpt를 새로 호출해서 받아온 뒤, 진행중이던 곳에 추가하기.
-    #     # 디폴트 인자로 해당케이스 속성값을 줘서, 얘에 추가하는 전용으로 영문값만 받아오는 케이스를 만들어야겠다.
-    #
-    #
-    # ### 추가용 gpt버전으로 들어왔는지 점검기
-    #
-    # if add == 1:
-    #     # 번역 없이, 영어값만 정리해서 리턴
+    ### 개수 점검기
+    # 초과하는 케이스 우선
+    if len(result['destinations']) > n:
+        for i in range(len(result['destinations']) - n):
+            result['destinations'].pop()  # result에 len개만큼만 남기도록 하고 뒤로 넘김
+    elif len(result['destinations']) < n: # 미만인 케이스
+        new_except_list = except_list[:]
+        for i in result["destinations"]:
+            name_with_region = i['name'] + '(' + i['region'] + ')'
+            new_except_list.append(name_with_region)
+        new_n = n-len(result['destinations'])
+        result['destinations'].extend(gpt(topic,new_n,new_except_list,0,1))
+        # new_except_list에 현재 검색한 양만큼 추가 후, new_n 은 n-len으로 맞춘 후, gpt를 새로 호출해서 받아온 뒤, 진행중이던 곳에 추가하기.
+        # 디폴트 인자로 해당케이스 속성값을 줘서, 얘에 추가하는 전용으로 영문값만 받아오는 케이스를 만들어야겠다.
 
-    ## 영문 여행지명 리스트 생성기
+    ### 추가용 gpt버전으로 들어왔는지 점검기
+
+    if add == 1:
+        return result['destinations']
+        # 번역 없이, 영어값 그대로 정리해서 리턴
+
+    # return [answer, result]
+
+    ### 영문 여행지명 리스트 생성기
 
 
     try:
@@ -257,7 +268,7 @@ def gpt(topic, n = 10, except_list=[], retry = 0, add = 0):
 
 # ! 테스팅
 topic = input()
-# ans = gpt(topic)
+# ans, res = gpt(topic)
 eng_name, name, introduce, PS = gpt(topic)
 print(eng_name)
 print(name)
@@ -267,7 +278,7 @@ print(PS)
 print("제외후 재 테스트\n")
 a, b, c, d = gpt(topic, 1, eng_name)
 print(a, b, c, d, sep="\n")
-# gpt(topic, 1, ans)
+# print(gpt(topic, 1, ans))
 
 
 # 번역 이전의 검색및 활용 데이터리스트 1개, 번역이 완료된 출력용 데이터리스트 2개를 만들 예정.
