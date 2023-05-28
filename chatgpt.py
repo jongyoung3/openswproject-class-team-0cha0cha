@@ -2,7 +2,9 @@ from apikey import OPENAI_API_KEY, RapidAPI_KEY  # 보안을 위해, 따로 저�
 import json
 
 
-def gpt(topic, n = 10):
+def gpt(topic, n = 10, except_list=[], retry = 0, add = 0):
+    if retry >= 2:
+        return [] # 다차례 오류 발생시 공백리스트 리턴
     import openai
 
     openai.api_key = OPENAI_API_KEY
@@ -10,53 +12,6 @@ def gpt(topic, n = 10):
     model = "gpt-3.5-turbo"
 
     train_topic = "'''tokyo shopping travel'''"
-
-    prev = """{
-    "destinations": [
-            {
-                "name": "Ginza",
-                "description": "One of the most high-end shopping areas in the world, Ginza has everything from fashion boutiques to department stores. It's also home to the famous Wako department store and the Sony Building, where you can find all the latest gadgets."
-            },
-            {
-                "name" : "Shibuya",
-                "description": "Known for its bustling city center, Shibuya is a hot spot for young shoppers and fashion enthusiasts. It's home to the famous Shibuya Crossing, as well as trendy shops like Tokyu Hands and Lush."
-            },
-            {
-                "name": "Harajuku",
-                "description": "Famous for its street fashion and cosplay, Harajuku is a must-visit for anyone interested in unique fashion trends and styles. Takeshita Street is a popular destination for shopping, while Omotesando is home to high-end fashion brands."
-            },
-            {
-                "name": "Shinjuku",
-                "description": "The busiest train station in the world, Shinjuku is also a popular shopping district filled with department stores like Isetan and Takashimaya. It's also home to the quirky Golden Gai area, a maze of narrow alleyways filled with tiny bars and restaurants."
-            },
-            {
-                "name": "Daikanyama",
-                "description": "Often compared to Brooklyn, Daikanyama is a trendy neighborhood filled with stylish cafes, boutiques, and bookstores. It's a great place to find unique clothing and accessories, as well as vintage and second-hand items."
-            },
-            {
-                "name": "Nakameguro",
-                "description": "A picturesque neighborhood along the Meguro River, Nakameguro is known for its chic boutiques, cafes, and restaurants. It's a popular spot for cherry blossom viewing in the spring, and the area comes alive with decorations during Christmas time."
-            },
-            {
-                "name": "Kichijoji",
-                "description": "Voted the most desirable neighborhood to live in Tokyo, Kichijoji is a great place to visit for its trendy shops and cafes, as well as the beautiful Inokashira Park. The shopping street of Sun Road is a great place to find unique souvenirs."
-            },
-            {
-                "name": "Odaiba",
-                "description": "A man-made island in Tokyo Bay, Odaiba is a popular destination for shopping and entertainment. It's home to multiple shopping centers, including the futuristic VenusFort and the Palette Town complex with its giant Ferris wheel."
-            },
-            {
-                "name": "Akihabara",
-                "description": "Known as the center of Japan's otaku culture, Akihabara is a popular destination for anime and manga fans. It's also a great place to find electronics and video games, with stores like Yodobashi Camera and Radio Kaikan."
-            },
-            {
-                "name": "Asakusa",
-                "description": "Located near the famous Sensoji Temple, Asakusa is a great place to find traditional Japanese souvenirs like kimono, ceramics, and paper crafts. The famous Nakamise shopping street is lined with vendors selling everything from snacks to trinkets."
-            }
-        ],
-        "topic_introduction": "Tokyo is a shopper's paradise, with a wide variety of districts and neighborhoods catering to every taste and budget. From high-end luxury boutiques to vibrant street fashion, Tokyo shopping has something for everyone."
-    }
-    """
 
     prev2 = """
     {
@@ -120,43 +75,55 @@ def gpt(topic, n = 10):
     # If you're given a country theme, rather than a specific region, suggest destinations that give an overview of the region, rather than just attractions (places).
     # In case of a specific region is given,
     systemsay = f"""
-    You are in the middle of a preliminary study to answer the following questions: 
+    You are in the middle of a preliminary study to answer the following questions:
     Find me Exactly ten of travel destinations related to the topic.
-    In the following query, topic will be provided wrapped in triple backticks.
+    In the following user query, topic will be provided wrapped in triple backticks.
     Topic can be provided in a variety of languages. Translate the topic to English for you.
-    Provide the results in the following order : 
+    Provide the results in the following order :
     Step 0. Imagine yourself as an expert travel guide AI speaking English. Do not say any other languages..
-    Step 1. Follow the following conditions wrapped in angle brackets and find {n} travel destinations related to topic in English : 
-    < You must only write places that can be cited and verified on Google Maps. 
+    Step 1. Follow the following conditions wrapped in angle brackets and find {n} of travel destinations related to topic in English :
+    < You must only write places that can be cited and verified on Google Maps.
     You should include places that are heavily visited and has high ratings by tourists.
     destinations must be close each other. So, The distances between all of each travel destinations must be less than 10km.
     You must write close destinations(destinations in same or close administrative region, district or area) back-to-back.
     You must arrange the destinations order so that all destinations are visited in an optimal path. >
     Step 2. Be sure to follow the precautions in Step 1 to ensure that condition is complete at all of each destination and if any of the conditions are not met, fix what you find.
-    Step 3. Follow the following conditions wrapped in angle brackets and find region name where the travel destinations belongs to. 
+    Step 3. Follow the following conditions wrapped in angle brackets and find region name where the travel destinations belongs to.
     < If the region is multiple, write the only one region that is most representative. >
     Step 4. write 3 sentences introductions and to each destination.
     Step 5. lastly, write 2 sentences introductions about topic.
-    Step 6. provide the output in English. The order of the output must satisfy the conditions in Step 1.
-    Your output should be in json format with two list and have the following fields in first list : 
+    Step 6. provide the output taht is {n} of travel destinations related to topic in English and only json format. The order of the output must satisfy the conditions in Step 1.
+    Your output should be in json format with two list and have the following fields in first list :
      'name', 'region', 'description'. first list key is "destinations".
     In second list, You should write only introduction about topic. Second list key is "topic_introduction".
     """
 
     # 아래 오류목록 참고해서, 확인 후 고쳐보고.
-    # 혹시 모르니 try except는 요구하고.
+
+    # 1. 개수 부족하면 추가로 돌도록 코딩하기 (이제 거의 발생 x. 다만 개수 부족이 아니라, 과잉으로 제공하는 경우도 있다.(재시도 상황 포함, 에러 대비책 필요.)
+    # 특히 재시도상황에서의 해당 문제는 치환시 치명적 문제 일으킬 수 있음. 중요!
+
+    # 2. 먼거리 추천 에러 step1 요구사항 3,4,5번 라인
+
+
+    # 3. 특정 지역 제외 후 재검색 기능 비작동 ( 영국 시계탑 중복 추천 등 일부 chatgpt가 실수하는 경우 있음. 드문 빈도. 다만, 관찰 필요. 무시해도 가능할 정도로 보임.) 주요문제는 x
+    # 재검색시 지역전체소개는 빼도록 하면 속도개선 가능. (0으로 대충 답변하게 추가는 했지만, 잘 x), 주요기능은 x
+
+
 
     # 개선사항 1. step1와 step2에서 여행지찾는 알고리즘 개선
     # 너무 광범위한 주제를 받았을 때 여행지간 거리 문제와, 최적 경로 순서로 추천하는 부분은 개선이 안 된다.
     # 최적 경로는 gpt에게 요구하기보다, 구글 맵 api를 활용하는 편이 적절할 수 있음.
     # 나라와, 특정 지역을 받았을때를 나눠보려했는데, 조금 더 고려해보고 해야겠다.
     # 다른 부분은 거의 해결
-    # 1. 개수 부족하면 추가로 돌도록 코딩하기
-    # 2. 먼거리 추천 에러
-    # 3. 지역명 왔다갔다
-    # 4. 갑자기 한국어로 응답
+    # chatgpt상에서는 불가능한것으로 보임.
+    #### 현 기준 해결 사항
+    # 맨위에서 언급했듯, gpt는 예상할 수 없기 때문에, 항상 try except를 활용하게 해야겠다.
+    # 6. 갑자기 json 로드가 안되는 치명적 오류 발생! 해결해야함(갑자기 안남! 계속 관찰 필요) 원인확인원료. json 앞뒤로 ```이 붙는 이상한 오류 발생. 발생 이제 거의 x ok
+    # 3. 지역명 왔다갔다(상당히 명확해짐. 이정도면 그냥 뽑아도 될듯.) ok
+    # 4. 갑자기 한국어로 응답 (이제 거의 일어나지 않는 버그긴 한데, 관찰 필요.) ok
 
-    query = f"'''{topic} in English'''"
+    query = f"```{topic} in English```"
 
     messages = [
         {"role": "system", "content": systemsay},
@@ -164,13 +131,40 @@ def gpt(topic, n = 10):
         {"role": "assistant", "content": prev2},
         {"role": "user", "content": query}
     ]
+    #         The rest of the instructions are the same as before.
+    if except_list != []:
+        except_destination = ", ".join(except_list)
+        systemsay2 = f"""
+        in next answer, You must find {n} of travel destinations related to topic in English, And You should follow the following conditions wrapped in angle brackets too.
+        < First, You must exclude the destinations wrapped in following double backticks. So, you must find the destinations that is not provided in following double backticks.
+        ``{except_destination}``. this is Top priority requirement.
+        Second, You don't need to write 2 sentences introductions about topic. Instead, Just write '0'. > 
+        The rest of the instructions are the same as preliminary study.
+        """
+        messages = [
+            {"role": "system", "content": systemsay},
+            {"role": "user", "content": train_topic},
+            {"role": "assistant", "content": prev2},
+            {"role": "user", "content": systemsay2},
+            {"role": "user", "content": query}
+        ]
 
     response = openai.ChatCompletion.create(model=model, messages=messages)
 
-    # answer = response['choices'][0]['message']['content']  # 응답 부분
-    # answer 테스트 부분
+    answer = response['choices'][0]['message']['content']  # 응답 부분
+    # ## answer 테스트 부분
     # print(response['choices'][0]['message']['content'])
-    result = json.loads(response['choices'][0]['message']['content'])
+    # print("json 변환 전 \n\n")
+    result = {}
+    if answer[0] == '`' or answer[len(answer)-1] == '`': # 아주 적은 빈도로, ```가 양쪽에 붙는 문제 해결
+        answer.strip('`')
+
+    try:
+        result = json.loads(response['choices'][0]['message']['content'])
+    except:
+        print("re-try")
+        retry += 1
+        return gpt(topic,n,except_list, retry)
     print(result)
     answer = []
     for i in result["destinations"]:
@@ -178,66 +172,102 @@ def gpt(topic, n = 10):
         answer.append(name_with_region)
     #     print(name_with_region, i["description"], sep=' :: ', end="\n\n")
     # print(result['topic_introduction'])
-    print(answer, len(answer),sep='\n')
+    print(answer, len(answer), sep='\n')
+    return answer
 
-    #
-    # ### 영문 여행지명 리스트 생성기
-    #
-    # textlist = answer.split('\n\n')
-    # n = 10
-    # eng_name = []
-    # for i in range(0, n):
-    #     temp_name, temp_introduce = textlist[i].split("::")
-    #     eng_name.append(temp_name.strip())
-    #
-    # # print(eng_name) # !테스트 부분
+    # ### 개수 점검기
+    # # 초과하는 케이스 우선
+    # if len(result['destinations']) > n:
+    #     # result에 len개만큼만 남기도록 하고 뒤로 넘김
+    # elif len(result['destinations']) < n: # 미만인 케이스
+    #     # new_except_list에 현재 검색한 양만큼 추가 후, new_n 은 n-len으로 맞춘 후, gpt를 새로 호출해서 받아온 뒤, 진행중이던 곳에 추가하기.
+    #     # 디폴트 인자로 해당케이스 속성값을 줘서, 얘에 추가하는 전용으로 영문값만 받아오는 케이스를 만들어야겠다.
     #
     #
-    # ### deepl api
-    # import requests
+    # ### 추가용 gpt버전으로 들어왔는지 점검기
     #
-    # url = "https://deepl-translator.p.rapidapi.com/translate"
-    #
-    # payload = {
-    #     "text": answer,
-    #     "source": "EN",
-    #     "target": "KO"
-    # }
-    # headers = {
-    #     "content-type": "application/json",
-    #     "X-RapidAPI-Key": RapidAPI_KEY,
-    #     "X-RapidAPI-Host": "deepl-translator.p.rapidapi.com"
-    # }
-    #
-    # response = requests.post(url, json=payload, headers=headers)
-    #
-    # # print(response.json()['text']) # 번역 완료 내용 테스트
-    #
-    # textdata = response.json()['text']
-    #
-    # #### 아래는 데이터 처리 부분
-    #
-    # textlist = textdata.split('\n\n')
-    # # print(textlist) # !!!테스트
-    # # print(textdata) # !!!테스트
-    # name = []
-    # introduce = []
-    # PS = textlist[n]
-    # for i in range(0, n):
-    #     temp_name, temp_introduce = textlist[i].split("::")
-    #     name.append(temp_name.strip())
-    #     introduce.append(temp_introduce.strip())
-    #
-    # return [eng_name, name, introduce, PS]
-    #
+    # if add == 1:
+    #     # 번역 없이, 영어값만 정리해서 리턴
+
+    ## 영문 여행지명 리스트 생성기
+
+
+    try:
+        eng_name = []
+        for dest in result['destinations']:
+            eng_name.append(dest['name'] + '(' + dest['region'] + ')')
+
+        # print(eng_name) # !테스트 부분
+
+        # 번역을 위한 데이터 처리 부분 1-
+
+        text = ""
+
+        for dest in result['destinations']:
+            text = text + dest['name'] + ' :: ' + dest['region'] + ' :: ' + dest['description'] + '\n'
+
+        text += result['topic_introduction'][0]
+
+        # print(text) # 테스트용
+
+
+        ### deepl api
+        import requests
+
+        url = "https://deepl-translator.p.rapidapi.com/translate"
+
+        payload = {
+            "text": text,
+            "source": "EN",
+            "target": "KO"
+        }
+        headers = {
+            "content-type": "application/json",
+            "X-RapidAPI-Key": RapidAPI_KEY,
+            "X-RapidAPI-Host": "deepl-translator.p.rapidapi.com"
+        }
+
+        response = requests.post(url, json=payload, headers=headers)
+
+        # print(response.json()['text']) # 번역 완료 내용 테스트
+
+        translated_text = response.json()['text']
+        # print(translated_text) #테스트 !!!
+
+
+        #### 아래는 리턴을 위한 데이터 처리 부분 2-
+
+        textlist = translated_text.split('\n')
+        # print(textlist) # !!!테스트
+        # print(textdata) # !!!테스트
+        name = []
+        introduce = []
+        PS = textlist.pop()
+        for texts in textlist:
+            temp_name, temp_region, temp_introduce = texts.split("::")
+            name.append(temp_name.strip().strip(":") + '(' + temp_region.strip().strip(":") + ')')
+            introduce.append(temp_introduce.strip().strip(":"))
+
+        return [eng_name, name, introduce, PS]
+    except:
+        retry += 1
+        return gpt(topic, n, except_list, retry)
+
+
+
 # ! 테스팅
 topic = input()
-gpt(topic)
-# a, b, c, d = gpt(topic)
-# print(a, b, c, d, sep="\n")
+# ans = gpt(topic)
+eng_name, name, introduce, PS = gpt(topic)
+print(eng_name)
+print(name)
+print(introduce)
+print(PS)
 
-
-
+print("제외후 재 테스트\n")
+a, b, c, d = gpt(topic, 1, eng_name)
+print(a, b, c, d, sep="\n")
+# gpt(topic, 1, ans)
 
 
 # 번역 이전의 검색및 활용 데이터리스트 1개, 번역이 완료된 출력용 데이터리스트 2개를 만들 예정.
