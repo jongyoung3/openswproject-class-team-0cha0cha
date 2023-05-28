@@ -105,18 +105,18 @@ else:
     print('지도 이미지 가져오기 실패')
 '''
 import googlemaps
+import gmaps
 import folium
 import webbrowser
 import requests
 from geopy.distance import geodesic
-import matplotlib.pyplot as plt
+from datetime import datetime
 
 
-
-n=int(input("몇 개의 지점? "))
+n=int(input("몇개의 지점?"))
 lat1=[]
 lon1=[]
-#distance=[]
+distance=[]
 site=[]
 for i in range(n):
     temp=input("장소 입력: ")
@@ -156,12 +156,25 @@ for i in range(n):
     else:
         print('API 요청 실패')
 
+gmaps.configure(api_key=API_KEY)
+fig=gmaps.figure()
+for i in range(n-1):
+    origin=(lat1[i],lon1[i])
+    destination=(lat1[i+1],lon1[i+1])
+    layer=gmaps.directions.Directions(origin,destination,mode="driving",avoid="ferries",departure_time=0)
+    fig.add_layer(layer)
+fig.show()
+
+
+
+ 
 
 # 맵 생성
 map = folium.Map(location=[lat1[0], lon1[0]], zoom_start=13)
-
+'''
 for i in range(n-1):
-    '''
+    # Directions API 엔드포인트
+    directions_url = 'https://maps.googleapis.com/maps/api/directions/json'
     
     la=lat1[i]
     lo=lon1[i]
@@ -175,39 +188,32 @@ for i in range(n-1):
         'key': API_KEY,
     }
     
-    '''
-    origin=(lat1[i],lon1[i])
-    destination=(lat1[i+1],lon1[i+1])
-    base_url = 'https://maps.googleapis.com/maps/api/directions/json'
-    params = {
-        'key': API_KEY,
-        'origin': origin,
-        'destination': destination
-    }
+    # 경로 API 요청 보내기
+    directions_response = requests.get(directions_url, params=directions_params)
+    directions_data = directions_response.json()
+    routes = directions_data['routes']
     
-    response = requests.get(base_url, params=params)
-    data = response.json()
+    #마커 표시
+    if i==0:
+        folium.Marker([lat1[i], lon1[i]], popup=site[i]).add_to(map)
+    folium.Marker([lat1[i+1], lon1[i+1]], popup=site[i]).add_to(map)
     
-    if data['status'] == 'OK':
-        routes = data['routes']
-        for route in routes:
-            # 경로 좌표를 가져옵니다.
-            points = route['overview_polyline']['points']
-            
-            # 좌표를 디코딩하여 경로의 위도와 경도 리스트로 변환합니다.
-            decoded_points = decode_polyline(points)
-            latitudes = [point[0] for point in decoded_points]
-            longitudes = [point[1] for point in decoded_points]
-            
-            # 경로를 그립니다.
-            plt.plot(longitudes, latitudes, color='blue')
-            
-        # 출발지와 도착지를 표시합니다.
-        plt.scatter([origin[1]], [origin[0]], color='green', label='출발지')
-        plt.scatter([destination[1]], [destination[0]], color='red', label='도착지')
-        
-        # 그래프를 표시합니다.
-        plt.legend()
-        plt.show()
-    else:
-        print("Directions API request failed.") 
+    # 경로 그리기
+    for route in routes:
+        steps = route['legs'][0]['steps']
+        for step in steps:
+            polyline = step['polyline']['points']
+            coordinates[] = polyline
+            coords = []
+            for coord in coordinates:
+                lat = coord[0]
+                lng = coord[1]
+                coords.append([lat, lng])
+            folium.PolyLine(locations=coords, color='red', weight=2.5, opacity=1).add_to(map)
+
+# 맵 저장
+map.save('map.html')
+
+
+webbrowser.open('map.html')
+'''
