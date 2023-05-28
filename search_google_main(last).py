@@ -7,6 +7,7 @@ from pprint import pprint #줄맞춤 출력을 위해 임포트 한 것이므로
 # result_list에 사진 값도 추가하긴 했는데 값이 길어서 이건 어떻게 할 건지 정하기(url로 대체함 안되면 content로 변경)
 # 폐업상태 제외하기
 # ㄴ완료
+# 최종 결과 리스트(result_list)에 '-1' 뜨는 건 아무리 걸러도 폐업한 것만 있을때 넣어논 거임
 #############################################################################################################################
 
 api_key = 'YOUR_API_KEY'
@@ -21,7 +22,12 @@ search_locations=['Ghibli Museum(Mitaka, Tokyo, Japan)', 'Akihabara(Chiyoda City
                   'Nakano Broadway(Nakano, Tokyo, Japan)', 'Pokemon Center Tokyo(Chuo City, Tokyo, Japan)', 'J-World Tokyo(Ikebukuro, Tokyo, Japan)', 
                   'Animate Ikebukuro(Toshima City, Tokyo, Japan)', 'Tokyo Anime Center(Chiyoda City, Tokyo, Japan)', 'Otome Road(Ikebukuro, Tokyo, Japan)', 
                   'Shinjuku Wald 9(Shinjuku City, Tokyo, Japan)']
-#search_locations=['Pokemon Center Tokyo(Chuo City, Tokyo, Japan)']
+#search_locations=['J-World Tokyo(Ikebukuro, Tokyo, Japan)']
+# search_locations=['Tokyo Disneyland(Urayasu, Chiba Prefecture, Japan)', 'Osaka Castle(Osaka, Japan)', 
+#                   'Fushimi Inari Shrine(Kyoto, Japan)', 'Hiroshima Peace Memorial Park(Hiroshima, Japan)', 
+#                   'Kinkaku-ji Temple(Kyoto, Japan)', 'Nagoya Castle(Nagoya, Aichi Prefecture, Japan)', 
+#                   'Mount Fuji(Yamanashi Prefecture, Japan)', 'Universal Studios Japan(Osaka, Japan)', 
+#                   'Shinjuku Gyoen National Garden(Shinjuku City, Tokyo, Japan)', 'Gunkanjima Island(Nagasaki, Japan)']
 
 
 min_rating = 0  # 최소 평점
@@ -36,10 +42,34 @@ for locations in search_locations:
     
     if(response['status'] !='ZERO_RESULTS'): #검색데이터 결과가 빈 리스트로 오는 경우(=검색결과가 없을때)를 걸러줌
         if('rating' in response['results'][0]): # 인덱스 번호에 따라 영업점 나오는 듯. 기준으로만 일단 만듬
-            if(response['results'][0]['business_status']=='OPERATIONAL'): #폐업인 경우 제외
-                # '0'->지역 외의 장소, 평점이 있는 것
-                # [0,'name','rating','user_ratings_total']
-                
+            if('business_status' in response['results'][0]): #'business_status'가 없는 경우 분류
+                if(response['results'][0]['business_status']=='OPERATIONAL'): #폐업인 경우 제외
+                    # '0'->지역 외의 장소, 평점이 있는 것
+                    # [0,'name','rating','user_ratings_total']
+                    
+                    if('photos' in response['results'][0]): # 'photos'가 아예없는 경우 제외
+                        #사진 요청
+                        photo_reference=response['results'][0]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
+                        photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo_reference}&key={api_key}"
+                        response_photo = requests.get(photo_url)
+                        #res_photo=response_photo.content
+                        res_photo=response_photo.url
+                        
+                        destination.append(0)
+                        destination.append(response['results'][0]['name'])
+                        destination.append(response['results'][0]['rating'])
+                        destination.append(response['results'][0]['user_ratings_total'])
+                        destination.append(res_photo)                                       
+                    else:
+                        destination.append(0)
+                        destination.append(response['results'][0]['name'])
+                        destination.append(response['results'][0]['rating'])
+                        destination.append(response['results'][0]['user_ratings_total'])
+                        destination.append('No Image')
+                    #print(res_photo)
+                else: # 폐업한 경우 '-1'
+                    destination.append(-1)
+            else:
                 if('photos' in response['results'][0]): # 'photos'가 아예없는 경우 제외
                     #사진 요청
                     photo_reference=response['results'][0]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
@@ -59,7 +89,6 @@ for locations in search_locations:
                     destination.append(response['results'][0]['rating'])
                     destination.append(response['results'][0]['user_ratings_total'])
                     destination.append('No Image')
-                #print(res_photo)
                 
                 
                     
@@ -91,7 +120,15 @@ for locations in search_locations:
                     # 리뷰 수가 높은 순으로 정렬 필요
                     #print(i)
                     if 'rating' in res_lo['results'][i]:
-                        if(res_lo['results'][i]['business_status']=='OPERATIONAL'): #폐업인 경우 제외
+                        if('business_status' in res_lo['results'][i]): #'business_status'가 없는 경우 분류
+                            if(res_lo['results'][i]['business_status']=='OPERATIONAL'): #폐업인 경우 제외
+                                name = res_lo['results'][i]['name']
+                                rating = res_lo['results'][i]['rating']
+                                reviews = res_lo['results'][i]['user_ratings_total']
+                                if reviews >= max_reviewer:
+                                    max_reviewer = reviews
+                                    max_index = i
+                        else:
                             name = res_lo['results'][i]['name']
                             rating = res_lo['results'][i]['rating']
                             reviews = res_lo['results'][i]['user_ratings_total']
@@ -141,7 +178,16 @@ for locations in search_locations:
                 for i in range(len(res_lo)):
                     # 리뷰 수가 높은 순으로 정렬 필요
                     #print(i)
-                    if(res_lo['results'][i]['business_status']=='OPERATIONAL'): #폐업인 경우 제외
+                    if('business_status' in res_lo['results'][i]): #'business_status'가 없는 경우 분류
+                        if(res_lo['results'][i]['business_status']=='OPERATIONAL'): #폐업인 경우 제외
+                            if 'rating' in data['results'][i]:
+                                name = data['results'][i]['name']
+                                rating = data['results'][i]['rating']
+                                reviews = data['results'][i]['user_ratings_total']
+                                if reviews >= max_reviewer:
+                                    max_reviewer = reviews
+                                    max_index = i
+                    else:
                         if 'rating' in data['results'][i]:
                             name = data['results'][i]['name']
                             rating = data['results'][i]['rating']
@@ -194,7 +240,16 @@ for locations in search_locations:
             for i in range(len(res_lo)):
                 # 리뷰 수가 높은 순으로 정렬 필요
                 #print(i)
-                if(data['results'][i]['business_status']=='OPERATIONAL'): #폐업인 경우 제외
+                if('business_status' in data['results'][i]): #'business_status'가 없는 경우 분류
+                    if(data['results'][i]['business_status']=='OPERATIONAL'): #폐업인 경우 제외
+                        if 'rating' in data['results'][i]:
+                            name = data['results'][i]['name']
+                            rating = data['results'][i]['rating']
+                            reviews = data['results'][i]['user_ratings_total']
+                            if reviews >= max_reviewer:
+                                max_reviewer = reviews
+                                max_index = i
+                else:
                     if 'rating' in data['results'][i]:
                         name = data['results'][i]['name']
                         rating = data['results'][i]['rating']
@@ -244,9 +299,31 @@ for locations in search_locations:
            
             if(response_blank['status'] !='ZERO_RESULTS'): #검색데이터 결과가 빈 리스트로 오는 경우(=검색결과가 없을때)를 걸러줌
                 if('rating' in response_blank['results'][0]): # 인덱스 번호에 따라 영업점 나오는 듯. 기준으로만 일단 만듬
-                    if(response_blank['results'][0]['business_status']=='OPERATIONAL'): #폐업인 경우 제외
-                        # '0'->지역 외의 장소, 평점이 있는 것
-                        # [0,'name','rating','user_ratings_total']
+                    if('business_status' in response_blank['results'][0]): #'business_status'가 없는 경우 분류
+                        if(response_blank['results'][0]['business_status']=='OPERATIONAL'): #폐업인 경우 제외
+                            # '0'->지역 외의 장소, 평점이 있는 것
+                            # [0,'name','rating','user_ratings_total']
+                            destination.append(0)
+                            if('photos' in response_blank['results'][0]):  # 'photos'가 아예없는 경우 제외
+                                #사진 요청
+                                photo_reference=response_blank['results'][0]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
+                                photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo_reference}&key={api_key}"
+                                response_photo = requests.get(photo_url)
+                                res_photo=response_photo.url
+                                
+                        
+                                destination.append(response_blank['results'][0]['name'])
+                                destination.append(response_blank['results'][0]['rating'])
+                                destination.append(response_blank['results'][0]['user_ratings_total'])
+                                destination.append(res_photo)
+                            else:
+                                destination.append(response_blank['results'][0]['name'])
+                                destination.append(response_blank['results'][0]['rating'])
+                                destination.append(response_blank['results'][0]['user_ratings_total'])
+                                destination.append('No Image')
+                        else: # 폐업인 경우 '-1'
+                            destination.append(-1)
+                    else:
                         destination.append(0)
                         if('photos' in response_blank['results'][0]):  # 'photos'가 아예없는 경우 제외
                             #사진 요청
@@ -259,13 +336,12 @@ for locations in search_locations:
                             destination.append(response_blank['results'][0]['name'])
                             destination.append(response_blank['results'][0]['rating'])
                             destination.append(response_blank['results'][0]['user_ratings_total'])
-                            attractions.append(res_photo)
+                            destination.append(res_photo)
                         else:
                             destination.append(response_blank['results'][0]['name'])
                             destination.append(response_blank['results'][0]['rating'])
                             destination.append(response_blank['results'][0]['user_ratings_total'])
-                            attractions.append('No Image')
-                    
+                            destination.append('No Image')
                             
                 else:
                     # '1'->지역이름, 여기서 지역이름에 관광명소를 평점높고 리뷰수 많은거 1개 가져오면 됨. 단, 없는건 건너뛰고
@@ -294,7 +370,16 @@ for locations in search_locations:
                         for i in range(len(res_lo)):
                             # 리뷰 수가 높은 순으로 정렬 필요
                             #print(i)
-                            if(res_lo['results'][i]['business_status']=='OPERATIONAL'): #폐업인 경우 제외
+                            if('business_status' in res_lo['results'][i]): #'business_status'가 없는 경우 분류
+                                if(res_lo['results'][i]['business_status']=='OPERATIONAL'): #폐업인 경우 제외
+                                    if 'rating' in res_lo['results'][i]:
+                                        name = res_lo['results'][i]['name']
+                                        rating = res_lo['results'][i]['rating']
+                                        reviews = res_lo['results'][i]['user_ratings_total']
+                                        if reviews >= max_reviewer:
+                                            max_reviewer = reviews
+                                            max_index = i
+                            else:
                                 if 'rating' in res_lo['results'][i]:
                                     name = res_lo['results'][i]['name']
                                     rating = res_lo['results'][i]['rating']
@@ -327,11 +412,11 @@ for locations in search_locations:
                             photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo_reference}&key={api_key}"
                             response_photo = requests.get(photo_url)
                             res_photo=response_photo.url
-                            attractions.append(res_photo)
                             
                             destination.append(1)
                             destination.append(locations) # 검색한 지역이름
                             destination.extend(attractions)
+                            destination.append(res_photo)
                         else:
                             destination.append(1)
                             destination.append(locations) # 검색한 지역이름
@@ -350,7 +435,16 @@ for locations in search_locations:
                         for i in range(len(res_lo)):
                             # 리뷰 수가 높은 순으로 정렬 필요
                             #print(i)
-                            if(data['results'][i]['business_status']=='OPERATIONAL'): #폐업인 경우 제외
+                            if('business_status' in data['results'][i]): #'business_status'가 없는 경우 분류
+                                if(data['results'][i]['business_status']=='OPERATIONAL'): #폐업인 경우 제외
+                                    if 'rating' in data['results'][i]:
+                                        name = data['results'][i]['name']
+                                        rating = data['results'][i]['rating']
+                                        reviews = data['results'][i]['user_ratings_total']
+                                        if reviews >= max_reviewer:
+                                            max_reviewer = reviews
+                                            max_index = i
+                            else:
                                 if 'rating' in data['results'][i]:
                                     name = data['results'][i]['name']
                                     rating = data['results'][i]['rating']
@@ -396,7 +490,9 @@ for locations in search_locations:
     #print(destination)
         
     if(destination!=[]): # destination 안에 비어있는 경우 제외
-        result_ex.append(destination)    
+        result_ex.append(destination)
+      
+
 
 result_list.extend(result_ex)
 
