@@ -356,17 +356,17 @@ class Ui_MainWindow(object):
         self.changeBtns[num].hide()
         self.changeBtns[num+1].hide()
         
-        #self.changeBtns[0].clicked.connect(self.changeSelect(lambda: num,0))
-        #self.changeBtns[1].clicked.connect(self.changeSelect(lambda: num,1))
-        #self.changeBtns[2].clicked.connect(self.changeSelect(lambda: num,2))
-        #self.changeBtns[3].clicked.connect(self.changeSelect(lambda: num,3))
-        #self.changeBtns[4].clicked.connect(self.changeSelect(lambda: num,4))
-        #self.changeBtns[5].clicked.connect(self.changeSelect(lambda: num,5))
-        #self.changeBtns[6].clicked.connect(self.changeSelect(lambda: num,6))
-        #self.changeBtns[7].clicked.connect(self.changeSelect(lambda: num,7))
-        #self.changeBtns[8].clicked.connect(self.changeSelect(lambda: num,8))
-        #self.changeBtns[9].clicked.connect(self.changeSelect(lambda: num,9))
-        #self.changeBtns[10].clicked.connect(self.changeSelect(lambda: num,10))
+        self.changeBtns[0].clicked.connect(lambda: self.changeSelect(num,0))
+        self.changeBtns[1].clicked.connect(lambda: self.changeSelect(num,1))
+        self.changeBtns[2].clicked.connect(lambda: self.changeSelect(num,2))
+        self.changeBtns[3].clicked.connect(lambda: self.changeSelect(num,3))
+        self.changeBtns[4].clicked.connect(lambda: self.changeSelect(num,4))
+        self.changeBtns[5].clicked.connect(lambda: self.changeSelect(num,5))
+        self.changeBtns[6].clicked.connect(lambda: self.changeSelect(num,6))
+        self.changeBtns[7].clicked.connect(lambda: self.changeSelect(num,7))
+        self.changeBtns[8].clicked.connect(lambda: self.changeSelect(num,8))
+        self.changeBtns[9].clicked.connect(lambda: self.changeSelect(num,9))
+        self.changeBtns[10].clicked.connect(lambda: self.changeSelect(num,10))
         
     #취소 누르면 다시 버튼으로 돌아감
     def cancelChange(self):
@@ -385,17 +385,21 @@ class Ui_MainWindow(object):
         self.contents[first_num].setText("%s" %self.contents[second_num].text())
         self.imgs[first_num].setUrl(QtCore.QUrl("%s" %self.imgs[second_num].url().toString()))
         self.reviewPoints[first_num].setText("%s" %self.reviewPoints[second_num].text())
-        self.reviews[first_num] = self.reviews[second_num].text()
+        self.reviews[first_num].setText("%s" %self.reviews[second_num].text())
         self.reviewStars[first_num] = self.reviewStars[second_num].text()
         
-        self.names[second_num] = self.temps[0].text()
-        self.contents[second_num] = self.temps[1].text()
-        self.imgs[second_num] = self.temps[2].url().toString()
-        self.reviewPoints[second_num] = self.temps[3].text()
-        self.reviews[second_num] = self.temps[4].text()
-        self.reviewStars[second_num] = self.temps[5].text()
+        self.names[second_num].setText("%s" %self.temps[0])
+        self.contents[second_num].setText("%s" %self.temps[1])
+        self.imgs[second_num].setUrl(QtCore.QUrl("%s" %self.temps[2]))
+        self.reviewPoints[second_num].setText("%s" %self.temps[3])
+        self.reviews[second_num].setText("%s" %self.temps[4])
+        self.reviewStars[second_num].setText("%s" %self.temps[5])
                
-            
+        self.Form.close()
+
+
+
+
 
 from PyQt5 import QtWebEngineWidgets
 
