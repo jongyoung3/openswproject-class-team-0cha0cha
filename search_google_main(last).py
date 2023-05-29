@@ -24,12 +24,12 @@ def search(input_search_locations=[]):
 
 
     # chat-gpt 로 받아올 데이터
-    #search_locations=input_search_locations
+    search_locations=input_search_locations
         #도쿄 애니메이션 여행
-    search_locations=['Ghibli Museum(Mitaka, Tokyo, Japan)', 'Akihabara(Chiyoda City, Tokyo, Japan)', 'Odaiba(Minato City, Tokyo, Japan)', 
-                    'Nakano Broadway(Nakano, Tokyo, Japan)', 'Pokemon Center Tokyo(Chuo City, Tokyo, Japan)', 'J-World Tokyo(Ikebukuro, Tokyo, Japan)', 
-                    'Animate Ikebukuro(Toshima City, Tokyo, Japan)', 'Tokyo Anime Center(Chiyoda City, Tokyo, Japan)', 'Otome Road(Ikebukuro, Tokyo, Japan)', 
-                    'Shinjuku Wald 9(Shinjuku City, Tokyo, Japan)']
+    # search_locations=['Ghibli Museum(Mitaka, Tokyo, Japan)', 'Akihabara(Chiyoda City, Tokyo, Japan)', 'Odaiba(Minato City, Tokyo, Japan)', 
+    #                 'Nakano Broadway(Nakano, Tokyo, Japan)', 'Pokemon Center Tokyo(Chuo City, Tokyo, Japan)', 'J-World Tokyo(Ikebukuro, Tokyo, Japan)', 
+    #                 'Animate Ikebukuro(Toshima City, Tokyo, Japan)', 'Tokyo Anime Center(Chiyoda City, Tokyo, Japan)', 'Otome Road(Ikebukuro, Tokyo, Japan)', 
+    #                 'Shinjuku Wald 9(Shinjuku City, Tokyo, Japan)']
     #search_locations=['J-World Tokyo(Ikebukuro, Tokyo, Japan)']
     #search_locations=['Tokyo Disneyland(Urayasu, Chiba Prefecture, Japan)', 'Osaka Castle(Osaka, Japan)', 
     #                   'Fushimi Inari Shrine(Kyoto, Japan)', 'Hiroshima Peace Memorial Park(Hiroshima, Japan)', 
