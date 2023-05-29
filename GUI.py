@@ -175,27 +175,13 @@ class Ui_MainWindow(object):
             
             self.imgs[i].setGeometry(QtCore.QRect(10, 42+175*i, 130, 130))
             self.reviewPoints[i].setGeometry(QtCore.QRect(144, 44+175*i, 51, 17))
-            self.reviewPoints[i].setText("4.3")
+            self.reviewPoints[i].setText("4.0")
             self.reviewStars[i].setText("★★★★★")
             self.reviews[i].setGeometry(QtCore.QRect(258, 44+175*i, 101, 16))
             self.reviews[i].setText("1,234")
             self.checkBoxes[i].setGeometry(13, 0+175*i, 130, 55)
             self.checkBoxes[i].hide()
             
-            
-        #별점은 중대사항
-        a = float(self.reviewPoints[0].text())
-        self.reviewStars[0].setGeometry(QtCore.QRect(175, 44+175*0, 50+2*int(a), 15))
-        self.reviewPoints[0].setText(str(a))
-        b = int(float(self.reviewPoints[1].text()))
-        self.reviewStars[1].setGeometry(QtCore.QRect(175, 44+175*1, 50+2*b, 15))
-        c = int(float(self.reviewPoints[2].text()))
-        self.reviewStars[2].setGeometry(QtCore.QRect(175, 44+175*2, 50+2*c, 15))
-        d = int(float(self.reviewPoints[3].text()))
-        self.reviewStars[3].setGeometry(QtCore.QRect(175, 44+175*3, 50+2*d, 15))
-        e = int(float(self.reviewPoints[4].text()))
-        self.reviewStars[4].setGeometry(QtCore.QRect(175, 44+175*4, 50+2*e, 15))
-        
             
         self.imgs[0].setUrl(QtCore.QUrl("https://lh3.googleusercontent.com/places/ANJU3DuXkXR4mLpUC8HveQxr6Q6xNSxuiaEWj2fTS0wCxhqg37hk_96rjlQyKfH7mD7tk8AwXdqb9ylUc5pdMO7pd2f8rdHD18-yZis=s1600-w400"))
         self.names[0].setText("도쿄 디즈니랜드(우라야스, 지바현, 일본)")
@@ -207,12 +193,32 @@ class Ui_MainWindow(object):
         self.reviewPoints[0].setText("4.2")
         self.reviewPoints[1].setText("4.7")
         self.reviewPoints[2].setText("3.4")
+        self.reviewPoints[3].setText("0.4")
+        self.reviewPoints[4].setText("2.4")
         self.reviews[0].setText("(9, 487)")
         self.reviews[1].setText("(16, 529)")
         self.reviews[2].setText("(1, 326)")
         self.reviewStars[0].setText("★★★★★")
         self.reviewStars[1].setText("★★★★★")
         self.reviewStars[2].setText("★★★★★")
+        
+           
+        #별점은 중대사항
+        a = float(self.reviewPoints[0].text()) * 14.1
+        self.reviewStars[0].setGeometry(QtCore.QRect(175, 44+175*0, 2+int(a), 15))
+        
+        b = float(self.reviewPoints[1].text()) * 14.1
+        self.reviewStars[1].setGeometry(QtCore.QRect(175, 44+175*1, 2+int(b), 15))
+        
+        c = float(self.reviewPoints[2].text()) * 14.1
+        self.reviewStars[2].setGeometry(QtCore.QRect(175, 44+175*2, 2+int(c), 15))
+        
+        d = float(self.reviewPoints[3].text()) * 14.1
+        self.reviewStars[3].setGeometry(QtCore.QRect(175, 44+175*3, 2+int(d), 15))
+        
+        e = float(self.reviewPoints[4].text()) * 14.1
+        self.reviewStars[4].setGeometry(QtCore.QRect(175, 44+175*4, 2+int(e), 15))
+        
         
         
     #메뉴바에 about 누르면 팀 정보창 열리게
@@ -432,6 +438,7 @@ class Ui_MainWindow(object):
             self.imgs[i].setUrl(QtCore.QUrl(self.imgs[i].url().toString()))
             self.reviewPoints[i].setText(self.reviewPoints[i].text())
             self.reviews[i].setText(self.reviews[i].text())
+            
             self.names[i].setGeometry(QtCore.QRect(10, 8+175*i, 415, 31))
             self.contents[i].setGeometry(QtCore.QRect(145, 64+175*i, 420, 110))
             self.imgs[i].setGeometry(QtCore.QRect(10, 42+175*i, 130, 130))
