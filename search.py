@@ -12,7 +12,7 @@ import requests
 #############################################################################################################################
 
 def search(input_search_locations=[]):
-    api_key = 'AIzaSyBHDdUYyuLXz5mwKb7pBDZRscDp2dUIcg0'
+    api_key = 'YOUR_API_KEY'
     map_clinet = googlemaps.Client(api_key)
 
     result_list = [] #최종 결과물 리스트
