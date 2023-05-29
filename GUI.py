@@ -99,10 +99,12 @@ class Ui_MainWindow(object):
         
         self.actionAbout = QtWidgets.QAction(MainWindow)
         self.actionAbout.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
+        self.actionOptimization = QtWidgets.QAction(MainWindow)
         self.actionQuit = QtWidgets.QAction(MainWindow)
         
         self.menuabout.addSeparator()
         self.menuabout.addAction(self.actionAbout)
+        self.menuabout.addAction(self.actionOptimization)
         self.menuabout.addAction(self.actionQuit)
         self.menuBar.addAction(self.menuabout.menuAction())
 
@@ -115,6 +117,7 @@ class Ui_MainWindow(object):
         self.changeButton.clicked.connect(self.changeOpen)
         self.actionAbout.triggered.connect(self.aboutOpen)
         self.actionQuit.triggered.connect(app.quit)
+        #self.actionOptimization.triggered.connect(최적화)
         self.SearchButton.clicked.connect(self.SearchClicked)
         
         self.deleteButton.clicked.connect(self.deleteClicked)
@@ -141,6 +144,7 @@ class Ui_MainWindow(object):
         self.cancelBtn.setText("Cancel")
         self.menuabout.setTitle("Menu")
         self.actionAbout.setText("About")
+        self.actionOptimization.setText("Optimization")       
         self.actionQuit.setText("Exit")
 
 
@@ -172,12 +176,26 @@ class Ui_MainWindow(object):
             self.imgs[i].setGeometry(QtCore.QRect(10, 42+175*i, 130, 130))
             self.reviewPoints[i].setGeometry(QtCore.QRect(144, 44+175*i, 51, 17))
             self.reviewPoints[i].setText("4.3")
-            self.reviewStars[i].setGeometry(QtCore.QRect(175, 44+175*i, 62, 15))
             self.reviewStars[i].setText("★★★★★")
             self.reviews[i].setGeometry(QtCore.QRect(258, 44+175*i, 101, 16))
             self.reviews[i].setText("1,234")
             self.checkBoxes[i].setGeometry(13, 0+175*i, 130, 55)
             self.checkBoxes[i].hide()
+            
+            
+        #별점은 중대사항
+        a = float(self.reviewPoints[0].text())
+        self.reviewStars[0].setGeometry(QtCore.QRect(175, 44+175*0, 50+2*int(a), 15))
+        self.reviewPoints[0].setText(str(a))
+        b = int(float(self.reviewPoints[1].text()))
+        self.reviewStars[1].setGeometry(QtCore.QRect(175, 44+175*1, 50+2*b, 15))
+        c = int(float(self.reviewPoints[2].text()))
+        self.reviewStars[2].setGeometry(QtCore.QRect(175, 44+175*2, 50+2*c, 15))
+        d = int(float(self.reviewPoints[3].text()))
+        self.reviewStars[3].setGeometry(QtCore.QRect(175, 44+175*3, 50+2*d, 15))
+        e = int(float(self.reviewPoints[4].text()))
+        self.reviewStars[4].setGeometry(QtCore.QRect(175, 44+175*4, 50+2*e, 15))
+        
             
         self.imgs[0].setUrl(QtCore.QUrl("https://lh3.googleusercontent.com/places/ANJU3DuXkXR4mLpUC8HveQxr6Q6xNSxuiaEWj2fTS0wCxhqg37hk_96rjlQyKfH7mD7tk8AwXdqb9ylUc5pdMO7pd2f8rdHD18-yZis=s1600-w400"))
         self.names[0].setText("도쿄 디즈니랜드(우라야스, 지바현, 일본)")
@@ -303,7 +321,7 @@ class Ui_MainWindow(object):
         self.changeLabels = [QtWidgets.QLabel(self.Form),QtWidgets.QLabel(self.Form),QtWidgets.QLabel(self.Form),QtWidgets.QLabel(self.Form),QtWidgets.QLabel(self.Form)]
         #라벨버튼 눌렀을 때 나오는 이동버튼
         self.changeBtns = [QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form)]
-        #1~10번중 선택했을 때 'n번 선택됨' 띄우는 disabled된 버튼
+        #1~5번중 선택했을 때 'n번 선택됨' 띄우는 disabled된 버튼
         self.disableLabelBtns = [QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form)]
         
         for i in range(0,5,1):
@@ -318,12 +336,13 @@ class Ui_MainWindow(object):
             self.disableLabelBtns[i].setDisabled(True)
             self.disableLabelBtns[i].hide()
             
-            self.LabelBtns[i].setGeometry(QtCore.QRect(20,70+70*i,350,23))
             self.LabelBtns[i].setText(self.names[i].text())
+            self.LabelBtns[i].setGeometry(QtCore.QRect(20,70+70*i,350,23))
+            
             
         for i in range(0,6,1):
             #changeBtn 위치 지정, 글자 내용 세팅
-            #얘만 따로 뺀 이유는 얘만 총 11개라서
+            #얘만 따로 뺀 이유는 얘만 총 6개라서
             self.changeBtns[i].setGeometry(QtCore.QRect(150, 35+70*i, 90, 23))
             self.changeBtns[i].setText("이동")
             self.changeBtns[i].hide()
@@ -357,6 +376,7 @@ class Ui_MainWindow(object):
             self.changeBtns[i].show()
             self.changeLabels[i].show()
             self.cancelChangeBtn.show()
+        self.changeBtns[5].show()
         self.changeBtns[num].hide()
         self.changeBtns[num+1].hide()
         
@@ -375,33 +395,27 @@ class Ui_MainWindow(object):
             self.changeBtns[i].hide()
             self.changeLabels[i].hide()
             self.cancelChangeBtn.hide()
+            self.changeLabels[i].setText(self.names[i].text())
+            self.LabelBtns[i].setText(self.names[i].text())
             
             self.LabelBtns[i].show()
+        self.changeBtns[5].hide()
             
             
-    #첫번째 지정된 리뷰랑 두번째 지정된 리뷰랑 자리 바꾸고 창 닫기
+    #첫번째 지정된 리뷰 자리를 두번째 지정된 리뷰 자리로 끌어올리고 창 닫기
     def changeSelect(self,first_num,second_num):
         #이게 생각해보니까 아래에서 위로 가는 거랑 위에서 아래로 가는 거랑 따로 생각해야 하더라고요
-        if (first_num < second_num):
-            second_num -=1
-            
-        self.temps = [str(self.names[first_num].text()),str(self.contents[first_num].text()),str(self.imgs[first_num].url().toString()),str(self.reviewPoints[first_num].text()),str(self.reviews[first_num].text()),str(self.reviewStars[first_num].text())]
+        if first_num < second_num:
+            second_num-=1
         
-        self.names[first_num].setText(self.names[second_num].text())
-        self.contents[first_num].setText(self.contents[second_num].text())
-        self.imgs[first_num].setUrl(QtCore.QUrl(self.imgs[second_num].url().toString()))
-        self.reviewPoints[first_num].setText(self.reviewPoints[second_num].text())
-        self.reviews[first_num].setText(self.reviews[second_num].text())
-        self.reviewStars[first_num].setText(self.reviewStars[second_num].text())
+        self.temps = [self.names.pop(first_num),self.contents.pop(first_num),self.imgs.pop(first_num),self.reviewPoints.pop(first_num),self.reviews.pop(first_num)]
         
-        self.names[second_num].setText(self.temps[0])
-        self.contents[second_num].setText(self.temps[1])
-        self.imgs[second_num].setUrl(QtCore.QUrl(self.temps[2]))
-        self.reviewPoints[second_num].setText(self.temps[3])
-        self.reviews[second_num].setText(self.temps[4])
-        self.reviewStars[second_num].setText(self.temps[5])
-               
-               
+        self.names.insert(second_num,self.temps[0])
+        self.contents.insert(second_num,self.temps[1])
+        self.imgs.insert(second_num,self.temps[2])
+        self.reviewPoints.insert(second_num,self.temps[3])
+        self.reviews.insert(second_num,self.temps[4])
+        
         for i in range(0,5,1):
             self.changeLabels[i].clear()
             self.disableLabelBtns[i].hide()
@@ -409,10 +423,22 @@ class Ui_MainWindow(object):
             self.changeLabels[i].hide()
             self.cancelChangeBtn.hide()
             self.LabelBtns[i].show() 
+        self.changeBtns[5].hide()
         self.Form.close()
-
-
-
+        
+        for i in range(0,5,1):
+            self.names[i].setText(self.names[i].text())
+            self.contents[i].setText(self.contents[i].text())
+            self.imgs[i].setUrl(QtCore.QUrl(self.imgs[i].url().toString()))
+            self.reviewPoints[i].setText(self.reviewPoints[i].text())
+            self.reviews[i].setText(self.reviews[i].text())
+            self.names[i].setGeometry(QtCore.QRect(10, 8+175*i, 415, 31))
+            self.contents[i].setGeometry(QtCore.QRect(145, 64+175*i, 420, 110))
+            self.imgs[i].setGeometry(QtCore.QRect(10, 42+175*i, 130, 130))
+            self.reviewPoints[i].setGeometry(QtCore.QRect(144, 44+175*i, 51, 17))
+            self.reviews[i].setGeometry(QtCore.QRect(258, 44+175*i, 101, 16))
+            
+    
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
