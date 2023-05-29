@@ -125,6 +125,7 @@ class Ui_MainWindow(object):
         self.Dialog = QDialog()
         self.Form = QDialog()
 
+
     #메인창 내용물에 글자들 넣기
     def setTexts(self, MainWindow):
         font = QtGui.QFont()
@@ -141,6 +142,7 @@ class Ui_MainWindow(object):
         self.menuabout.setTitle("Menu")
         self.actionAbout.setText("About")
         self.actionQuit.setText("Exit")
+
 
     #리뷰들에 들어가는 제목, 내용물, 리뷰 별과 갯수, 이미지를 생성
     def makeReviews(self):
@@ -219,6 +221,7 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(self.Dialog)
         self.Dialog.show()
 
+
     #about 창도 글자들 채워줌
     def aboutSetTexts(self, Dialog):
         font = QtGui.QFont()
@@ -239,6 +242,7 @@ class Ui_MainWindow(object):
         self.teamMem.setText("<html><head/><body><p>2020039070 전종영 - 크롤링 담당</p><p>2022041081 홍준석 - API 담당</p><p>2022041056 윤정아 - GUI 담당</p><p><br/></p></body></html>")
         self.CloseButton.setText("닫기")
 
+
     #검색 버튼 누르면 크롤링, API로 나온 내용들 로딩되게 구현할 예정
     #현재는 첫 번째 리뷰 제목이 검색창에 입력한 내용으로 변함
     def SearchClicked(self):
@@ -246,6 +250,7 @@ class Ui_MainWindow(object):
         self.names[0].setText(self.text)
         #apis.APIS(1,self.text)
         #self.Map.setUrl(QtCore.QUrl("file:///C:/Users/31125/Desktop/python_files/TeamProjects/map.html"))
+        
         
     #deleteButton 눌렀을 때 버튼들 나타나고 사라지게, 체크박스 표시
     def deleteClicked(self):
@@ -256,6 +261,7 @@ class Ui_MainWindow(object):
             self.checkBoxes[i].show()
             self.names[i].setGeometry(QtCore.QRect(35, 8+175*i, 415, 31))
         
+        
     #cancelBtn 눌렀을 때 체크박스 안보이게 원상복귀, 체크상태 해제
     def removeEnd(self):
         self.deleteButton.show()
@@ -265,6 +271,7 @@ class Ui_MainWindow(object):
             self.checkBoxes[i].hide()
             self.checkBoxes[i].setChecked(False)
             self.names[i].setGeometry(QtCore.QRect(10, 8+175*i, 415, 31))
+        
         
     #trashCan 클릭시엔 아이템들 지우고 복구하기: 현재는 그 칸의 기본 세팅된 내용 지워짐
     #삭제 후 정렬 기능은 후에 구현 예정
@@ -340,6 +347,7 @@ class Ui_MainWindow(object):
         self.cancelChangeBtn.hide()
         self.cancelChangeBtn.clicked.connect(self.cancelChange)
 
+
         self.Form.setWindowTitle("옮기기")
         QtCore.QMetaObject.connectSlotsByName(self.Form)
         self.Form.show()
@@ -356,6 +364,8 @@ class Ui_MainWindow(object):
         self.changeBtns[num].hide()
         self.changeBtns[num+1].hide()
         
+        
+        
         self.changeBtns[0].clicked.connect(lambda: self.changeSelect(num,0))
         self.changeBtns[1].clicked.connect(lambda: self.changeSelect(num,1))
         self.changeBtns[2].clicked.connect(lambda: self.changeSelect(num,2))
@@ -368,6 +378,7 @@ class Ui_MainWindow(object):
         self.changeBtns[9].clicked.connect(lambda: self.changeSelect(num,9))
         self.changeBtns[10].clicked.connect(lambda: self.changeSelect(num,10))
         
+        
     #취소 누르면 다시 버튼으로 돌아감
     def cancelChange(self):
         for i in range(0,10,1):
@@ -377,24 +388,36 @@ class Ui_MainWindow(object):
             self.cancelChangeBtn.hide()
             self.LabelBtns[i].show()
             
+            
     #첫번째 지정된 리뷰랑 두번째 지정된 리뷰랑 자리 바꾸기
     def changeSelect(self,first_num,second_num):
+        #이게 생각해보니까 아래에서 위로 가는 거랑 위에서 아래로 가는 거랑 따로 생각해야 하더라고요
+        if (first_num < second_num):
+            second_num -=1
+            
         self.temps = [str(self.names[first_num].text()),str(self.contents[first_num].text()),str(self.imgs[first_num].url().toString()),str(self.reviewPoints[first_num].text()),str(self.reviews[first_num].text()),str(self.reviewStars[first_num].text())]
         
-        self.names[first_num].setText("%s" %self.names[second_num].text())
-        self.contents[first_num].setText("%s" %self.contents[second_num].text())
-        self.imgs[first_num].setUrl(QtCore.QUrl("%s" %self.imgs[second_num].url().toString()))
-        self.reviewPoints[first_num].setText("%s" %self.reviewPoints[second_num].text())
-        self.reviews[first_num].setText("%s" %self.reviews[second_num].text())
-        self.reviewStars[first_num] = self.reviewStars[second_num].text()
+        self.names[first_num].setText(self.names[second_num].text())
+        self.contents[first_num].setText(self.contents[second_num].text())
+        self.imgs[first_num].setUrl(QtCore.QUrl(self.imgs[second_num].url().toString()))
+        self.reviewPoints[first_num].setText(self.reviewPoints[second_num].text())
+        self.reviews[first_num].setText(self.reviews[second_num].text())
+        self.reviewStars[first_num].setText(self.reviewStars[second_num].text())
         
-        self.names[second_num].setText("%s" %self.temps[0])
-        self.contents[second_num].setText("%s" %self.temps[1])
-        self.imgs[second_num].setUrl(QtCore.QUrl("%s" %self.temps[2]))
-        self.reviewPoints[second_num].setText("%s" %self.temps[3])
-        self.reviews[second_num].setText("%s" %self.temps[4])
-        self.reviewStars[second_num].setText("%s" %self.temps[5])
+        self.names[second_num].setText(self.temps[0])
+        self.contents[second_num].setText(self.temps[1])
+        self.imgs[second_num].setUrl(QtCore.QUrl(self.temps[2]))
+        self.reviewPoints[second_num].setText(self.temps[3])
+        self.reviews[second_num].setText(self.temps[4])
+        self.reviewStars[second_num].setText(self.temps[5])
                
+               
+        for i in range(0,10,1):
+            self.disableLabelBtns[i].hide()
+            self.changeBtns[i].hide()
+            self.changeLabels[i].hide()
+            self.cancelChangeBtn.hide()
+            self.LabelBtns[i].show()       
         self.Form.close()
 
 
