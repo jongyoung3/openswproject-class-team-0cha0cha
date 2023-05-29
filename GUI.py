@@ -55,7 +55,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(False)
         
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 591, 1770))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 591, 900))
              
         
         #삭제 관련, 교체 관련
@@ -146,13 +146,13 @@ class Ui_MainWindow(object):
 
     #리뷰들에 들어가는 제목, 내용물, 리뷰 별과 갯수, 이미지를 생성
     def makeReviews(self):
-        self.names = [QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents)]
-        self.contents = [QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents)]
-        self.imgs = [QtWebEngineWidgets.QWebEngineView(self.scrollAreaWidgetContents),QtWebEngineWidgets.QWebEngineView(self.scrollAreaWidgetContents),QtWebEngineWidgets.QWebEngineView(self.scrollAreaWidgetContents),QtWebEngineWidgets.QWebEngineView(self.scrollAreaWidgetContents),QtWebEngineWidgets.QWebEngineView(self.scrollAreaWidgetContents),QtWebEngineWidgets.QWebEngineView(self.scrollAreaWidgetContents),QtWebEngineWidgets.QWebEngineView(self.scrollAreaWidgetContents),QtWebEngineWidgets.QWebEngineView(self.scrollAreaWidgetContents),QtWebEngineWidgets.QWebEngineView(self.scrollAreaWidgetContents),QtWebEngineWidgets.QWebEngineView(self.scrollAreaWidgetContents)]
-        self.reviewPoints = [QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents)]
-        self.reviewStars = [QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents)]
-        self.reviews = [QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents)]
-        self.checkBoxes = [QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents)]
+        self.names = [QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents)]
+        self.contents = [QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents)]
+        self.imgs = [QtWebEngineWidgets.QWebEngineView(self.scrollAreaWidgetContents),QtWebEngineWidgets.QWebEngineView(self.scrollAreaWidgetContents),QtWebEngineWidgets.QWebEngineView(self.scrollAreaWidgetContents),QtWebEngineWidgets.QWebEngineView(self.scrollAreaWidgetContents),QtWebEngineWidgets.QWebEngineView(self.scrollAreaWidgetContents)]
+        self.reviewPoints = [QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents)]
+        self.reviewStars = [QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),]
+        self.reviews = [QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents)]
+        self.checkBoxes = [QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents)]
 
         font = QtGui.QFont()
         font.setFamily("한컴산뜻돋움")
@@ -160,7 +160,7 @@ class Ui_MainWindow(object):
         font.setBold(False)
         font.setWeight(50)
 
-        for i in range(0,10,1):
+        for i in range(0,5,1):
             self.names[i].setGeometry(QtCore.QRect(10, 8+175*i, 415, 31))
             self.names[i].setFont(font)
             self.names[i].setText(("%s번째") % str(i+1))
@@ -257,7 +257,7 @@ class Ui_MainWindow(object):
         self.deleteButton.hide()
         self.cancelBtn.show()
         self.trashCan.show()
-        for i in range(0,10,1):
+        for i in range(0,5,1):
             self.checkBoxes[i].show()
             self.names[i].setGeometry(QtCore.QRect(35, 8+175*i, 415, 31))
         
@@ -267,7 +267,7 @@ class Ui_MainWindow(object):
         self.deleteButton.show()
         self.trashCan.hide()
         self.cancelBtn.hide()
-        for i in range(0,10,1):
+        for i in range(0,5,1):
             self.checkBoxes[i].hide()
             self.checkBoxes[i].setChecked(False)
             self.names[i].setGeometry(QtCore.QRect(10, 8+175*i, 415, 31))
@@ -280,7 +280,7 @@ class Ui_MainWindow(object):
         self.trashCan.hide()
         self.cancelBtn.hide()
             
-        for i in range(0,10,1):
+        for i in range(0,5,1):
             if (self.checkBoxes[i].isChecked()):
                 self.names[i].clear()
                 self.contents[i].clear()
@@ -295,33 +295,33 @@ class Ui_MainWindow(object):
             
     #리뷰들 위치 교환할 창 열림
     def changeOpen(self, Form):
-        self.Form.resize(392, 800)
+        self.Form.resize(392, 500)
         
         #시작하면 나오는 1~10번 리뷰들 제목 있는 버튼들
-        self.LabelBtns = [QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form)]
+        self.LabelBtns = [QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),]
         #라벨버튼 눌렀을 때 나오는 1~10번 제목 라벨들
-        self.changeLabels = [QtWidgets.QLabel(self.Form),QtWidgets.QLabel(self.Form),QtWidgets.QLabel(self.Form),QtWidgets.QLabel(self.Form),QtWidgets.QLabel(self.Form),QtWidgets.QLabel(self.Form),QtWidgets.QLabel(self.Form),QtWidgets.QLabel(self.Form),QtWidgets.QLabel(self.Form),QtWidgets.QLabel(self.Form)]
+        self.changeLabels = [QtWidgets.QLabel(self.Form),QtWidgets.QLabel(self.Form),QtWidgets.QLabel(self.Form),QtWidgets.QLabel(self.Form),QtWidgets.QLabel(self.Form)]
         #라벨버튼 눌렀을 때 나오는 이동버튼
-        self.changeBtns = [QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form)]
+        self.changeBtns = [QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form)]
         #1~10번중 선택했을 때 'n번 선택됨' 띄우는 disabled된 버튼
-        self.disableLabelBtns = [QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form)]
+        self.disableLabelBtns = [QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form)]
         
-        for i in range(0,10,1):
+        for i in range(0,5,1):
             #각 changeLables, disalbeLabelBtns, LabelBtns 위치 지정 및 글자 내용 세팅
             self.changeLabels[i].setGeometry(QtCore.QRect(20,70+70*i,350,22))
             self.changeLabels[i].setAlignment(QtCore.Qt.AlignCenter)
-            self.changeLabels[i].setText("%s번"%str(i+1))
+            self.changeLabels[i].setText(self.names[i].text())
             self.changeLabels[i].hide()
             
             self.disableLabelBtns[i].setGeometry(QtCore.QRect(20,70+70*i,350,25))
-            self.disableLabelBtns[i].setText("%s번 선택됨"%str(i+1))
+            self.disableLabelBtns[i].setText("선택됨")
             self.disableLabelBtns[i].setDisabled(True)
             self.disableLabelBtns[i].hide()
             
             self.LabelBtns[i].setGeometry(QtCore.QRect(20,70+70*i,350,23))
-            self.LabelBtns[i].setText("%s번"%str(i+1))
+            self.LabelBtns[i].setText(self.names[i].text())
             
-        for i in range(0,11,1):
+        for i in range(0,6,1):
             #changeBtn 위치 지정, 글자 내용 세팅
             #얘만 따로 뺀 이유는 얘만 총 11개라서
             self.changeBtns[i].setGeometry(QtCore.QRect(150, 35+70*i, 90, 23))
@@ -334,12 +334,7 @@ class Ui_MainWindow(object):
         self.LabelBtns[2].clicked.connect(lambda: self.LabelSelect(2))
         self.LabelBtns[3].clicked.connect(lambda: self.LabelSelect(3))
         self.LabelBtns[4].clicked.connect(lambda: self.LabelSelect(4))    
-        self.LabelBtns[5].clicked.connect(lambda: self.LabelSelect(5))
-        self.LabelBtns[6].clicked.connect(lambda: self.LabelSelect(6))
-        self.LabelBtns[7].clicked.connect(lambda: self.LabelSelect(7))
-        self.LabelBtns[8].clicked.connect(lambda: self.LabelSelect(8))
-        self.LabelBtns[9].clicked.connect(lambda: self.LabelSelect(9))
-        
+   
         #취소버튼 
         self.cancelChangeBtn = QtWidgets.QPushButton(self.Form)
         self.cancelChangeBtn.setGeometry(QtCore.QRect(332, 10, 50, 28)) 
@@ -356,15 +351,14 @@ class Ui_MainWindow(object):
     #시작하고서 1~10번 제목버튼 누르면 라벨로 전환되고 이동 버튼들 나옴
     def LabelSelect(self,num):
         self.disableLabelBtns[num].show()
-        for i in range(0,10,1):
+        for i in range(0,5,1):
             self.LabelBtns[i].hide()
+            self.LabelBtns[i].setText("")
             self.changeBtns[i].show()
             self.changeLabels[i].show()
             self.cancelChangeBtn.show()
         self.changeBtns[num].hide()
         self.changeBtns[num+1].hide()
-        
-        
         
         self.changeBtns[0].clicked.connect(lambda: self.changeSelect(num,0))
         self.changeBtns[1].clicked.connect(lambda: self.changeSelect(num,1))
@@ -372,24 +366,20 @@ class Ui_MainWindow(object):
         self.changeBtns[3].clicked.connect(lambda: self.changeSelect(num,3))
         self.changeBtns[4].clicked.connect(lambda: self.changeSelect(num,4))
         self.changeBtns[5].clicked.connect(lambda: self.changeSelect(num,5))
-        self.changeBtns[6].clicked.connect(lambda: self.changeSelect(num,6))
-        self.changeBtns[7].clicked.connect(lambda: self.changeSelect(num,7))
-        self.changeBtns[8].clicked.connect(lambda: self.changeSelect(num,8))
-        self.changeBtns[9].clicked.connect(lambda: self.changeSelect(num,9))
-        self.changeBtns[10].clicked.connect(lambda: self.changeSelect(num,10))
         
         
     #취소 누르면 다시 버튼으로 돌아감
     def cancelChange(self):
-        for i in range(0,10,1):
+        for i in range(0,5,1):
             self.disableLabelBtns[i].hide()
             self.changeBtns[i].hide()
             self.changeLabels[i].hide()
             self.cancelChangeBtn.hide()
+            
             self.LabelBtns[i].show()
             
             
-    #첫번째 지정된 리뷰랑 두번째 지정된 리뷰랑 자리 바꾸기
+    #첫번째 지정된 리뷰랑 두번째 지정된 리뷰랑 자리 바꾸고 창 닫기
     def changeSelect(self,first_num,second_num):
         #이게 생각해보니까 아래에서 위로 가는 거랑 위에서 아래로 가는 거랑 따로 생각해야 하더라고요
         if (first_num < second_num):
@@ -412,19 +402,16 @@ class Ui_MainWindow(object):
         self.reviewStars[second_num].setText(self.temps[5])
                
                
-        for i in range(0,10,1):
+        for i in range(0,5,1):
+            self.changeLabels[i].clear()
             self.disableLabelBtns[i].hide()
             self.changeBtns[i].hide()
             self.changeLabels[i].hide()
             self.cancelChangeBtn.hide()
-            self.LabelBtns[i].show()       
+            self.LabelBtns[i].show() 
         self.Form.close()
 
 
-
-
-
-from PyQt5 import QtWebEngineWidgets
 
 if __name__ == "__main__":
     import sys
