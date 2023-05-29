@@ -123,10 +123,10 @@ def search(input_search_locations=[]):
                 if(res_lo['status']!='ZERO_RESULTS'):
                     max_reviewer = -1
                     max_index = -1
-                    for i in range(len(res_lo)):
+                    for i in range(len(res_lo['results'])):
                         # 리뷰 수가 높은 순으로 정렬 필요
                         #print(i)
-                        if 'rating' in res_lo['results'][i]:
+                        if ('rating' in res_lo['results'][i]):
                             if('business_status' in res_lo['results'][i]): #'business_status'가 없는 경우 분류
                                 if(res_lo['results'][i]['business_status']=='OPERATIONAL'): #폐업인 경우 제외
                                     name = res_lo['results'][i]['name']
@@ -153,11 +153,7 @@ def search(input_search_locations=[]):
                             if attractions!=(name,rating,reviews): #리스트 내에 있는 관광명소와 중복방지
                                 attractions.append((name,rating,reviews))
                     
-                    # 좌표
-                    search_location_lat=(res_lo['results'][max_index]['geometry']['location']['lat'])
-                    search_location_lng=(res_lo['results'][max_index]['geometry']['location']['lng'])
-                    destination.append(search_location_lat)
-                    destination.append(search_location_lng)
+                   
 
                     if('photos' in res_lo['results'][max_index]):  # 'photos'가 아예없는 경우 제외
                         #사진 요청
@@ -176,7 +172,11 @@ def search(input_search_locations=[]):
                         destination.extend(attractions)
                         destination.extend('No Image')
                     
-                    
+                    # 좌표
+                    search_location_lat=(res_lo['results'][max_index]['geometry']['location']['lat'])
+                    search_location_lng=(res_lo['results'][max_index]['geometry']['location']['lng'])
+                    destination.append(search_location_lat)
+                    destination.append(search_location_lng)
                 #검색데이터 결과가 빈 리스트로 오는 경우(=검색결과가 없을때) 텍스트 검색으로 다시 찾기
                 else: 
                     url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query={locations}&key={api_key}"
@@ -187,7 +187,7 @@ def search(input_search_locations=[]):
                     
                     max_reviewer = -1
                     max_index = -1
-                    for i in range(len(res_lo)):
+                    for i in range(len(res_lo['results'])):
                         # 리뷰 수가 높은 순으로 정렬 필요
                         #print(i)
                         if('business_status' in res_lo['results'][i]): #'business_status'가 없는 경우 분류
@@ -248,7 +248,7 @@ def search(input_search_locations=[]):
             if(data['status'] !='ZERO_RESULTS'): # 이것도 공백 리스트 경우를 제외
                 max_reviewer = -1
                 max_index = -1
-                for i in range(len(res_lo)):
+                for i in range(len(res_lo['results'])):
                     # 리뷰 수가 높은 순으로 정렬 필요
                     #print(i)
                     if('business_status' in data['results'][i]): #'business_status'가 없는 경우 분류
@@ -386,7 +386,7 @@ def search(input_search_locations=[]):
                         if(res_lo['status']!='ZERO_RESULTS'):
                             max_reviewer = -1
                             max_index = -1
-                            for i in range(len(res_lo)):
+                            for i in range(len(res_lo['results'])):
                                 # 리뷰 수가 높은 순으로 정렬 필요
                                 #print(i)
                                 if('business_status' in res_lo['results'][i]): #'business_status'가 없는 경우 분류
@@ -448,7 +448,7 @@ def search(input_search_locations=[]):
                             attractions = []
                             max_reviewer = -1
                             max_index = -1
-                            for i in range(len(res_lo)):
+                            for i in range(len(res_lo['results'])):
                                 # 리뷰 수가 높은 순으로 정렬 필요
                                 #print(i)
                                 if('business_status' in data['results'][i]): #'business_status'가 없는 경우 분류
@@ -507,25 +507,9 @@ def search(input_search_locations=[]):
     
     # [0 ,'검색한 장소=검색한 결과의 장소','평점','리뷰 수','사진링크','lat','lng']
     # [1 ,'검색한 장소','검색한 결과의 장소','평점','리뷰 수','사진링크','lat','lng']
+    
     return result_list #최종 리턴값
 
-# search_locations=['Tower of London', 'Westminster Abbey', 
-#                   'Buckingham Palace', 'Churchill War Rooms', 
-#                   'The British Museum', 'Canterbury Cathedral', 
-#                   'Stonehenge', 'Roman Baths', "St. Paul's Cathedral", 
-#                   'Edinburgh Castle']
-
-#도쿄 애니메이션 여행
-#search_locations=['J-World Tokyo(Ikebukuro, Tokyo, Japan)', 'Tokyo Anime Center(Chiyoda City, Tokyo, Japan)', 'Otome Road(Ikebukuro, Tokyo, Japan)']
-
-#도쿄 애니메이션 여행
-# search_locations=['Ghibli Museum(Mitaka, Tokyo, Japan)', 'Akihabara(Chiyoda City, Tokyo, Japan)', 'Odaiba(Minato City, Tokyo, Japan)', 
-#                 'Nakano Broadway(Nakano, Tokyo, Japan)', 'Pokemon Center Tokyo(Chuo City, Tokyo, Japan)', 'J-World Tokyo(Ikebukuro, Tokyo, Japan)', 
-#                 'Animate Ikebukuro(Toshima City, Tokyo, Japan)', 'Tokyo Anime Center(Chiyoda City, Tokyo, Japan)', 'Otome Road(Ikebukuro, Tokyo, Japan)', 
-#                 'Shinjuku Wald 9(Shinjuku City, Tokyo, Japan)']
-#search_locations=['J-World Tokyo(Ikebukuro, Tokyo, Japan)']
-#search_locations=['Tokyo Disneyland(Urayasu, Chiba Prefecture, Japan)', 'Osaka Castle(Osaka, Japan)', 
-#                   'Fushimi Inari Shrine(Kyoto, Japan)', 'Hiroshima Peace Memorial Park(Hiroshima, Japan)', 
-#                   'Kinkaku-ji Temple(Kyoto, Japan)', 'Nagoya Castle(Nagoya, Aichi Prefecture, Japan)', 
-#                   'Mount Fuji(Yamanashi Prefecture, Japan)', 'Universal Studios Japan(Osaka, Japan)', 
-#                   'Shinjuku Gyoen National Garden(Shinjuku City, Tokyo, Japan)', 'Gunkanjima Island(Nagasaki, Japan)']
+#TEST
+# res_sol=search(['Taj Mahal(Agra, Uttar Pradesh, India)', 'Varanasi(Uttar Pradesh, India)', 'Jaipur(Rajasthan, India)', 'Udaipur(Rajasthan, India)', 'Rishikesh(Uttarakhand, India)', 'Amer Fort(Jaipur, Rajasthan, India)', 'Jaisalmer(Rajasthan, India)', 'Darjeeling(West Bengal, India)', 'Hampi(Karnataka, India)', 'Goa(India)'])
+# print(res_sol)
