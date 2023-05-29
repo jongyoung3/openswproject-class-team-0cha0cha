@@ -20,16 +20,16 @@ def search(input_search_locations=[]):
     result_ex=[] #최종 결과물 리스트 전 단계
 
     result_location=[] # 최종 좌표 모음
-    
+
 
 
     # chat-gpt 로 받아올 데이터
-    search_locations=input_search_locations
+    #search_locations=input_search_locations
         #도쿄 애니메이션 여행
-    # search_locations=['Ghibli Museum(Mitaka, Tokyo, Japan)', 'Akihabara(Chiyoda City, Tokyo, Japan)', 'Odaiba(Minato City, Tokyo, Japan)', 
-    #                 'Nakano Broadway(Nakano, Tokyo, Japan)', 'Pokemon Center Tokyo(Chuo City, Tokyo, Japan)', 'J-World Tokyo(Ikebukuro, Tokyo, Japan)', 
-    #                 'Animate Ikebukuro(Toshima City, Tokyo, Japan)', 'Tokyo Anime Center(Chiyoda City, Tokyo, Japan)', 'Otome Road(Ikebukuro, Tokyo, Japan)', 
-    #                 'Shinjuku Wald 9(Shinjuku City, Tokyo, Japan)']
+    search_locations=['Ghibli Museum(Mitaka, Tokyo, Japan)', 'Akihabara(Chiyoda City, Tokyo, Japan)', 'Odaiba(Minato City, Tokyo, Japan)', 
+                    'Nakano Broadway(Nakano, Tokyo, Japan)', 'Pokemon Center Tokyo(Chuo City, Tokyo, Japan)', 'J-World Tokyo(Ikebukuro, Tokyo, Japan)', 
+                    'Animate Ikebukuro(Toshima City, Tokyo, Japan)', 'Tokyo Anime Center(Chiyoda City, Tokyo, Japan)', 'Otome Road(Ikebukuro, Tokyo, Japan)', 
+                    'Shinjuku Wald 9(Shinjuku City, Tokyo, Japan)']
     #search_locations=['J-World Tokyo(Ikebukuro, Tokyo, Japan)']
     #search_locations=['Tokyo Disneyland(Urayasu, Chiba Prefecture, Japan)', 'Osaka Castle(Osaka, Japan)', 
     #                   'Fushimi Inari Shrine(Kyoto, Japan)', 'Hiroshima Peace Memorial Park(Hiroshima, Japan)', 
@@ -47,8 +47,6 @@ def search(input_search_locations=[]):
         response = map_clinet.places(query=locations) # 데이터를 api로 보냄
         #print(response)
         destination = [] 
-        search_location_lat=[] # 지도에 보내줄 좌표 lat (최종)
-        search_location_lng=[] # 지도에 보내줄 좌표 lng (최종)
         
         if(response['status'] !='ZERO_RESULTS'): #검색데이터 결과가 빈 리스트로 오는 경우(=검색결과가 없을때)를 걸러줌
             if('rating' in response['results'][0]): # 인덱스 번호에 따라 영업점 나오는 듯. 기준으로만 일단 만듬
@@ -72,8 +70,10 @@ def search(input_search_locations=[]):
                             destination.append(res_photo)
                             #print(response['results'][0]['geometry']['location'])
                             # 좌표
-                            search_location_lat.append(response['results'][0]['geometry']['location']['lat'])
-                            search_location_lng.append(response['results'][0]['geometry']['location']['lng'])                                 
+                            search_location_lat=(response['results'][0]['geometry']['location']['lat'])
+                            search_location_lng=(response['results'][0]['geometry']['location']['lng'])
+                            destination.append(search_location_lat)
+                            destination.append(search_location_lng)                                 
                         else:
                             destination.append(0)
                             destination.append(response['results'][0]['name'])
@@ -81,8 +81,10 @@ def search(input_search_locations=[]):
                             destination.append(response['results'][0]['user_ratings_total'])
                             destination.append('No Image')
                             # 좌표
-                            search_location_lat.append(response['results'][0]['geometry']['location']['lat'])
-                            search_location_lng.append(response['results'][0]['geometry']['location']['lng'])
+                            search_location_lat=(response['results'][0]['geometry']['location']['lat'])
+                            search_location_lng=(response['results'][0]['geometry']['location']['lng'])
+                            destination.append(search_location_lat)
+                            destination.append(search_location_lng)
                         #print(res_photo)
                     else: # 폐업한 경우 '-1'
                         destination.append(-1)
@@ -101,8 +103,10 @@ def search(input_search_locations=[]):
                         destination.append(response['results'][0]['user_ratings_total'])
                         destination.append(res_photo)
                         # 좌표
-                        search_location_lat.append(response['results'][0]['geometry']['location']['lat'])
-                        search_location_lng.append(response['results'][0]['geometry']['location']['lng'])                                      
+                        search_location_lat=(response['results'][0]['geometry']['location']['lat'])
+                        search_location_lng=(response['results'][0]['geometry']['location']['lng'])
+                        destination.append(search_location_lat)
+                        destination.append(search_location_lng)                                      
                     else:
                         destination.append(0)
                         destination.append(response['results'][0]['name'])
@@ -110,8 +114,10 @@ def search(input_search_locations=[]):
                         destination.append(response['results'][0]['user_ratings_total'])
                         destination.append('No Image')
                         # 좌표
-                        search_location_lat.append(response['results'][0]['geometry']['location']['lat'])
-                        search_location_lng.append(response['results'][0]['geometry']['location']['lng'])
+                        search_location_lat=(response['results'][0]['geometry']['location']['lat'])
+                        search_location_lng=(response['results'][0]['geometry']['location']['lng'])
+                        destination.extend(search_location_lat)
+                        destination.extend(search_location_lng)
                     
                     
                         
@@ -170,8 +176,10 @@ def search(input_search_locations=[]):
                                 attractions.append((name,rating,reviews))
                     
                     # 좌표
-                    search_location_lat.append(res_lo['results'][max_index]['geometry']['location']['lat'])
-                    search_location_lng.append(res_lo['results'][max_index]['geometry']['location']['lng'])
+                    search_location_lat=(res_lo['results'][max_index]['geometry']['location']['lat'])
+                    search_location_lng=(res_lo['results'][max_index]['geometry']['location']['lng'])
+                    destination.append(search_location_lat)
+                    destination.append(search_location_lng)
                     
                     #받은 관광명소 내림차순으로 정렬해서 그 중 위의 1개 반환 
                     #attractions.sort(key=lambda x: (x[1]), reverse=True)
@@ -257,8 +265,10 @@ def search(input_search_locations=[]):
                         destination.extend(attractions)
                         
                     # 좌표
-                    search_location_lat.append(res_lo['results'][max_index]['geometry']['location']['lat'])
-                    search_location_lng.append(res_lo['results'][max_index]['geometry']['location']['lng'])
+                    search_location_lat=(res_lo['results'][max_index]['geometry']['location']['lat'])
+                    search_location_lng=(res_lo['results'][max_index]['geometry']['location']['lng'])
+                    destination.append(search_location_lat)
+                    destination.append(search_location_lng)
                     
         else: #검색데이터 결과가 빈 리스트로 오는 경우(=검색결과가 없을때) 텍스트 검색으로 다시 찾기
             url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query={locations}&key={api_key}"
@@ -323,9 +333,11 @@ def search(input_search_locations=[]):
                     destination.extend(attractions)
                     destination.extend('No Image')
                     
-                # 좌표
-                search_location_lat.append(data['results'][max_index]['geometry']['location']['lat'])
-                search_location_lng.append(data['results'][max_index]['geometry']['location']['lng'])
+            # 좌표
+                search_location_lat=(data['results'][max_index]['geometry']['location']['lat'])
+                search_location_lng=(data['results'][max_index]['geometry']['location']['lng'])
+                destination.append(search_location_lat)
+                destination.append(search_location_lng)
                     
             else: # 그래도 공백 리스트인 경우
                 locations_blank_text=locations.split("(")
@@ -358,8 +370,10 @@ def search(input_search_locations=[]):
                                     destination.append(response_blank['results'][0]['user_ratings_total'])
                                     destination.append('No Image')
                                 # 좌표
-                                search_location_lat.append(response_blank['results'][0]['geometry']['location']['lat'])
-                                search_location_lng.append(response_blank['results'][0]['geometry']['location']['lng'])
+                                search_location_lat=(response_blank['results'][0]['geometry']['location']['lat'])
+                                search_location_lng=(response_blank['results'][0]['geometry']['location']['lng'])
+                                destination.append(search_location_lat)
+                                destination.append(search_location_lng)
                                 
                             else: # 폐업인 경우 '-1'
                                 destination.append(-1)
@@ -383,8 +397,10 @@ def search(input_search_locations=[]):
                                 destination.append(response_blank['results'][0]['user_ratings_total'])
                                 destination.append('No Image')
                             # 좌표
-                            search_location_lat.append(response_blank['results'][0]['geometry']['location']['lat'])
-                            search_location_lng.append(response_blank['results'][0]['geometry']['location']['lng'])     
+                            search_location_lat=(response_blank['results'][0]['geometry']['location']['lat'])
+                            search_location_lng=(response_blank['results'][0]['geometry']['location']['lng'])
+                            destination.append(search_location_lat)
+                            destination.append(search_location_lng)     
                     else:
                         # '1'->지역이름, 여기서 지역이름에 관광명소를 평점높고 리뷰수 많은거 1개 가져오면 됨. 단, 없는건 건너뛰고
                         # [1,'locations',('name','rating','user_ratings_total')]
@@ -450,7 +466,7 @@ def search(input_search_locations=[]):
                             #attractions.sort(key=lambda x: (x[1]), reverse=True)
                             if('photos' in res_lo['results'][max_index]):  # 'photos'가 아예없는 경우 제외
                                 #사진 요청
-                                photo_reference=res_lo['results'][0]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
+                                photo_reference=res_lo['results'][max_index]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
                                 photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo_reference}&key={api_key}"
                                 response_photo = requests.get(photo_url)
                                 res_photo=response_photo.url
@@ -465,8 +481,10 @@ def search(input_search_locations=[]):
                                 destination.extend(attractions)
                                 destination.extend('No Image')
                             # 좌표
-                            search_location_lat.append(res_lo['results'][max_index]['geometry']['location']['lat'])
-                            search_location_lng.append(res_lo['results'][max_index]['geometry']['location']['lng'])
+                            search_location_lat=(res_lo['results'][max_index]['geometry']['location']['lat'])
+                            search_location_lng=(res_lo['results'][max_index]['geometry']['location']['lng'])
+                            destination.append(search_location_lat)
+                            destination.append(search_location_lng)
                         #검색데이터 결과가 빈 리스트로 오는 경우(=검색결과가 없을때) 텍스트 검색으로 다시 찾기
                         else: 
                             url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query={locations_blank_text[0]}&key={api_key}"
@@ -528,9 +546,12 @@ def search(input_search_locations=[]):
                                 destination.append(1)
                                 destination.append(locations) # 검색한 지역이름
                                 destination.extend(attractions)
+                                
                             # 좌표
-                            search_location_lat.append(data['results'][max_index]['geometry']['location']['lat'])
-                            search_location_lng.append(data['results'][max_index]['geometry']['location']['lng'])
+                            search_location_lat=(data['results'][max_index]['geometry']['location']['lat'])
+                            search_location_lng=(data['results'][max_index]['geometry']['location']['lng'])
+                            destination.append(search_location_lat)
+                            destination.append(search_location_lng)
                 
                 
                     
@@ -538,15 +559,12 @@ def search(input_search_locations=[]):
             
         if(destination!=[]): # destination 안에 비어있는 경우 제외
             result_ex.append(destination)
-        if(search_location_lat!=[] and search_location_lng!=[]):
-            search_location_lat.extend(search_location_lng)
-            result_location.append(search_location_lat)
+        
         
 
-   
+
     result_list.extend(result_ex)
-    result_list.extend(result_location)
-    #pprint(result_list) #최종 결과 출력
+    pprint(result_list) #최종 결과 출력
     #pprint(result_location) #좌표
     # [0 ,'검색한 장소=검색한 결과의 장소','평점','리뷰 수','사진링크']
     # [1 ,'검색한 장소','검색한 결과의 장소','평점','리뷰 수','사진링크']
