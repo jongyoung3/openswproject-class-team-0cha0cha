@@ -19,14 +19,14 @@ def search(input_search_locations=[]):
     result_ex=[] #최종 결과물 리스트 전 단계
 
     # chat-gpt 로 받아올 데이터
-    search_locations=input_search_locations
+    #search_locations=input_search_locations
 
     min_rating = 0  # 최소 평점
     min_reviews = 0  # 최소 리뷰 수
 
 
     # 지도에 데이터 보낼 때 좌표로 보내는 걸로 코드 바꾸기(원한다면)
-    for locations in search_locations:
+    for locations in input_search_locations:
         response = map_clinet.places(query=locations) # 데이터를 api로 보냄
         destination = [] 
         
