@@ -3,6 +3,8 @@ from PyQt5 import QtWebEngineWidgets
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 
+import chatgpt
+import search
 class Ui_MainWindow(object):
     #메인창 내용물
     def setupUi(self, MainWindow):
@@ -271,7 +273,7 @@ class Ui_MainWindow(object):
     #현재는 첫 번째 리뷰 제목이 검색창에 입력한 내용으로 변함
     def SearchClicked(self):
         self.text = self.SearchEdit.text()
-        self.names[0].setText(self.text)
+        self.process_call(self.text)
         #apis.APIS(1,self.text)
         #self.Map.setUrl(QtCore.QUrl("file:///C:/Users/31125/Desktop/python_files/TeamProjects/map.html"))
         
@@ -303,19 +305,23 @@ class Ui_MainWindow(object):
         self.deleteButton.show()
         self.trashCan.hide()
         self.cancelBtn.hide()
-            
+        index_list = []
+        ############ searched_well 변수 등을 만들어서, process 함수와 이어준 뒤, 한번 이상 서치가 잘 이루어진 후에만 동작하도록 만들어야 할듯
+        ############ 일부 장소는 주제를 바꿔서 탐색할수도 있게 해도 괜찮을 듯, 고려 필요.
         for i in range(0,5,1):
             if (self.checkBoxes[i].isChecked()):
-                self.names[i].clear()
-                self.contents[i].clear()
-                self.reviewPoints[i].clear()
-                self.reviews[i].clear()
-                self.reviewStars[i].clear()
-                self.imgs[i].hide()
+                index_list.append(i)
+                # self.names[i].clear()
+                # self.contents[i].clear()
+                # self.reviewPoints[i].clear()
+                # self.reviews[i].clear()
+                # self.reviewStars[i].clear()
+                # self.imgs[i].hide()
             self.checkBoxes[i].hide()
             self.checkBoxes[i].setChecked(False)
             self.names[i].setGeometry(QtCore.QRect(10, 8+175*i, 415, 31))
-            
+        self.process_call(topic,index_list,1)
+
             
     #리뷰들 위치 교환할 창 열림
     def changeOpen(self, Form):
@@ -406,8 +412,8 @@ class Ui_MainWindow(object):
             
             self.LabelBtns[i].show()
         self.changeBtns[5].hide()
-            
-            
+
+
     #첫번째 지정된 리뷰 자리를 두번째 지정된 리뷰 자리로 끌어올리고 창 닫기
     def changeSelect(self,first_num,second_num):
         #이게 생각해보니까 아래에서 위로 가는 거랑 위에서 아래로 가는 거랑 따로 생각해야 하더라고요
@@ -444,13 +450,146 @@ class Ui_MainWindow(object):
             self.imgs[i].setGeometry(QtCore.QRect(10, 42+175*i, 130, 130))
             self.reviewPoints[i].setGeometry(QtCore.QRect(144, 44+175*i, 51, 17))
             self.reviews[i].setGeometry(QtCore.QRect(258, 44+175*i, 101, 16))
-            
-    
+
+    # self.names[i].clear()
+    # self.contents[i].clear()
+    # self.reviewPoints[i].clear()
+    # self.reviews[i].clear()
+    # self.reviewStars[i].clear()
+    # self.imgs[i].hide()
+    def process_call(self, process_topic, index_list=[], recall=0):
+        ############# 이상한 주제 등을 받거나 해서 비정상 동작하는 경우, 팅기는게 아니라 에러 메시지를 띄우고 재진행 할 수 있도록.
+        #### (gpt가 잘 모르겠다는 응답을 한다던가.)
+        global except_list
+        global topic
+        topic = process_topic ## 변수 낭비일수도 있는데, 귀찮아서 추가함.
+        n = 5
+        eng_list, kor_name, kor_introduce, ps = [], [], [], ''
+
+        def search_error_index(process_topic, error_count):  #### 서치 데이터 -1 관련 함수
+            global except_list
+            nonlocal search_list
+            nonlocal eng_list
+            nonlocal kor_name
+            nonlocal kor_introduce
+
+            minus1_index = []
+            for _ in range(error_count):  # -1인 인덱스들 확인, 위치 저장
+                minus1_index.append(search_list.index([-1]))
+                search_list.pop(search_list.index([-1]))
+
+            temp_eng_list, temp_kor_name, temp_kor_introduce, trash = chatgpt.gpt(process_topic, error_count,
+                                                                                  except_list)  # 에러 개수만큼 탐색, temp에 저장
+            except_list.extend(temp_eng_list)  # 새로 탐색한것도 exceptlist에 추가해둠
+            temp_search_list = search.search(temp_eng_list)  # search 데이터 temp에 저장
+            # 일단 바깥의 사용용 데이터들 전부 새 데이터로 교체
+            j = 0
+            for i in minus1_index:
+                eng_list[i] = temp_eng_list[j]
+                kor_name[i] = temp_kor_name[j]
+                kor_introduce[i] = temp_kor_introduce[j]
+                search_list.insert(i, temp_search_list[j])
+                j += 1
+            error_count = search_list.count([-1])  # 다 교체는 해둔 뒤, error_count 재 체크
+            if error_count == 0:  # 해결 완료시엔 끝
+                return [0, 0]
+            else:  # 아직도 비해결 시에는, 에러메시지인 1과 오류수 보냄
+                return [1, error_count]
+
+
+        if recall == 1:  # 중복 제외후,  재검색하는 케이스 # index_list는 원래 부분에서 삭제하고, 교체할 부분을 나타냄
+            n = len(index_list)  # 같은 주제 재탐색하는, 중복제외 필요시 상황 ( 검색버튼 다시누른 케이스가 아니라, 삭제후 재탐색으로 들어온 케이스)
+            eng_list, kor_name, kor_introduce, ps = chatgpt.gpt(process_topic, n, except_list)
+            except_list.extend(eng_list)
+
+            search_list = search.search(eng_list)
+            error_count = search_list.count([-1])
+
+            if error_count != 0:  # 폐업점 등으로 일부 재탐색 필요시
+                chk, next_error_counter = search_error_index(process_topic, error_count)
+                while chk != 0:  # 한번 끝난 후에도 해결이 안됐다면 재진입, 해결될때까지 재진입할것
+                    chk, next_error_counter = search_error_index(process_topic, next_error_counter)
+        else:
+            except_list.clear()
+            eng_list, kor_name, kor_introduce, ps = chatgpt.gpt(process_topic, n)
+            except_list.extend(eng_list)
+
+            search_list = search.search(eng_list)
+            error_count = search_list.count([-1])
+
+            if error_count != 0:  # 폐업점 등으로 일부 재탐색 필요시
+                chk, next_error_counter = search_error_index(process_topic, error_count)
+                while chk != 0:  # 한번 끝난 후에도 해결이 안됐다면 재진입, 해결될때까지 재진입할것
+                    chk, next_error_counter = search_error_index(process_topic, next_error_counter)
+
+        #### 좌표 데이터 가지고 map함수 call 부분 필요
+
+        if recall == 0: # 다 바꿔야하는 경우
+            for i in range(n):  #### 내용 지정부
+                self.names[i].setText(kor_name[i])
+                self.contents[i].setText(kor_introduce[i])
+
+                if search_list[i][0] == 0:  # 0, 즉 장소일때
+                    ############### self.reviewStars[i].setText(search_list[i][2]) 별점 비정상 동작
+                    self.reviewPoints[i].setText(str(search_list[i][2]))
+                    self.reviews[i].setText(str(search_list[i][3]))
+                    if search_list[i][4] != 'No Image':
+                        self.imgs[i].setUrl(QtCore.QUrl(search_list[i][4]))
+                    else:  # 이미지 없을땐
+                        pass  # 알아서 지정
+
+                else:  # 1, 즉 지역일때
+                    ########### 리뷰 대신, 추천지역 관련 변수 추가로 요구됨 (search_list[i][2][1])
+                    ############### self.reviewStars[i].setText(search_list[i][2]) 별점 비정상 동작
+                    self.reviewPoints[i].setText(str(search_list[i][2][1]))
+                    self.reviews[i].setText(str(search_list[i][2][2]))
+                    if search_list[i][3] != 'No Image':
+                        self.imgs[i].setUrl(QtCore.QUrl(search_list[i][3]))
+                    else:  # 이미지 없을땐
+                        pass  # 알아서 지정
+            self.PsContents.setText(ps)
+
+        else: # 일부 인덱스만 교체해주면 되는 경우(리콜된 경우)
+            for i,index in enumerate(index_list):
+                self.names[index].setText(kor_name[i])
+                self.contents[index].setText(kor_introduce[i])
+
+                if search_list[i][0] == 0:  # 0, 즉 장소일때
+                    # self.reviewStars[index].setText(search_list[i][2])
+                    self.reviewPoints[index].setText(str(search_list[i][2]))
+                    self.reviews[index].setText(str(search_list[i][3]))
+                    if search_list[i][4] != 'No Image':
+                        self.imgs[index].setUrl(QtCore.QUrl(search_list[i][4]))
+                    else:  # 이미지 없을땐
+                        pass  # 알아서 지정
+
+                else:  # 1, 즉 지역일때
+                    # 리뷰 대신, 추천지역 관련 변수 추가로 요구됨 (search_list[i][2][1])
+                    self.reviewPoints[index].setText(str(search_list[i][2][1]))
+                    self.reviews[index].setText(str(search_list[i][2][2]))
+                    if search_list[i][3] != 'No Image':
+                        self.imgs[index].setUrl(QtCore.QUrl(search_list[i][3]))
+                    else:  # 이미지 없을땐
+                        pass  # 알아서 지정
+
+    # [0 ,'검색한 장소=검색한 결과의 장소','평점','리뷰 수','사진링크','lat','lng']
+    # [1 ,'검색한 장소',('검색한 결과의 장소','평점','리뷰 수'),'사진링크','lat','lng']
+    # result_list=[0 or 1,'검색한 장소=검색한 결과의 장소','평점','리뷰 수','사진링크', '좌표(lat)', '좌표(lng)']
+
+
+
 if __name__ == "__main__":
     import sys
+
+    topic = ''
+    except_list = []
+
+
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
+
+

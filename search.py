@@ -1,7 +1,7 @@
 import os
 import googlemaps
 import requests
-
+from apikey import GoogleMap_API_KEY
 ########################################-----------수정 사항---------#########################################################
 # result_list에 사진 값도 추가하긴 했는데 값이 길어서 이건 어떻게 할 건지 정하기(url로 대체함 안되면 content로 변경)
 # ㄴ되는 거 확인되서 그대로 유지
@@ -12,7 +12,7 @@ import requests
 #############################################################################################################################
 
 def search(input_search_locations=[]):
-    api_key = 'YOUR_API_KEY'
+    api_key = GoogleMap_API_KEY
     map_clinet = googlemaps.Client(api_key)
 
     result_list = [] #최종 결과물 리스트

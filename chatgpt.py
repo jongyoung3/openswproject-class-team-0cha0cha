@@ -78,12 +78,12 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
     # 사전학습 데이터
     systemsay = f"""
     You are in the middle of a preliminary study to answer the following questions:
-    Find me Exactly ten of travel destinations related to the topic.
+    Find me Exactly 10 of travel destinations related to the topic.
     In the following user query, topic will be provided wrapped in triple backticks.
     Topic can be provided in a variety of languages. Translate the topic to English for you.
     Provide the results in the following order :
     Step 0. Imagine yourself as an expert travel guide AI speaking English. Do not say any other languages..
-    Step 1. Follow the following conditions wrapped in angle brackets and find {n} of travel destinations related to topic in English :
+    Step 1. Follow the following conditions wrapped in angle brackets and find 10 of travel destinations related to topic in English :
     < You must only write places that can be cited and verified on Google Maps.
     You should include places that are heavily visited and has high ratings by tourists.
     destinations must be close each other. So, The distances between all of each travel destinations must be less than 10km.
@@ -94,7 +94,7 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
     < If the region is multiple, write the only one region that is most representative. >
     Step 4. write 3 sentences introductions and to each destination.
     Step 5. lastly, write 2 sentences introductions about topic.
-    Step 6. provide the output taht is {n} of travel destinations related to topic in English and only json format. The order of the output must satisfy the conditions in Step 1.
+    Step 6. provide the output that is 10 of travel destinations related to topic in English and only json format. The order of the output must satisfy the conditions in Step 1.
     Your output should be in json format with two list and have the following fields in first list :
      'name', 'region', 'description'. first list key is "destinations".
     In second list, You should write only introduction about topic. Second list key is "topic_introduction".
@@ -102,11 +102,23 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
 
     # 아래 오류목록 참고해서, 확인 후 고쳐보고.
 
-    # 2. 먼거리 추천 에러 step1 요구사항 3,4,5번 라인
+    # 하시마 섬 등 드라이빙으로 경로를 알아낼 수 없는 경우. #############
+
+    # 2. 먼거리 추천 에러 step1 요구사항 3,4,5번 라인###
+
 
     # 3. 특정 지역 제외 후 재검색 기능 비작동 ( 영국 시계탑 중복 추천 등 일부 chatgpt가 실수하는 경우 있음. 드문 빈도. 다만, 관찰 필요. 무시해도 가능할 정도로 보임.) 주요문제는 x
 
     # 재검색시 지역전체소개는 빼도록 하면 속도개선 가능. (0으로 대충 답변하게 추가는 했지만, 잘 x), 주요기능은 x
+
+
+    # 번역에서의 오류. 왜 나는거지.? 해결된 것으로 보이나, 관찰 필요
+    # 개수 체크 필요 자꾸 1개 달라는데 최초 케이스에서, 5개 주고 막 그럼. 아마 prev 데이터 때문에 헷갈려하는거 같아. 해결된 것으로 보이나, 관찰 필요
+    prev_query = f"""
+    in next answer, You must find Exactly {n} of travel destinations related to topic in English. 
+    So, your output has {n} of travel destinations related to topic.
+    The rest of the instructions are the same as preliminary study.
+    """
 
     query = f"```{topic} in English```"
 
@@ -114,6 +126,7 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
         {"role": "system", "content": systemsay},
         {"role": "user", "content": train_topic},
         {"role": "assistant", "content": prev2},
+        {"role": "user", "content" : prev_query},
         {"role": "user", "content": query}
     ]
 
@@ -121,7 +134,7 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
     if except_list != []:
         except_destination = ", ".join(except_list)
         systemsay2 = f"""
-        in next answer, You must find {n} of travel destinations related to topic in English, And You should follow the following conditions wrapped in angle brackets too.
+        in next answer, You must find Exactly {n} of travel destinations related to topic in English, And You should follow the following conditions wrapped in angle brackets too.
         < First, You must exclude the destinations wrapped in following double backticks. So, you must find the destinations that is not provided in following double backticks.
         ``{except_destination}``. this is Top priority requirement.
         Second, You don't need to write 2 sentences introductions about topic. Instead, Just write '0'. > 
@@ -142,10 +155,10 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
     result = {}
 
     if answer[0] == '`' or answer[len(answer) - 1] == '`':  # 아주 적은 빈도로, chatgpt 응답에 ```가 양쪽에 붙는 문제 해결
-        answer.strip('`')
+        answer.strip('`').strip().strip('`')
 
     try:  # json 변환을 통해 변환 시도후, 적절한 문법 형식이 맞춰지지 않았다면 재귀 진행
-        result = json.loads(response['choices'][0]['message']['content'])
+        result = json.loads(answer)
     except:
         print("re-try\n\n")
         print(response['choices'][0]['message']['content'])
@@ -207,8 +220,12 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
 
     response = requests.post(url, json=payload, headers=headers)
 
-    translated_text = response.json()['text']  # 번역받아온 결과 변환하여 저장
-
+    try:
+        translated_text = response.json()['text']  # 번역받아온 결과 변환하여 저장  ########################################### 번역도 종종 에러가 난다. 확인 필요.
+    except:
+        print(response)
+        response = requests.post(url, json=payload, headers=headers)
+        translated_text = response.json()['text']
     try:  # api 관련하여, 번역 과정에서의 혹시 모를 오류 방지를 위해 try except 사용
 
         ### 아래는 리턴을 위한 데이터 처리 부분
@@ -232,16 +249,16 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
         return gpt(topic, n, except_list, retry)
 
 
-# ! 테스팅
-topic = input()
-# ans, res = gpt(topic)
-eng_name, name, introduce, PS = gpt(topic)
-print(eng_name)
-print(name)
-print(introduce)
-print(PS)
+# # ! 테스팅
+# topic = input()
+# # ans, res = gpt(topic)
+# eng_name, name, introduce, PS = gpt(topic)
+# print(eng_name)
+# print(name)
+# print(introduce)
+# print(PS)
 
-print("제외후 재 테스트\n")
-a, b, c, d = gpt(topic, 1, eng_name)
-print(a, b, c, d, sep="\n")
-# print(gpt(topic, 1, ans))
+# print("제외후 재 테스트\n")
+# a, b, c, d = gpt(topic, 1, eng_name)
+# print(a, b, c, d, sep="\n")
+# # print(gpt(topic, 1, ans))
