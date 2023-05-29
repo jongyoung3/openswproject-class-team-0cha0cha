@@ -1,7 +1,7 @@
 import os
 import googlemaps
 import requests
-from pprint import pprint #줄맞춤 출력을 위해 임포트 한 것이므로 나중에 지워야함
+#from pprint import pprint #줄맞춤 출력을 위해 임포트 한 것이므로 나중에 지워야함
 
 ########################################-----------수정 사항---------#########################################################
 # result_list에 사진 값도 추가하긴 했는데 값이 길어서 이건 어떻게 할 건지 정하기(url로 대체함 안되면 content로 변경)
@@ -564,7 +564,7 @@ def search(input_search_locations=[]):
 
 
     result_list.extend(result_ex)
-    pprint(result_list) #최종 결과 출력
+    #pprint(result_list) #최종 결과 출력
     #pprint(result_location) #좌표
     # [0 ,'검색한 장소=검색한 결과의 장소','평점','리뷰 수','사진링크']
     # [1 ,'검색한 장소','검색한 결과의 장소','평점','리뷰 수','사진링크']
