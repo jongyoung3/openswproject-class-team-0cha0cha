@@ -14,7 +14,7 @@ lon=[]
 distance=[]
 site=['Tokyo(Kanto Region, Japan)', 'Kyoto(Kansai Region, Japan)', 'Osaka(Kansai Region, Japan)', 'Hiroshima(Chugoku Region, Japan)', 'Nara(Kansai Region, Japan)']
 n=len(site)
-
+waypoints=[site[1],site[2],site[3]]
 # API 키
 API_KEY = 'AIzaSyB8I74JlUYDKbZyDCQs2vAtelO9FrGKNGA'
 
@@ -50,13 +50,13 @@ for i in range(n):
     else:
         print('API 요청 실패')
 
+    
 origin=(lat[0],lon[0])
 # 지도 생성
-map = folium.Map(location=origin, zoom_start=13)
+map = folium.Map(location=origin, zoom_start=5)
 
 for i in range(n-1):
-    origin=(lat[i],lon[i])
-    destination=(lat[i+1],lon[i+1])
+    
     
     #마커 찍기
     if i == 0:
@@ -64,12 +64,16 @@ for i in range(n-1):
 
     folium.Marker([lat[i+1], lon[i+1]], popup=site[i+1]).add_to(map)
     
+origin=(lat[0],lon[0])
+destination=(lat[4],lon[4])
 
 
-    directions_response=gmaps.directions(origin,destination,mode='driving')
-    
-    if len(directions_response) > 0 and 'legs' in directions_response[0]:
-        route = directions_response[0]['legs'][0]
+
+directions_response=gmaps.directions(origin,destination,mode='driving',waypoints=waypoints,optimize_waypoints = True)
+
+if len(directions_response) > 0 and 'legs' in directions_response[0]:
+    for i in range(n-1):
+        route = directions_response[0]['legs'][i]
 
         points = []
         for step in route['steps']:
@@ -77,12 +81,18 @@ for i in range(n-1):
             end = (step['end_location']['lat'], step['end_location']['lng'])
             points.extend([start, end])
 
-
+        print(points)
         # 경로 그리기
-        folium.PolyLine(points, color='blue', weight=5).add_to(map)
-    else:
-        print(f"No directions found for the route from {site[i]} to {site[i+1]}")
+        for i in range(n-1):
+            folium.PolyLine(points, color='blue', weight=i+1).add_to(map)
+           
+    
+else:
+    print(f"No directions found for the route from {site[i]} to {site[i+1]}")
+    
+    
 
+        
 # HTML 파일로 저장
 map.save('route.html')
 
