@@ -82,9 +82,10 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
     In the following user query, topic will be provided wrapped in triple backticks.
     Topic can be provided in a variety of languages. Translate the topic to English for you.
     Provide the results in the following order :
-    Step 0. Imagine yourself as an expert travel guide AI speaking English. Do not say any other languages..
+    Step 0. Imagine yourself as an expert travel guide AI speaking English. Do not say any other languages.
     Step 1. Follow the following conditions wrapped in angle brackets and find 10 of travel destinations related to topic in English :
     < You must only write places that can be cited and verified on Google Maps.
+    You must only write places you can drive to.
     You should include places that are heavily visited and has high ratings by tourists.
     destinations must be close each other. So, The distances between all of each travel destinations must be less than 10km.
     You must write close destinations(destinations in same or close administrative region, district or area) back-to-back.
@@ -107,11 +108,11 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
     # 2. 먼거리 추천 에러 step1 요구사항 3,4,5번 라인###
 
 
-    # 3. 특정 지역 제외 후 재검색 기능 비작동 ( 영국 시계탑 중복 추천 등 일부 chatgpt가 실수하는 경우 있음. 드문 빈도. 다만, 관찰 필요. 무시해도 가능할 정도로 보임.) 주요문제는 x
+
+
 
     # 재검색시 지역전체소개는 빼도록 하면 속도개선 가능. (0으로 대충 답변하게 추가는 했지만, 잘 x), 주요기능은 x
-
-
+    # 3. 특정 지역 제외 후 재검색 기능 비작동 ( 영국 시계탑 중복 추천 등 일부 chatgpt가 실수하는 경우 있음. 드문 빈도. 다만, 관찰 필요. 무시해도 가능할 정도로 보임.) 주요문제는 x
     # 번역에서의 오류. 왜 나는거지.? 해결된 것으로 보이나, 관찰 필요
     # 개수 체크 필요 자꾸 1개 달라는데 최초 케이스에서, 5개 주고 막 그럼. 아마 prev 데이터 때문에 헷갈려하는거 같아. 해결된 것으로 보이나, 관찰 필요
     prev_query = f"""
@@ -120,7 +121,7 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
     The rest of the instructions are the same as preliminary study.
     """
 
-    query = f"```{topic} in English```"
+    query = f"```{topic} ```in English"
 
     messages = [
         {"role": "system", "content": systemsay},
