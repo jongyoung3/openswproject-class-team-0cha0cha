@@ -10,6 +10,7 @@ from apikey import GoogleMap_API_KEY
 # ㄴ 최종 결과 리스트(result_list)에 '-1' 뜨는 건 아무리 걸러도 폐업한 것만 있을때 넣어논 거임
 # ㄴ완료
 # result_list=[0 or 1,'검색한 장소=검색한 결과의 장소','평점','리뷰 수','사진링크', '좌표(lat)', '좌표(lng)']
+# 에러 났을때 재시도 3번 이상이면 -99 리턴
 #############################################################################################################################
           # chat-gpt 로 받아올 데이터, 반복회수
 def search(input_search_locations=[], retry=0):
@@ -34,7 +35,7 @@ def search(input_search_locations=[], retry=0):
             if(response['status'] !='ZERO_RESULTS'): #검색데이터 결과가 빈 리스트로 오는 경우(=검색결과가 없을때)를 걸러줌
                 if('rating' in response['results'][0]): # 인덱스 번호에 따라 영업점 나오는 듯. 기준으로만 일단 만듬
                     if('business_status' in response['results'][0]): #'business_status'가 없는 경우 분류
-                        if(response['results'][0]['business_status']=='OPERATIONAL'): #폐업인 경우 제외
+                        if(response['results'][0]['business_status']!='CLOSED_PERMANENTLY'): #폐업인 경우 제외
                             # '0'->지역 외의 장소, 평점이 있는 것
                             
                             if('photos' in response['results'][0]): # 'photos'가 아예없는 경우 제외
@@ -102,13 +103,17 @@ def search(input_search_locations=[], retry=0):
                         
                             
                 else:
-                    # '1'->지역이름, 여기서 지역이름에 관광명소를 평점높고 리뷰수 많은거 1개 가져오면 됨. 단, 없는건 건너뛰고
+                    # '1'->지역이름, 여기서 지역이름에 관광명소를 평점높고 리뷰수 많은거 1개 가져오면 됨. 단, 없는건 건너뛰고 
 
+                    locations_blank_text_one=locations.split("(")
+                    
+                    text_lo=locations_blank_text_one[0]
+                    response_blank_one = map_clinet.places(query=text_lo) # 데이터를 api로 보냄
+                    
                     # 장소 '1'에 해당되는 장소의 좌표값
-                    location_lat=response['results'][0]['geometry']['location']['lat']
-                    location_lng=response['results'][0]['geometry']['location']['lng']
-                        
-                    radius=2000 # 반경 2,000m
+                    location_lat=response_blank_one['results'][0]['geometry']['location']['lat']
+                    location_lng=response_blank_one['results'][0]['geometry']['location']['lng']
+                    radius=100000 # 반경 100,000m
                         
                     # 장소 세부요청 (전달받은 위치의 반경 2000m에 있는 관광명소 탐색)
                     payload={}
@@ -116,7 +121,7 @@ def search(input_search_locations=[], retry=0):
                     attractions = []
                         
                     #장소 세부요청
-                    url=f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={location_lat},{location_lng}&radius={radius}&type=tourist+attractions&key={api_key}"
+                    url=f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={location_lat},{location_lng}&radius={radius}&keyword=attractions&key={api_key}"
                     data=requests.request("GET", url, headers=headers, data=payload)
                     res_lo=data.json()
                         
@@ -129,7 +134,7 @@ def search(input_search_locations=[], retry=0):
                             #print(i)
                             if ('rating' in res_lo['results'][i]):
                                 if('business_status' in res_lo['results'][i]): #'business_status'가 없는 경우 분류
-                                    if(res_lo['results'][i]['business_status']=='OPERATIONAL'): #폐업인 경우 제외
+                                    if(res_lo['results'][i]['business_status']!='CLOSED_PERMANENTLY'): #폐업인 경우 제외
                                         name = res_lo['results'][i]['name']
                                         rating = res_lo['results'][i]['rating']
                                         reviews = res_lo['results'][i]['user_ratings_total']
@@ -192,7 +197,7 @@ def search(input_search_locations=[], retry=0):
                             # 리뷰 수가 높은 순으로 정렬 필요
                             #print(i)
                             if('business_status' in res_lo['results'][i]): #'business_status'가 없는 경우 분류
-                                if(res_lo['results'][i]['business_status']=='OPERATIONAL'): #폐업인 경우 제외
+                                if(res_lo['results'][i]['business_status']!='CLOSED_PERMANENTLY'): #폐업인 경우 제외
                                     if 'rating' in data['results'][i]:
                                         name = data['results'][i]['name']
                                         rating = data['results'][i]['rating']
@@ -253,7 +258,7 @@ def search(input_search_locations=[], retry=0):
                         # 리뷰 수가 높은 순으로 정렬 필요
                         #print(i)
                         if('business_status' in data['results'][i]): #'business_status'가 없는 경우 분류
-                            if(data['results'][i]['business_status']=='OPERATIONAL'): #폐업인 경우 제외
+                            if(data['results'][i]['business_status']!='CLOSED_PERMANENTLY'): #폐업인 경우 제외
                                 if 'rating' in data['results'][i]:
                                     name = data['results'][i]['name']
                                     rating = data['results'][i]['rating']
@@ -311,7 +316,7 @@ def search(input_search_locations=[], retry=0):
                     if(response_blank['status'] !='ZERO_RESULTS'): #검색데이터 결과가 빈 리스트로 오는 경우(=검색결과가 없을때)를 걸러줌
                         if('rating' in response_blank['results'][0]): # 인덱스 번호에 따라 영업점 나오는 듯. 기준으로만 일단 만듬
                             if('business_status' in response_blank['results'][0]): #'business_status'가 없는 경우 분류
-                                if(response_blank['results'][0]['business_status']=='OPERATIONAL'): #폐업인 경우 제외
+                                if(response_blank['results'][0]['business_status']!='CLOSED_PERMANENTLY'): #폐업인 경우 제외
                                     # '0'->지역 외의 장소, 평점이 있는 것
 
                                     destination.append(0)
@@ -379,7 +384,7 @@ def search(input_search_locations=[], retry=0):
                             attractions = []
                                 
                             #장소 세부요청
-                            url=f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={location_lat},{location_lng}&radius={radius}&type=tourist+attractions&key={api_key}"
+                            url=f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={location_lat},{location_lng}&radius={radius}&keyword=attractions&key={api_key}"
                             data=requests.request("GET", url, headers=headers, data=payload)
                             res_lo=data.json()
                                 
@@ -391,7 +396,7 @@ def search(input_search_locations=[], retry=0):
                                     # 리뷰 수가 높은 순으로 정렬 필요
                                     #print(i)
                                     if('business_status' in res_lo['results'][i]): #'business_status'가 없는 경우 분류
-                                        if(res_lo['results'][i]['business_status']=='OPERATIONAL'): #폐업인 경우 제외
+                                        if(res_lo['results'][i]['business_status']!='CLOSED_PERMANENTLY'): #폐업인 경우 제외
                                             if 'rating' in res_lo['results'][i]:
                                                 name = res_lo['results'][i]['name']
                                                 rating = res_lo['results'][i]['rating']
@@ -453,7 +458,7 @@ def search(input_search_locations=[], retry=0):
                                     # 리뷰 수가 높은 순으로 정렬 필요
                                     #print(i)
                                     if('business_status' in data['results'][i]): #'business_status'가 없는 경우 분류
-                                        if(data['results'][i]['business_status']=='OPERATIONAL'): #폐업인 경우 제외
+                                        if(data['results'][i]['business_status']!='CLOSED_PERMANENTLY'): #폐업인 경우 제외
                                             if 'rating' in data['results'][i]:
                                                 name = data['results'][i]['name']
                                                 rating = data['results'][i]['rating']
@@ -515,5 +520,6 @@ def search(input_search_locations=[], retry=0):
         return search(input_search_locations,retry)
 
 #TEST
-# res_sol=search(['Taj Mahal(Agra, Uttar Pradesh, India)', 'Varanasi(Uttar Pradesh, India)', 'Jaipur(Rajasthan, India)', 'Udaipur(Rajasthan, India)', 'Rishikesh(Uttarakhand, India)', 'Amer Fort(Jaipur, Rajasthan, India)', 'Jaisalmer(Rajasthan, India)', 'Darjeeling(West Bengal, India)', 'Hampi(Karnataka, India)', 'Goa(India)'])
-# print(res_sol)
+res_sol=search(['Tokyo(Kanto Region, Japan)'])
+print(res_sol)
+#['Tokyo(Kanto Region, Japan)', 'Kyoto(Kansai Region, Japan)', 'Osaka(Kansai Region, Japan)', 'Hiroshima(Chugoku Region, Japan)', 'Nara(Kansai Region, Japan)']
