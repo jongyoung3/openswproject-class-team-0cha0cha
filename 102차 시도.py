@@ -12,11 +12,11 @@ from googlemaps import convert
 lat=[]
 lon=[]
 distance=[]
-site=['Tokyo Disneyland(Urayasu, Chiba Prefecture, Japan)', 'Osaka Castle(Osaka, Japan)', 'Fushimi Inari Shrine(Kyoto, Japan)', 'Hiroshima Peace Memorial Park(Hiroshima, Japan)', 'Kinkaku-ji Temple(Kyoto, Japan)', 'Nagoya Castle(Nagoya, Aichi Prefecture, Japan)', 'Mount Fuji(Yamanashi Prefecture, Japan)', 'Universal Studios Japan(Osaka, Japan)', 'Shinjuku Gyoen National Garden(Shinjuku City, Tokyo, Japan)', 'Gunkanjima Island(Nagasaki, Japan)']
+site=['Tokyo(Kanto Region, Japan)', 'Kyoto(Kansai Region, Japan)', 'Osaka(Kansai Region, Japan)', 'Hiroshima(Chugoku Region, Japan)', 'Nara(Kansai Region, Japan)']
 n=len(site)
 
 # API 키
-API_KEY = 'AIzaSyBHDdUYyuLXz5mwKb7pBDZRscDp2dUIcg0'
+API_KEY = 'AIzaSyB8I74JlUYDKbZyDCQs2vAtelO9FrGKNGA'
 
 gmaps = googlemaps.Client(key=API_KEY)
 
@@ -58,10 +58,15 @@ for i in range(n-1):
     origin=(lat[i],lon[i])
     destination=(lat[i+1],lon[i+1])
     
+    #마커 찍기
+    if i == 0:
+        folium.Marker([lat[i], lon[i]], popup=site[i]).add_to(map)
+
+    folium.Marker([lat[i+1], lon[i+1]], popup=site[i+1]).add_to(map)
     
 
 
-    directions_response=gmaps.directions(origin,destination)
+    directions_response=gmaps.directions(origin,destination,mode='driving')
     
     if len(directions_response) > 0 and 'legs' in directions_response[0]:
         route = directions_response[0]['legs'][0]
@@ -72,10 +77,6 @@ for i in range(n-1):
             end = (step['end_location']['lat'], step['end_location']['lng'])
             points.extend([start, end])
 
-        if i == 0:
-            folium.Marker([lat[i], lon[i]], popup=site[i]).add_to(map)
-
-        folium.Marker([lat[i+1], lon[i+1]], popup=site[i+1]).add_to(map)
 
         # 경로 그리기
         folium.PolyLine(points, color='blue', weight=5).add_to(map)
