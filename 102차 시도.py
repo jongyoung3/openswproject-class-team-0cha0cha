@@ -61,6 +61,7 @@ for i in range(n):
 
 # 시작점, 도착점
 for i in range(n - 1): 
+    j=i
     for j in range(n - 1):
         distance = geodesic(point[i], point[j]).meters
         if(distance > loong):
