@@ -520,6 +520,6 @@ def search(input_search_locations=[], retry=0):
         return search(input_search_locations,retry)
 
 #TEST
-res_sol=search(['Tokyo(Kanto Region, Japan)'])
-print(res_sol)
+# res_sol=search(['Tokyo(Kanto Region, Japan)'])
+# print(res_sol)
 #['Tokyo(Kanto Region, Japan)', 'Kyoto(Kansai Region, Japan)', 'Osaka(Kansai Region, Japan)', 'Hiroshima(Chugoku Region, Japan)', 'Nara(Kansai Region, Japan)']
