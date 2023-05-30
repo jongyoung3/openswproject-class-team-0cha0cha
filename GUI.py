@@ -2,6 +2,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5 import QtWebEngineWidgets
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
+import threading
 
 import chatgpt
 import search
@@ -88,7 +89,10 @@ class Ui_MainWindow(object):
         self.Map.setGeometry(QtCore.QRect(20, 10, 551, 641))
         self.Map.setUrl(QtCore.QUrl("file:///C:/Users/31125/Desktop/python_files/TeamProjects/map.html"))
         
-        
+        self.optimize = QtWidgets.QPushButton(self.centralwidget)
+        self.optimize.setGeometry(QtCore.QRect(470, 17, 94, 28))
+
+
         #메뉴바 관련
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
@@ -97,16 +101,15 @@ class Ui_MainWindow(object):
         self.menuBar = QtWidgets.QMenuBar(MainWindow)
         self.menuBar.setGeometry(QtCore.QRect(0, 0, 1200, 26))
         self.menuabout = QtWidgets.QMenu(self.menuBar)
+
         MainWindow.setMenuBar(self.menuBar)
         
         self.actionAbout = QtWidgets.QAction(MainWindow)
         self.actionAbout.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
-        self.actionOptimization = QtWidgets.QAction(MainWindow)
         self.actionQuit = QtWidgets.QAction(MainWindow)
         
         self.menuabout.addSeparator()
         self.menuabout.addAction(self.actionAbout)
-        self.menuabout.addAction(self.actionOptimization)
         self.menuabout.addAction(self.actionQuit)
         self.menuBar.addAction(self.menuabout.menuAction())
 
@@ -119,7 +122,6 @@ class Ui_MainWindow(object):
         self.changeButton.clicked.connect(self.changeOpen)
         self.actionAbout.triggered.connect(self.aboutOpen)
         self.actionQuit.triggered.connect(app.quit)
-        #self.actionOptimization.triggered.connect(최적화)
         self.SearchButton.clicked.connect(self.SearchClicked)
         
         self.deleteButton.clicked.connect(self.deleteClicked)
@@ -144,9 +146,9 @@ class Ui_MainWindow(object):
         self.PsContents.setText("일본은 최첨단 기술뿐만 아니라 고대 문화가 풍부한 대조적인 나라로 가득합니다. 상징적인 랜드마크와 번화한 도시부터 산과 바다의 고요한 자연의 아름다움까지, 이 매혹적인 나라에는 모두를 위한 무언가가 있습니다. 전통과 현대의 독특한 조화를 경험할 준비를 하시고 여행 중에 맛있는 현지 요리를 맛보는 것도 잊지 마세요!")
         self.deleteButton.setText("Check to delete")
         self.cancelBtn.setText("Cancel")
-        self.menuabout.setTitle("Menu")
+        self.menuabout.setTitle("메뉴")
         self.actionAbout.setText("About")
-        self.actionOptimization.setText("Optimization")       
+        self.optimize.setText("경로 최적화")
         self.actionQuit.setText("Exit")
 
 
@@ -208,16 +210,16 @@ class Ui_MainWindow(object):
         #별점은 중대사항
         a = float(self.reviewPoints[0].text()) * 14.1
         self.reviewStars[0].setGeometry(QtCore.QRect(175, 44+175*0, 2+int(a), 15))
-        
+
         b = float(self.reviewPoints[1].text()) * 14.1
         self.reviewStars[1].setGeometry(QtCore.QRect(175, 44+175*1, 2+int(b), 15))
-        
+
         c = float(self.reviewPoints[2].text()) * 14.1
         self.reviewStars[2].setGeometry(QtCore.QRect(175, 44+175*2, 2+int(c), 15))
-        
+
         d = float(self.reviewPoints[3].text()) * 14.1
         self.reviewStars[3].setGeometry(QtCore.QRect(175, 44+175*3, 2+int(d), 15))
-        
+
         e = float(self.reviewPoints[4].text()) * 14.1
         self.reviewStars[4].setGeometry(QtCore.QRect(175, 44+175*4, 2+int(e), 15))
         
@@ -451,12 +453,26 @@ class Ui_MainWindow(object):
             self.reviewPoints[i].setGeometry(QtCore.QRect(144, 44+175*i, 51, 17))
             self.reviews[i].setGeometry(QtCore.QRect(258, 44+175*i, 101, 16))
 
-    # self.names[i].clear()
-    # self.contents[i].clear()
-    # self.reviewPoints[i].clear()
-    # self.reviews[i].clear()
-    # self.reviewStars[i].clear()
-    # self.imgs[i].hide()
+        #바뀐 별점에 따라 별 갯수 노출 변화
+        a = float(self.reviewPoints[0].text()) * 14.1
+        self.reviewStars[0].setGeometry(QtCore.QRect(175, 44+175*0, 2+int(a), 15))
+        b = float(self.reviewPoints[1].text()) * 14.1
+        self.reviewStars[1].setGeometry(QtCore.QRect(175, 44+175*1, 2+int(b), 15))
+        c = float(self.reviewPoints[2].text()) * 14.1
+        self.reviewStars[2].setGeometry(QtCore.QRect(175, 44+175*2, 2+int(c), 15))
+        d = float(self.reviewPoints[3].text()) * 14.1
+        self.reviewStars[3].setGeometry(QtCore.QRect(175, 44+175*3, 2+int(d), 15))
+        e = float(self.reviewPoints[4].text()) * 14.1
+        self.reviewStars[4].setGeometry(QtCore.QRect(175, 44+175*4, 2+int(e), 15))
+
+        # self.names[i].clear()
+        # self.contents[i].clear()
+        # self.reviewPoints[i].clear()
+        # self.reviews[i].clear()
+        # self.reviewStars[i].clear()
+        # self.imgs[i].hide()
+
+
     def process_call(self, process_topic, index_list=[], recall=0):
         ############# 이상한 주제 등을 받거나 해서 비정상 동작하는 경우, 팅기는게 아니라 에러 메시지를 띄우고 재진행 할 수 있도록.
         #### (gpt가 잘 모르겠다는 응답을 한다던가.)
@@ -478,8 +494,7 @@ class Ui_MainWindow(object):
                 minus1_index.append(search_list.index([-1]))
                 search_list.pop(search_list.index([-1]))
 
-            temp_eng_list, temp_kor_name, temp_kor_introduce, trash = chatgpt.gpt(process_topic, error_count,
-                                                                                  except_list)  # 에러 개수만큼 탐색, temp에 저장
+            temp_eng_list, temp_kor_name, temp_kor_introduce, trash = chatgpt.gpt(process_topic, error_count, except_list)  # 에러 개수만큼 탐색, temp에 저장
             except_list.extend(temp_eng_list)  # 새로 탐색한것도 exceptlist에 추가해둠
             temp_search_list = search.search(temp_eng_list)  # search 데이터 temp에 저장
             # 일단 바깥의 사용용 데이터들 전부 새 데이터로 교체
@@ -529,9 +544,12 @@ class Ui_MainWindow(object):
                 self.names[i].setText(kor_name[i])
                 self.contents[i].setText(kor_introduce[i])
 
+                # a = float(self.reviewPoints[0].text()) * 14.1
+                # self.reviewStars[0].setGeometry(QtCore.QRect(175, 44 + 175 * 0, 2 + int(a), 15))
+
                 if search_list[i][0] == 0:  # 0, 즉 장소일때
-                    ############### self.reviewStars[i].setText(search_list[i][2]) 별점 비정상 동작
                     self.reviewPoints[i].setText(str(search_list[i][2]))
+                    self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 175 * 0, 2 + int(float(search_list[i][2]) * 14.1), 15))
                     self.reviews[i].setText(str(search_list[i][3]))
                     if search_list[i][4] != 'No Image':
                         self.imgs[i].setUrl(QtCore.QUrl(search_list[i][4]))
@@ -540,8 +558,8 @@ class Ui_MainWindow(object):
 
                 else:  # 1, 즉 지역일때
                     ########### 리뷰 대신, 추천지역 관련 변수 추가로 요구됨 (search_list[i][2][1])
-                    ############### self.reviewStars[i].setText(search_list[i][2]) 별점 비정상 동작
                     self.reviewPoints[i].setText(str(search_list[i][2][1]))
+                    self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 175 * 0, 2 + int(float(search_list[i][2][1]) * 14.1), 15))
                     self.reviews[i].setText(str(search_list[i][2][2]))
                     if search_list[i][3] != 'No Image':
                         self.imgs[i].setUrl(QtCore.QUrl(search_list[i][3]))
@@ -555,8 +573,8 @@ class Ui_MainWindow(object):
                 self.contents[index].setText(kor_introduce[i])
 
                 if search_list[i][0] == 0:  # 0, 즉 장소일때
-                    # self.reviewStars[index].setText(search_list[i][2])
                     self.reviewPoints[index].setText(str(search_list[i][2]))
+                    self.reviewStars[index].setGeometry(QtCore.QRect(175, 44 + 175 * 0, 2 + int(float(search_list[i][2]) * 14.1), 15))
                     self.reviews[index].setText(str(search_list[i][3]))
                     if search_list[i][4] != 'No Image':
                         self.imgs[index].setUrl(QtCore.QUrl(search_list[i][4]))
@@ -566,6 +584,7 @@ class Ui_MainWindow(object):
                 else:  # 1, 즉 지역일때
                     # 리뷰 대신, 추천지역 관련 변수 추가로 요구됨 (search_list[i][2][1])
                     self.reviewPoints[index].setText(str(search_list[i][2][1]))
+                    self.reviewStars[index].setGeometry(QtCore.QRect(175, 44 + 175 * 0, 2 + int(float(search_list[i][2][1]) * 14.1), 15))
                     self.reviews[index].setText(str(search_list[i][2][2]))
                     if search_list[i][3] != 'No Image':
                         self.imgs[index].setUrl(QtCore.QUrl(search_list[i][3]))
@@ -576,6 +595,9 @@ class Ui_MainWindow(object):
     # [1 ,'검색한 장소',('검색한 결과의 장소','평점','리뷰 수'),'사진링크','lat','lng']
     # result_list=[0 or 1,'검색한 장소=검색한 결과의 장소','평점','리뷰 수','사진링크', '좌표(lat)', '좌표(lng)']
 
+    #일단 스레드 넣어봤어요 안되면 다시 수정할게요
+#    t1 = threading.Thread(target=SearchClicked())
+#    t1.start()
 
 
 if __name__ == "__main__":
@@ -591,5 +613,4 @@ if __name__ == "__main__":
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
-
 
