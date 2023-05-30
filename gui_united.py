@@ -2,47 +2,49 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5 import QtWebEngineWidgets
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
+import threading
 
 import chatgpt
 import search
+
+import openai
+OPENAI_API_KEY = "AIzaSyB8I74JlUYDKbZyDCQs2vAtelO9FrGKNGA"
+openai.api_key = OPENAI_API_KEY
+
 
 class Ui_MainWindow(object):
     #메인창 내용물
     def setupUi(self, MainWindow):
         #메인창 관련
-        #메인창 크기
         MainWindow.resize(1200, 700)
-        #메인창 크기 변경 못하게
         MainWindow.setMinimumSize(QtCore.QSize(1200, 700))
         MainWindow.setMaximumSize(QtCore.QSize(1200, 700))
         MainWindow.setAnimated(False)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         
         
-    #ps창 관련
-        #ps창 프레임: 창 크기, 테두리
+        #ps창 관련
         self.Psframe = QtWidgets.QFrame(self.centralwidget)
         self.Psframe.setGeometry(QtCore.QRect(590, 520, 591, 121))
         self.Psframe.setFrameShape(QtWidgets.QFrame.Box)
-        #ps창 제목: P.S. 적힌 글씨 창 크기
+        
         self.PsTitle = QtWidgets.QLabel(self.Psframe)
         self.PsTitle.setGeometry(QtCore.QRect(10, 10, 91, 21))
-        #ps창 내용: 창 크기, 크기 넘어가면 줄바꿈
+        
         self.PsContents = QtWidgets.QLabel(self.Psframe)
         self.PsContents.setGeometry(QtCore.QRect(20, 10, 561, 110))
         self.PsContents.setWordWrap(True)
         
         
-    #검색창 관련
-        #검색창 프레임: 창 크기, 테두리, 그림자
+        #검색창 관련
         self.SearchFrame = QtWidgets.QFrame(self.centralwidget)
         self.SearchFrame.setGeometry(QtCore.QRect(590, 10, 591, 51))
         self.SearchFrame.setFrameShape(QtWidgets.QFrame.Box)
         self.SearchFrame.setFrameShadow(QtWidgets.QFrame.Raised)
-        #검색창 글씨 입력 부분: 창 크기
+        
         self.SearchEdit = QtWidgets.QLineEdit(self.SearchFrame)
         self.SearchEdit.setGeometry(QtCore.QRect(10, 10, 531, 31))
-        #검색창의 버튼: 창 크기, 아이콘 배정
+        
         self.SearchButton = QtWidgets.QPushButton(self.SearchFrame)
         self.SearchButton.setGeometry(QtCore.QRect(540, 10, 40, 32))
         icon = QtGui.QIcon()
@@ -105,20 +107,18 @@ class Ui_MainWindow(object):
         self.menuBar = QtWidgets.QMenuBar(MainWindow)
         self.menuBar.setGeometry(QtCore.QRect(0, 0, 1200, 26))
         self.menuabout = QtWidgets.QMenu(self.menuBar)
-        self.menuOptimi = QtWidgets.QMenu(self.menuBar)
         
         MainWindow.setMenuBar(self.menuBar)
         
         self.actionAbout = QtWidgets.QAction(MainWindow)
         self.actionAbout.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
-        self.actionOptimization = QtWidgets.QAction(MainWindow)
         self.actionQuit = QtWidgets.QAction(MainWindow)
         
         self.menuabout.addSeparator()
         self.menuabout.addAction(self.actionAbout)
         self.menuabout.addAction(self.actionQuit)
         self.menuBar.addAction(self.menuabout.menuAction())
-
+        
 
         #내용물 정의 완료, 시그널로 제어
         self.makeReviews()
@@ -128,7 +128,6 @@ class Ui_MainWindow(object):
         self.changeButton.clicked.connect(self.changeOpen)
         self.actionAbout.triggered.connect(self.aboutOpen)
         self.actionQuit.triggered.connect(app.quit)
-        #self.menuOptimization.triggered.connect(최적화)
         self.SearchButton.clicked.connect(self.SearchClicked)
         
         self.deleteButton.clicked.connect(self.deleteClicked)
@@ -154,9 +153,8 @@ class Ui_MainWindow(object):
         self.deleteButton.setText("Check to delete")
         self.cancelBtn.setText("Cancel")
         self.menuabout.setTitle("메뉴")
-        self.menuOptimi.setTitle("경로 최적화")
         self.actionAbout.setText("About")
-        self.optimize.setText("경로 최적화")      
+        self.optimize.setText("경로 최적화")     
         self.actionQuit.setText("Exit")
 
 
@@ -461,20 +459,12 @@ class Ui_MainWindow(object):
             self.reviewPoints[i].setGeometry(QtCore.QRect(144, 44+175*i, 51, 17))
             self.reviews[i].setGeometry(QtCore.QRect(258, 44+175*i, 101, 16))
 
-        #수정된 별점에 맞춰서 별 갯수 노출 변화
-        a = float(self.reviewPoints[0].text()) * 14.1
-        self.reviewStars[0].setGeometry(QtCore.QRect(175, 44+175*0, 2+int(a), 15))
-        b = float(self.reviewPoints[1].text()) * 14.1
-        self.reviewStars[1].setGeometry(QtCore.QRect(175, 44+175*1, 2+int(b), 15))
-        c = float(self.reviewPoints[2].text()) * 14.1
-        self.reviewStars[2].setGeometry(QtCore.QRect(175, 44+175*2, 2+int(c), 15))
-        d = float(self.reviewPoints[3].text()) * 14.1
-        self.reviewStars[3].setGeometry(QtCore.QRect(175, 44+175*3, 2+int(d), 15))
-        e = float(self.reviewPoints[4].text()) * 14.1
-        self.reviewStars[4].setGeometry(QtCore.QRect(175, 44+175*4, 2+int(e), 15))
-        
-
-    
+    # self.names[i].clear()
+    # self.contents[i].clear()
+    # self.reviewPoints[i].clear()
+    # self.reviews[i].clear()
+    # self.reviewStars[i].clear()
+    # self.imgs[i].hide()
     def process_call(self, process_topic, index_list=[], recall=0):
         ############# 이상한 주제 등을 받거나 해서 비정상 동작하는 경우, 팅기는게 아니라 에러 메시지를 띄우고 재진행 할 수 있도록.
         #### (gpt가 잘 모르겠다는 응답을 한다던가.)
@@ -593,7 +583,9 @@ class Ui_MainWindow(object):
     # [0 ,'검색한 장소=검색한 결과의 장소','평점','리뷰 수','사진링크','lat','lng']
     # [1 ,'검색한 장소',('검색한 결과의 장소','평점','리뷰 수'),'사진링크','lat','lng']
     # result_list=[0 or 1,'검색한 장소=검색한 결과의 장소','평점','리뷰 수','사진링크', '좌표(lat)', '좌표(lng)']
-
+    
+    t1 = threading.Thread(target=SearchClicked)
+    t1.start()
 
 
 if __name__ == "__main__":
