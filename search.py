@@ -177,7 +177,7 @@ def search(input_search_locations=[], retry=0):
                             destination.append(1)      
                             destination.append(locations) # 검색한 지역이름
                             destination.extend(attractions)
-                            destination.extend('No Image')
+                            destination.append('No Image')
                         
                         # 좌표
                         search_location_lat=(res_lo['results'][max_index]['geometry']['location']['lat'])
@@ -300,7 +300,7 @@ def search(input_search_locations=[], retry=0):
                         destination.append(1)
                         destination.append(locations) # 검색한 지역이름
                         destination.extend(attractions)
-                        destination.extend('No Image')
+                        destination.append('No Image')
                         
                     # 좌표
                     search_location_lat=(data['results'][max_index]['geometry']['location']['lat'])
@@ -440,7 +440,7 @@ def search(input_search_locations=[], retry=0):
                                     destination.append(1)
                                     destination.append(locations) # 검색한 지역이름
                                     destination.extend(attractions)
-                                    destination.extend('No Image')
+                                    destination.append('No Image')
                                 # 좌표
                                 search_location_lat=(res_lo['results'][max_index]['geometry']['location']['lat'])
                                 search_location_lng=(res_lo['results'][max_index]['geometry']['location']['lng'])
@@ -521,6 +521,6 @@ def search(input_search_locations=[], retry=0):
         return search(input_search_locations,retry)
 
 #TEST
-# res_sol=search(['Tokyo(Kanto Region, Japan)'])
+# res_sol=search(['Tokyo(Kanto Region, Japan)', 'Kyoto(Kansai Region, Japan)', 'Osaka(Kansai Region, Japan)', 'Hiroshima(Chugoku Region, Japan)', 'Nara(Kansai Region, Japan)'])
 # print(res_sol)
 #['Tokyo(Kanto Region, Japan)', 'Kyoto(Kansai Region, Japan)', 'Osaka(Kansai Region, Japan)', 'Hiroshima(Chugoku Region, Japan)', 'Nara(Kansai Region, Japan)']
