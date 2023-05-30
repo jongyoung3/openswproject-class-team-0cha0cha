@@ -9,6 +9,11 @@ import time
     def SearchClicked(self):
         actionSearch = Search_loading(parent=self)
         actionSearch.start()
+      
+      
+    #def changeOpen(self, Form) 내부 맨 윗줄에 추가해주세요
+    #이거 하면 예쁜 위치에 나타나요
+    self.Form.move(500,200)
         
 
 
