@@ -1,0 +1,39 @@
+#맨 위에 import QtCore, import time 추가됐어요
+from PyQt5.QtCore import *
+import time
+
+
+
+    #검색 버튼 누르면 크롤링, API로 나온 내용들 메서드로 이동해서 구현
+    #기존 SearchClicked(self)를 이거로 교체해주세요
+    def SearchClicked(self):
+        actionSearch = Search_loading(parent=self)
+        actionSearch.start()
+      
+      
+    #def changeOpen(self, Form) 내부 맨 윗줄에 추가해주세요
+    #이거 하면 예쁜 위치에 나타나요
+    self.Form.move(500,200)
+        
+
+
+#메인 클래스 밖에 이거 메서드 클래스 추가해주세용
+class Search_loading(QThread):
+    def __init__(self,parent):
+        super().__init__(parent)
+        self.parent=parent
+        
+    def run(self):
+        #검색하는 함수들 여기에 연결해주시면 됩니다
+        #메인윈도우 클래스꺼는 self.parent.붙여서 돌리시면 됩니다!
+        #시험삼아 돌렸던 내용입니다 searchEdit 내용으로 names[0] 내용이 변경되게 했었어요
+        cnt = 0
+        while (cnt<5):
+            self.text = self.parent.SearchEdit.text()
+            self.parent.names[0].setText(self.text)
+            cnt+=1
+            time.sleep(1)
+        #다 끝나고 스레드 끝내주셔야 하는듯
+        self.quit()
+
+
