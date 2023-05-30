@@ -1,3 +1,5 @@
+from PyQt5.QtCore import *
+import time
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5 import QtWebEngineWidgets
 from PyQt5.QtWidgets import *
@@ -6,7 +8,7 @@ import threading
 
 import chatgpt
 import search
-class Ui_MainWindow(object):
+class Ui_MainWindow(QMainWindow):
     #메인창 내용물
     def setupUi(self, MainWindow):
         #메인창 관련
@@ -194,7 +196,7 @@ class Ui_MainWindow(object):
         self.contents[0].setText("가족과 디즈니 팬이라면 꼭 방문해야 하는 도쿄 디즈니랜드는 캘리포니아에 있는 오리지널 디즈니랜드의 모든 마법을 체험할 수 있는 곳입니다. 다양한 테마 공간, 화려한 퍼레이드와 쇼, 다양한 캐릭터를 만날 수 있는 도쿄 디즈니랜드는 즐거운 당일치기 여행에 완벽한 장소입니다.")
         self.contents[1].setText("일본에서 가장 유명한 성 중 하나인 오사카 성은 방문객들에게 일본의 풍부한 역사와 문화를 엿볼 수 있는 곳입니다. 언덕 꼭대기에 위치한 이 성에는 도시의 숨막히는 전경을 감상할 수 있는 박물관과 전망대가 있습니다. 멋진 건축물과 아름다운 정원이 있는 오사카 성은 여유로운 산책을 즐기기에 완벽한 장소입니다.")
         self.contents[2].setText("수천 개의 밝은 주황색 도리이 문으로 유명한 후시미이나리 신사는 교토의 상징이자 일본의 가장 상징적인 명소 중 하나입니다. 산의 산책로는 계절에 관계없이 신비롭고 고요한 경험을 제공하며 교토의 멋진 전망을 감상할 수 있는 유명한 정상으로 이어집니다. 카메라를 꼭 지참하세요!")
-        self.reviewPoints[0].setText("4.2")
+        self.reviewPoints[0].setText("1")
         self.reviewPoints[1].setText("4.7")
         self.reviewPoints[2].setText("3.4")
         self.reviewPoints[3].setText("0.4")
@@ -273,9 +275,12 @@ class Ui_MainWindow(object):
 
     #검색 버튼 누르면 크롤링, API로 나온 내용들 로딩되게 구현할 예정
     #현재는 첫 번째 리뷰 제목이 검색창에 입력한 내용으로 변함
+    # def SearchClicked(self):
+    #     self.text = self.SearchEdit.text()
+    #     self.process_call(self.text)
     def SearchClicked(self):
-        self.text = self.SearchEdit.text()
-        self.process_call(self.text)
+        actionSearch = Search_loading(parent=self)
+        actionSearch.start()
         #apis.APIS(1,self.text)
         #self.Map.setUrl(QtCore.QUrl("file:///C:/Users/31125/Desktop/python_files/TeamProjects/map.html"))
         
@@ -328,6 +333,7 @@ class Ui_MainWindow(object):
     #리뷰들 위치 교환할 창 열림
     def changeOpen(self, Form):
         self.Form.resize(392, 500)
+        self.Form.move(500, 200)
         
         #시작하면 나오는 1~10번 리뷰들 제목 있는 버튼들
         self.LabelBtns = [QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),]
@@ -549,7 +555,7 @@ class Ui_MainWindow(object):
 
                 if search_list[i][0] == 0:  # 0, 즉 장소일때
                     self.reviewPoints[i].setText(str(search_list[i][2]))
-                    self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 175 * 0, 2 + int(float(search_list[i][2]) * 14.1), 15))
+                    self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 175 * i, 2 + int(float(search_list[i][2]) * 14.1), 15))
                     self.reviews[i].setText(str(search_list[i][3]))
                     if search_list[i][4] != 'No Image':
                         self.imgs[i].setUrl(QtCore.QUrl(search_list[i][4]))
@@ -559,7 +565,7 @@ class Ui_MainWindow(object):
                 else:  # 1, 즉 지역일때
                     ########### 리뷰 대신, 추천지역 관련 변수 추가로 요구됨 (search_list[i][2][1])
                     self.reviewPoints[i].setText(str(search_list[i][2][1]))
-                    self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 175 * 0, 2 + int(float(search_list[i][2][1]) * 14.1), 15))
+                    self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 175 * i, 2 + int(float(search_list[i][2][1]) * 14.1), 15))
                     self.reviews[i].setText(str(search_list[i][2][2]))
                     if search_list[i][3] != 'No Image':
                         self.imgs[i].setUrl(QtCore.QUrl(search_list[i][3]))
@@ -574,7 +580,7 @@ class Ui_MainWindow(object):
 
                 if search_list[i][0] == 0:  # 0, 즉 장소일때
                     self.reviewPoints[index].setText(str(search_list[i][2]))
-                    self.reviewStars[index].setGeometry(QtCore.QRect(175, 44 + 175 * 0, 2 + int(float(search_list[i][2]) * 14.1), 15))
+                    self.reviewStars[index].setGeometry(QtCore.QRect(175, 44 + 175 * index, 2 + int(float(search_list[i][2]) * 14.1), 15))
                     self.reviews[index].setText(str(search_list[i][3]))
                     if search_list[i][4] != 'No Image':
                         self.imgs[index].setUrl(QtCore.QUrl(search_list[i][4]))
@@ -584,7 +590,7 @@ class Ui_MainWindow(object):
                 else:  # 1, 즉 지역일때
                     # 리뷰 대신, 추천지역 관련 변수 추가로 요구됨 (search_list[i][2][1])
                     self.reviewPoints[index].setText(str(search_list[i][2][1]))
-                    self.reviewStars[index].setGeometry(QtCore.QRect(175, 44 + 175 * 0, 2 + int(float(search_list[i][2][1]) * 14.1), 15))
+                    self.reviewStars[index].setGeometry(QtCore.QRect(175, 44 + 175 * index, 2 + int(float(search_list[i][2][1]) * 14.1), 15))
                     self.reviews[index].setText(str(search_list[i][2][2]))
                     if search_list[i][3] != 'No Image':
                         self.imgs[index].setUrl(QtCore.QUrl(search_list[i][3]))
@@ -595,9 +601,25 @@ class Ui_MainWindow(object):
     # [1 ,'검색한 장소',('검색한 결과의 장소','평점','리뷰 수'),'사진링크','lat','lng']
     # result_list=[0 or 1,'검색한 장소=검색한 결과의 장소','평점','리뷰 수','사진링크', '좌표(lat)', '좌표(lng)']
 
-    #일단 스레드 넣어봤어요 안되면 다시 수정할게요
-#    t1 = threading.Thread(target=SearchClicked())
-#    t1.start()
+class Search_loading(QThread):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.parent = parent
+
+    def run(self):
+        # 검색하는 함수들 여기에 연결해주시면 됩니다
+        # 메인윈도우 클래스꺼는 self.parent.붙여서 돌리시면 됩니다!
+        # 시험삼아 돌렸던 내용입니다 searchEdit 내용으로 names[0] 내용이 변경되게 했었어요
+        # cnt = 0
+        # while (cnt < 5):
+        #     self.text = self.parent.SearchEdit.text()
+        #     self.parent.names[0].setText(self.text)
+        #     cnt += 1
+        #     time.sleep(1)
+        self.parent.text = self.parent.SearchEdit.text()
+        self.parent.process_call(self.parent.text)
+        # 다 끝나고 스레드 끝내주셔야 하는듯
+        self.quit()
 
 
 if __name__ == "__main__":
