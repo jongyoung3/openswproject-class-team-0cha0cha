@@ -11,7 +11,9 @@ from googlemaps import convert
 #n=int(input("지점 개수: "))
 lat=[]
 lon=[]
-site=['Tokyo(Kanto Region, Japan)', 'Kyoto(Kansai Region, Japan)', 'Osaka(Kansai Region, Japan)', 'Hiroshima(Chugoku Region, Japan)', 'Nara(Kansai Region, Japan)']
+site=['Ghibli Museum(Mitaka, Tokyo, Japan)', 'Akihabara(Chiyoda City, Tokyo, Japan)', 'Odaiba(Minato City, Tokyo, Japan)', 'Nakano Broadway(Nakano, Tokyo, Japan)', 'Pokemon Center Tokyo(Chuo City, Tokyo, Japan)', 'J-World Tokyo(Ikebukuro, Tokyo, Japan)', 'Animate Ikebukuro(Toshima City, Tokyo, Japan)', 'Tokyo Anime Center(Chiyoda City, Tokyo, Japan)', 'Otome Road(Ikebukuro, Tokyo, Japan)', 'Shinjuku Wald 9(Shinjuku City, Tokyo, Japan)']
+
+
 n=len(site)
 # API 키
 API_KEY = 'AIzaSyB8I74JlUYDKbZyDCQs2vAtelO9FrGKNGA'
@@ -109,5 +111,14 @@ if len(directions_response) > 0 and 'legs' in directions_response[0]:
     
 else:
     print(f"No directions found for the route from {site[i]} to {site[i+1]}")
+    
+    
+
+        
+# HTML 파일로 저장
+map.save('route.html')
+
+# 생성된 HTML 파일 열기
+webbrowser.open('route.html')
 
 
