@@ -41,7 +41,7 @@ def search(input_search_locations=[], retry=0):
                             if('photos' in response['results'][0]): # 'photos'가 아예없는 경우 제외
                                 #사진 요청
                                 photo_reference=response['results'][0]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
-                                photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo_reference}&key={api_key}"
+                                photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=1600&photoreference={photo_reference}&key={api_key}"
                                 response_photo = requests.get(photo_url)
                                 res_photo=response_photo.url
                                 
@@ -74,7 +74,7 @@ def search(input_search_locations=[], retry=0):
                         if('photos' in response['results'][0]): # 'photos'가 아예없는 경우 제외
                             #사진 요청
                             photo_reference=response['results'][0]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
-                            photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo_reference}&key={api_key}"
+                            photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=1600&photoreference={photo_reference}&key={api_key}"
                             response_photo = requests.get(photo_url)
                             res_photo=response_photo.url
                             
@@ -164,7 +164,7 @@ def search(input_search_locations=[], retry=0):
                         if('photos' in res_lo['results'][max_index]):  # 'photos'가 아예없는 경우 제외
                             #사진 요청
                             photo_reference=res_lo['results'][max_index]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
-                            photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo_reference}&key={api_key}"
+                            photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=1600&photoreference={photo_reference}&key={api_key}"
                             response_photo = requests.get(photo_url)
                             res_photo=response_photo.url
                             attractions.append(res_photo)
@@ -225,7 +225,7 @@ def search(input_search_locations=[], retry=0):
 
                         if('photos' in res_lo['results'][max_index]):  # 'photos'가 아예없는 경우 제외
                             photo_reference=res_lo['results'][max_index]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
-                            photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo_reference}&key={api_key}"
+                            photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=1600&photoreference={photo_reference}&key={api_key}"
                             response_photo = requests.get(photo_url)
                             res_photo=response_photo.url
                             attractions.append(res_photo)
@@ -287,7 +287,7 @@ def search(input_search_locations=[], retry=0):
                     if('photos' in data['results'][max_index]):  # 'photos'가 아예없는 경우 제외
                         #사진 요청
                         photo_reference=data['results'][max_index]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
-                        photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo_reference}&key={api_key}"
+                        photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=1600&photoreference={photo_reference}&key={api_key}"
                         response_photo = requests.get(photo_url)
                         res_photo=response_photo.url
                         attractions.append(res_photo)
@@ -323,7 +323,7 @@ def search(input_search_locations=[], retry=0):
                                     if('photos' in response_blank['results'][0]):  # 'photos'가 아예없는 경우 제외
                                         #사진 요청
                                         photo_reference=response_blank['results'][0]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
-                                        photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo_reference}&key={api_key}"
+                                        photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=1600&photoreference={photo_reference}&key={api_key}"
                                         response_photo = requests.get(photo_url)
                                         res_photo=response_photo.url
                                         
@@ -350,7 +350,7 @@ def search(input_search_locations=[], retry=0):
                                 if('photos' in response_blank['results'][0]):  # 'photos'가 아예없는 경우 제외
                                     #사진 요청
                                     photo_reference=response_blank['results'][0]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
-                                    photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo_reference}&key={api_key}"
+                                    photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=1600&photoreference={photo_reference}&key={api_key}"
                                     response_photo = requests.get(photo_url)
                                     res_photo=response_photo.url
                                     
@@ -427,7 +427,7 @@ def search(input_search_locations=[], retry=0):
                                 if('photos' in res_lo['results'][max_index]):  # 'photos'가 아예없는 경우 제외
                                     #사진 요청
                                     photo_reference=res_lo['results'][max_index]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
-                                    photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo_reference}&key={api_key}"
+                                    photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=1600&photoreference={photo_reference}&key={api_key}"
                                     response_photo = requests.get(photo_url)
                                     res_photo=response_photo.url
                                     
@@ -487,7 +487,7 @@ def search(input_search_locations=[], retry=0):
                                 if('photos' in data['results'][max_index]): # 'photos'가 아예없는 경우 제외
                                     #사진 요청
                                     photo_reference=data['results'][max_index]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
-                                    photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo_reference}&key={api_key}"
+                                    photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=1600&photoreference={photo_reference}&key={api_key}"
                                     response_photo = requests.get(photo_url)
                                     res_photo=response_photo.url
                                     attractions.append(res_photo)
