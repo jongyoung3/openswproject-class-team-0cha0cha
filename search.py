@@ -3,14 +3,16 @@ import googlemaps
 import requests
 from apikey import GoogleMap_API_KEY
 
+
 ########################################-----------수정 사항---------#########################################################
 # result_list에 사진 값도 추가하긴 했는데 값이 길어서 이건 어떻게 할 건지 정하기(url로 대체함 안되면 content로 변경)
 # ㄴ되는 거 확인되서 그대로 유지
 # 폐업상태 제외하기
 # ㄴ 최종 결과 리스트(result_list)에 '-1' 뜨는 건 아무리 걸러도 폐업한 것만 있을때 넣어논 거임
 # ㄴ완료
-# result_list=[0 or 1,'검색한 장소=검색한 결과의 장소','평점','리뷰 수','사진링크', '좌표(lat)', '좌표(lng)']
+# result_list=[0 or 1,'검색한 장소','검색한 결과의 장소','평점','리뷰 수','사진링크', '좌표(lat)', '좌표(lng)']
 # 에러 났을때 재시도 3번 이상이면 -99 리턴
+# 중복 체크 완료
 #############################################################################################################################
           # chat-gpt 로 받아올 데이터, 반복회수
 def search(input_search_locations=[], retry=0):
@@ -19,6 +21,7 @@ def search(input_search_locations=[], retry=0):
 
     result_list = [] #최종 결과물 리스트
     result_ex=[] #최종 결과물 리스트 전 단계
+    except_list_name=[] # 지역 중북방지
     
     min_rating = 0  # 최소 평점
     min_reviews = 0  # 최소 리뷰 수
@@ -50,6 +53,7 @@ def search(input_search_locations=[], retry=0):
                                 destination.append(response['results'][0]['rating'])
                                 destination.append(response['results'][0]['user_ratings_total'])
                                 destination.append(res_photo)
+                                except_list_name.append(response['results'][0]['name'])
                                 
                                 # 좌표
                                 search_location_lat=(response['results'][0]['geometry']['location']['lat'])
@@ -62,6 +66,7 @@ def search(input_search_locations=[], retry=0):
                                 destination.append(response['results'][0]['rating'])
                                 destination.append(response['results'][0]['user_ratings_total'])
                                 destination.append('No Image')
+                                except_list_name.append(response['results'][0]['name'])
                                 # 좌표
                                 search_location_lat=(response['results'][0]['geometry']['location']['lat'])
                                 search_location_lng=(response['results'][0]['geometry']['location']['lng'])
@@ -83,6 +88,7 @@ def search(input_search_locations=[], retry=0):
                             destination.append(response['results'][0]['rating'])
                             destination.append(response['results'][0]['user_ratings_total'])
                             destination.append(res_photo)
+                            except_list_name.append(response['results'][0]['name'])
                             # 좌표
                             search_location_lat=(response['results'][0]['geometry']['location']['lat'])
                             search_location_lng=(response['results'][0]['geometry']['location']['lng'])
@@ -94,6 +100,7 @@ def search(input_search_locations=[], retry=0):
                             destination.append(response['results'][0]['rating'])
                             destination.append(response['results'][0]['user_ratings_total'])
                             destination.append('No Image')
+                            except_list_name.append(response['results'][0]['name'])
                             # 좌표
                             search_location_lat=(response['results'][0]['geometry']['location']['lat'])
                             search_location_lng=(response['results'][0]['geometry']['location']['lng'])
@@ -104,16 +111,19 @@ def search(input_search_locations=[], retry=0):
                             
                 else:
                     # '1'->지역이름, 여기서 지역이름에 관광명소를 평점높고 리뷰수 많은거 1개 가져오면 됨. 단, 없는건 건너뛰고 
-
+                    
                     locations_blank_text_one=locations.split("(")
                     
                     text_lo=locations_blank_text_one[0]
                     response_blank_one = map_clinet.places(query=text_lo) # 데이터를 api로 보냄
                     
+                    # if(response_blank_one['status'] =='ZERO_RESULTS'):
+                    #     response_blank_one = map_clinet.places(query=locations) # 데이터를 api로 보냄
+                        
                     # 장소 '1'에 해당되는 장소의 좌표값
                     location_lat=response_blank_one['results'][0]['geometry']['location']['lat']
                     location_lng=response_blank_one['results'][0]['geometry']['location']['lng']
-                    radius=100000 # 반경 100,000m
+                    radius=30000 # 반경 3,000m
                         
                     # 장소 세부요청 (전달받은 위치의 반경 2000m에 있는 관광명소 탐색)
                     payload={}
@@ -132,7 +142,15 @@ def search(input_search_locations=[], retry=0):
                         for i in range(len(res_lo['results'])):
                             # 리뷰 수가 높은 순으로 정렬 필요
                             #print(i)
+                            pro_chk = 0
                             if ('rating' in res_lo['results'][i]):
+                                # 지역 중복방지
+                                for k in except_list_name:
+                                    if(res_lo['results'][i]['name']==k):
+                                        pro_chk = 1
+                                        break
+                                if pro_chk == 1:
+                                    continue
                                 if('business_status' in res_lo['results'][i]): #'business_status'가 없는 경우 분류
                                     if(res_lo['results'][i]['business_status']!='CLOSED_PERMANENTLY'): #폐업인 경우 제외
                                         name = res_lo['results'][i]['name']
@@ -172,11 +190,13 @@ def search(input_search_locations=[], retry=0):
                             destination.append(1)      
                             destination.append(locations) # 검색한 지역이름
                             destination.extend(attractions)
+                            except_list_name.append(res_lo['results'][max_index]['name'])
                         else:
                             destination.append(1)      
                             destination.append(locations) # 검색한 지역이름
                             destination.extend(attractions)
                             destination.append('No Image')
+                            except_list_name.append(res_lo['results'][max_index]['name'])
                         
                         # 좌표
                         search_location_lat=(res_lo['results'][max_index]['geometry']['location']['lat'])
@@ -193,11 +213,20 @@ def search(input_search_locations=[], retry=0):
                         
                         max_reviewer = -1
                         max_index = -1
+                        
                         for i in range(len(res_lo['results'])):
                             # 리뷰 수가 높은 순으로 정렬 필요
                             #print(i)
-                            if('business_status' in res_lo['results'][i]): #'business_status'가 없는 경우 분류
-                                if(res_lo['results'][i]['business_status']!='CLOSED_PERMANENTLY'): #폐업인 경우 제외
+                            # 지역 중복방지
+                            pro_chk = 0
+                            for k in except_list_name:
+                                if(data['results'][i]['name']==k):
+                                    pro_chk = 1
+                                    break
+                            if pro_chk == 1:
+                                continue
+                            if('business_status' in data['results'][i]): #'business_status'가 없는 경우 분류
+                                if(data['results'][i]['business_status']!='CLOSED_PERMANENTLY'): #폐업인 경우 제외
                                     if 'rating' in data['results'][i]:
                                         name = data['results'][i]['name']
                                         rating = data['results'][i]['rating']
@@ -213,7 +242,7 @@ def search(input_search_locations=[], retry=0):
                                     if reviews >= max_reviewer:
                                         max_reviewer = reviews
                                         max_index = i
-                                    
+                                
                         name = data['results'][max_index]['name']
                         rating = data['results'][max_index]['rating']
                         reviews = data['results'][max_index]['user_ratings_total']
@@ -238,6 +267,7 @@ def search(input_search_locations=[], retry=0):
                             destination.append(1)
                             destination.append(locations) # 검색한 지역이름
                             destination.extend(attractions)
+                            except_list_name.append(res_lo['results'][max_index]['name'])
                             
                         # 좌표
                         search_location_lat=(res_lo['results'][max_index]['geometry']['location']['lat'])
@@ -254,9 +284,18 @@ def search(input_search_locations=[], retry=0):
                 if(data['status'] !='ZERO_RESULTS'): # 이것도 공백 리스트 경우를 제외
                     max_reviewer = -1
                     max_index = -1
+                    
                     for i in range(len(res_lo['results'])):
                         # 리뷰 수가 높은 순으로 정렬 필요
                         #print(i)
+                        # 지역 중복방지
+                        pro_chk = 0
+                        for k in except_list_name:
+                            if(data['results'][i]['name']==k):
+                                pro_chk = 1
+                                break
+                        if pro_chk == 1:
+                            continue
                         if('business_status' in data['results'][i]): #'business_status'가 없는 경우 분류
                             if(data['results'][i]['business_status']!='CLOSED_PERMANENTLY'): #폐업인 경우 제외
                                 if 'rating' in data['results'][i]:
@@ -295,11 +334,13 @@ def search(input_search_locations=[], retry=0):
                         destination.append(1)
                         destination.append(locations) # 검색한 지역이름
                         destination.extend(attractions)
+                        except_list_name.append(data['results'][max_index]['name'])
                     else:
                         destination.append(1)
                         destination.append(locations) # 검색한 지역이름
                         destination.extend(attractions)
                         destination.append('No Image')
+                        except_list_name.append(data['results'][max_index]['name'])
                         
                     # 좌표
                     search_location_lat=(data['results'][max_index]['geometry']['location']['lat'])
@@ -332,11 +373,13 @@ def search(input_search_locations=[], retry=0):
                                         destination.append(response_blank['results'][0]['rating'])
                                         destination.append(response_blank['results'][0]['user_ratings_total'])
                                         destination.append(res_photo)
+                                        except_list_name.append(response_blank['results'][0]['name'])
                                     else:
                                         destination.append(response_blank['results'][0]['name'])
                                         destination.append(response_blank['results'][0]['rating'])
                                         destination.append(response_blank['results'][0]['user_ratings_total'])
                                         destination.append('No Image')
+                                        except_list_name.append(response_blank['results'][0]['name'])
                                     # 좌표
                                     search_location_lat=(response_blank['results'][0]['geometry']['location']['lat'])
                                     search_location_lng=(response_blank['results'][0]['geometry']['location']['lng'])
@@ -359,11 +402,13 @@ def search(input_search_locations=[], retry=0):
                                     destination.append(response_blank['results'][0]['rating'])
                                     destination.append(response_blank['results'][0]['user_ratings_total'])
                                     destination.append(res_photo)
+                                    except_list_name.append(response_blank['results'][0]['name'])
                                 else:
                                     destination.append(response_blank['results'][0]['name'])
                                     destination.append(response_blank['results'][0]['rating'])
                                     destination.append(response_blank['results'][0]['user_ratings_total'])
                                     destination.append('No Image')
+                                    except_list_name.append(response_blank['results'][0]['name'])
                                 # 좌표
                                 search_location_lat=(response_blank['results'][0]['geometry']['location']['lat'])
                                 search_location_lng=(response_blank['results'][0]['geometry']['location']['lng'])
@@ -376,7 +421,7 @@ def search(input_search_locations=[], retry=0):
                             location_lat=response_blank['results'][0]['geometry']['location']['lat']
                             location_lng=response_blank['results'][0]['geometry']['location']['lng']
                                 
-                            radius=2000 # 반경 2,000m
+                            radius=30000 # 반경 3,000m
                                 
                             # 장소 세부요청 (전달받은 위치의 반경 2000m에 있는 관광명소 탐색)
                             payload={}
@@ -395,6 +440,14 @@ def search(input_search_locations=[], retry=0):
                                 for i in range(len(res_lo['results'])):
                                     # 리뷰 수가 높은 순으로 정렬 필요
                                     #print(i)
+                                    # 지역 중복방지
+                                    pro_chk = 0
+                                    for k in except_list_name:
+                                        if(res_lo['results'][i]['name']==k):
+                                            pro_chk = 1
+                                            break
+                                    if pro_chk == 1:
+                                        continue
                                     if('business_status' in res_lo['results'][i]): #'business_status'가 없는 경우 분류
                                         if(res_lo['results'][i]['business_status']!='CLOSED_PERMANENTLY'): #폐업인 경우 제외
                                             if 'rating' in res_lo['results'][i]:
@@ -412,7 +465,7 @@ def search(input_search_locations=[], retry=0):
                                             if reviews >= max_reviewer:
                                                 max_reviewer = reviews
                                                 max_index = i
-                                    
+                            
                                 name = res_lo['results'][max_index]['name']
                                 rating = res_lo['results'][max_index]['rating']
                                 reviews = res_lo['results'][max_index]['user_ratings_total']
@@ -435,11 +488,13 @@ def search(input_search_locations=[], retry=0):
                                     destination.append(locations) # 검색한 지역이름
                                     destination.extend(attractions)
                                     destination.append(res_photo)
+                                    except_list_name.append(res_lo['results'][max_index]['name'])
                                 else:
                                     destination.append(1)
                                     destination.append(locations) # 검색한 지역이름
                                     destination.extend(attractions)
                                     destination.append('No Image')
+                                    except_list_name.append(res_lo['results'][max_index]['name'])
                                 # 좌표
                                 search_location_lat=(res_lo['results'][max_index]['geometry']['location']['lat'])
                                 search_location_lng=(res_lo['results'][max_index]['geometry']['location']['lng'])
@@ -457,6 +512,14 @@ def search(input_search_locations=[], retry=0):
                                 for i in range(len(res_lo['results'])):
                                     # 리뷰 수가 높은 순으로 정렬 필요
                                     #print(i)
+                                    # 지역 중복방지
+                                    pro_chk = 0
+                                    for k in except_list_name:
+                                        if(data['results'][i]['name']==k):
+                                            pro_chk = 1
+                                            break
+                                    if pro_chk == 1:
+                                        continue
                                     if('business_status' in data['results'][i]): #'business_status'가 없는 경우 분류
                                         if(data['results'][i]['business_status']!='CLOSED_PERMANENTLY'): #폐업인 경우 제외
                                             if 'rating' in data['results'][i]:
@@ -499,7 +562,7 @@ def search(input_search_locations=[], retry=0):
                                     destination.append(1)
                                     destination.append(locations) # 검색한 지역이름
                                     destination.extend(attractions)
-                                    
+                                    except_list_name.append(data['results'][max_index]['name'])
                                 # 좌표
                                 search_location_lat=(data['results'][max_index]['geometry']['location']['lat'])
                                 search_location_lng=(data['results'][max_index]['geometry']['location']['lng'])
@@ -515,11 +578,13 @@ def search(input_search_locations=[], retry=0):
         # [1 ,'검색한 장소','검색한 결과의 장소','평점','리뷰 수','사진링크','lat','lng']
         
         return result_list #최종 리턴값
+    
     except: # 예외 처리
         retry+=1
-        return search(input_search_locations,retry)
+        return search(input_search_locations, retry)
 
 #TEST
-# res_sol=search(['Tokyo(Kanto Region, Japan)', 'Kyoto(Kansai Region, Japan)', 'Osaka(Kansai Region, Japan)', 'Hiroshima(Chugoku Region, Japan)', 'Nara(Kansai Region, Japan)'])
-# print(res_sol)
+res_sol=search(['Tokyo(Kanto Region, Japan)', 'Kyoto(Kansai Region, Japan)', 'Osaka(Kansai Region, Japan)', 'Hiroshima(Chugoku Region, Japan)', 'Nara(Kansai Region, Japan)'])
+
+print(res_sol)
 #['Tokyo(Kanto Region, Japan)', 'Kyoto(Kansai Region, Japan)', 'Osaka(Kansai Region, Japan)', 'Hiroshima(Chugoku Region, Japan)', 'Nara(Kansai Region, Japan)']
