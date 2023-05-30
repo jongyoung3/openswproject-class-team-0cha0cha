@@ -458,13 +458,20 @@ class Ui_MainWindow(object):
             self.imgs[i].setGeometry(QtCore.QRect(10, 42+175*i, 130, 130))
             self.reviewPoints[i].setGeometry(QtCore.QRect(144, 44+175*i, 51, 17))
             self.reviews[i].setGeometry(QtCore.QRect(258, 44+175*i, 101, 16))
-
-    # self.names[i].clear()
-    # self.contents[i].clear()
-    # self.reviewPoints[i].clear()
-    # self.reviews[i].clear()
-    # self.reviewStars[i].clear()
-    # self.imgs[i].hide()
+    
+        #바뀐 별점에 따라 별 갯수 노출 변화
+        a = float(self.reviewPoints[0].text()) * 14.1
+        self.reviewStars[0].setGeometry(QtCore.QRect(175, 44+175*0, 2+int(a), 15))
+        b = float(self.reviewPoints[1].text()) * 14.1
+        self.reviewStars[1].setGeometry(QtCore.QRect(175, 44+175*1, 2+int(b), 15))
+        c = float(self.reviewPoints[2].text()) * 14.1
+        self.reviewStars[2].setGeometry(QtCore.QRect(175, 44+175*2, 2+int(c), 15))
+        d = float(self.reviewPoints[3].text()) * 14.1
+        self.reviewStars[3].setGeometry(QtCore.QRect(175, 44+175*3, 2+int(d), 15))
+        e = float(self.reviewPoints[4].text()) * 14.1
+        self.reviewStars[4].setGeometry(QtCore.QRect(175, 44+175*4, 2+int(e), 15))
+        
+        
     def process_call(self, process_topic, index_list=[], recall=0):
         ############# 이상한 주제 등을 받거나 해서 비정상 동작하는 경우, 팅기는게 아니라 에러 메시지를 띄우고 재진행 할 수 있도록.
         #### (gpt가 잘 모르겠다는 응답을 한다던가.)
@@ -584,7 +591,8 @@ class Ui_MainWindow(object):
     # [1 ,'검색한 장소',('검색한 결과의 장소','평점','리뷰 수'),'사진링크','lat','lng']
     # result_list=[0 or 1,'검색한 장소=검색한 결과의 장소','평점','리뷰 수','사진링크', '좌표(lat)', '좌표(lng)']
     
-    t1 = threading.Thread(target=SearchClicked)
+    #일단 스레드 넣어봤어요 안되면 다시 수정할게요
+    t1 = threading.Thread(target=SearchClicked())
     t1.start()
 
 
