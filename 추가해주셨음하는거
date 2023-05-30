@@ -26,6 +26,7 @@ class Search_loading(QThread):
     def run(self):
         #검색하는 함수들 여기에 연결해주시면 됩니다
         #메인윈도우 클래스꺼는 self.parent.붙여서 돌리시면 됩니다!
+        #시험삼아 돌렸던 내용입니다 searchEdit 내용으로 names[0] 내용이 변경되게 했었어요
         cnt = 0
         while (cnt<5):
             self.text = self.parent.SearchEdit.text()
