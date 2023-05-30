@@ -26,7 +26,7 @@ def search(input_search_locations=[], retry=0):
     min_rating = 0  # 최소 평점
     min_reviews = 0  # 최소 리뷰 수
 
-    if retry>=3: # 재시도 3번 이상이면 -99 리턴
+    if retry>=5: # 재시도 3번 이상이면 -99 리턴
         return -99
     
     try:
