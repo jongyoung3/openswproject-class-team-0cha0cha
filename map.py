@@ -3,8 +3,7 @@ import folium
 import webbrowser
 import requests
 from geopy.distance import geodesic
-
-#lat,lon
+#lat,lon구하기
 def FindLatLon(API_KEY,site):
     lat=[]
     lon=[]
@@ -51,13 +50,13 @@ def FindLatLon(API_KEY,site):
 def ReturnPoint(lat,lon,n):
     point = []
     for i in range(n):
-        point.append([lat[i], lon[i]])
-
+        point.append([lat[i], lon[i]]) 
     return point
 
 #시작점, 도착점 설정 및 경유지 리스트 생성
 def FindOriDes(point,n):
     loong=0
+    site=[]
     temp=[]
     temp.extend(point)
     for i in range(n-1): 
@@ -73,10 +72,9 @@ def FindOriDes(point,n):
         if (i==n-2):
             del(temp[a])
             del(temp[b-1])
-    
     return origin,destination,temp
 
-#맵 
+#맵 생성
 def CreateMap(origin):
     map = folium.Map(location=origin, zoom_start=11)
     return map
@@ -87,9 +85,9 @@ def mark(map,n):
         folium.Marker([lat[i], lon[i]], popup=site[i]).add_to(map)
         
 #경로 그리기        
-def DrawDirec(origin,destination,locations,gmaps,map,n):
+def DrawDirec(origin,destination,locations,gmaps,map,opt,n):
     
-    directions_response=gmaps.directions(origin,destination,mode='driving',waypoints=locations,optimize_waypoints = True)
+    directions_response=gmaps.directions(origin,destination,mode='driving',waypoints=locations,optimize_waypoints = opt)
 
     
     if len(directions_response) > 0 and 'legs' in directions_response[0]:
@@ -109,7 +107,7 @@ def DrawDirec(origin,destination,locations,gmaps,map,n):
             
         
         else:
-            print(f"No directions found for the route from {site[i]} to {site[i+1]}")
+            print("No directions found")
 
 # HTML 파일로 저장
 def ReturnHTML(map):
@@ -120,21 +118,24 @@ def ReturnHTML(map):
 # 생성된 HTML 파일 열기
 def OpenMap(html):
     webbrowser.open(html)
-   
-#지점 입력
-#site=['Ghibli Museum(Mitaka, Tokyo, Japan)', 'Akihabara(Chiyoda City, Tokyo, Japan)', 'Odaiba(Minato City, Tokyo, Japan)', 'Nakano Broadway(Nakano, Tokyo, Japan)', 'Pokemon Center Tokyo(Chuo City, Tokyo, Japan)', 'J-World Tokyo(Ikebukuro, Tokyo, Japan)', 'Animate Ikebukuro(Toshima City, Tokyo, Japan)', 'Tokyo Anime Center(Chiyoda City, Tokyo, Japan)', 'Otome Road(Ikebukuro, Tokyo, Japan)', 'Shinjuku Wald 9(Shinjuku City, Tokyo, Japan)']
- 
-#lat,lon,gmaps,n=FindLatLon('AIzaSyB8I74JlUYDKbZyDCQs2vAtelO9FrGKNGA',site)
+#
+def MainFunc(point,opt=0):
+    n=len(point)
+    locations=[]
+    # 시작점, 도착점
+    if (opt==1):
+        origin,destination,locations=FindOriDes(point,n)
+    else:
+        origin=point[0]
+        destination=point[n-1]
+        for i in range(1,n-1):
+            locations.append(point[i])
+            
+    map=CreateMap(origin)
 
-# 시작점, 도착점
-#origin,destination,locations=FindOriDes(ReturnPoint(lat,lon,n),n)
-
-#map=CreateMap(origin)
-
-#마커 찍기 함수
-#mark(map,n)
-
-#DrawDirec(origin,destination,locations,gmaps,map,n)
-
-#html=ReturnHTML(map)
-#OpenMap(html)
+    #마커 찍기 함수
+    mark(map,n)
+    
+    DrawDirec(origin,destination,locations,gmaps,map,opt,n)
+    
+    return ReturnHTML(map)
