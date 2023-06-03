@@ -3,10 +3,10 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5 import QtWebEngineWidgets
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
+from PyQt5 import QtTest
 
 import chatgpt
 import search
-
 
 class Ui_MainWindow(QMainWindow):    
 #메인창 내용물
@@ -51,6 +51,12 @@ class Ui_MainWindow(QMainWindow):
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("TeamProjects/ClueIcon.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
         self.SearchButton.setIcon(icon)
+    #검색 종료 여부에 사용될 bool타입 변수
+        self.SearchEnd = bool(False)
+    #검색 중 나올 로딩 안내문
+        self.SearchLoading = QtWidgets.QLabel(self.centralwidget)
+        self.SearchLoading.setGeometry(460,190,300,250)
+        self.SearchLoading.setAlignment(Qt.AlignCenter)
         
         
     #스크롤바 관련
@@ -124,6 +130,7 @@ class Ui_MainWindow(QMainWindow):
     #메인창 필요한 곳에 text 세팅
         self.setTexts(MainWindow)
         
+        
     #각 버튼들 클릭시 연결된 이벤트 발생
         self.changeButton.clicked.connect(self.changeOpen)
         self.actionAbout.triggered.connect(self.aboutOpen)
@@ -137,7 +144,10 @@ class Ui_MainWindow(QMainWindow):
     #메인창 말고 about창, 위치변경창도 Dialog(창)으로 정의
         self.Dialog = QDialog()
         self.Form = QDialog()
-
+        
+    #로딩 화살표가 맨 앞으로 오게 raise로 당겨주기
+        self.SearchLoading.raise_()    
+        
 
 #메인창 내용물에 text들 채워줌
     def setTexts(self, MainWindow):
@@ -146,6 +156,9 @@ class Ui_MainWindow(QMainWindow):
         font.setFamily("Agency FB")
         font.setPointSize(12)
         self.PsTitle.setFont(font)
+        font.setFamily("나눔고딕")
+        font.setPointSize(15)
+        self.SearchLoading.setFont(font)
         
     #글자 내용들
         MainWindow.setWindowTitle("TripWithGPT")
@@ -178,7 +191,7 @@ class Ui_MainWindow(QMainWindow):
 
         for i in range(0,5,1):
     #리뷰 제목들 위치, 폰트, text 세팅
-            self.names[i].setGeometry(QtCore.QRect(10, 8+175*i, 415, 31))
+            self.names[i].setGeometry(QtCore.QRect(10, 8+175*i, 535, 31))
             self.names[i].setFont(font)
             self.names[i].setText(("%s번째") % str(i+1))
     #리뷰 제목들 위치, text, 줄바꿈 세팅
@@ -203,7 +216,7 @@ class Ui_MainWindow(QMainWindow):
         self.contents[0].setText("가족과 디즈니 팬이라면 꼭 방문해야 하는 도쿄 디즈니랜드는 캘리포니아에 있는 오리지널 디즈니랜드의 모든 마법을 체험할 수 있는 곳입니다. 다양한 테마 공간, 화려한 퍼레이드와 쇼, 다양한 캐릭터를 만날 수 있는 도쿄 디즈니랜드는 즐거운 당일치기 여행에 완벽한 장소입니다.")
         self.contents[1].setText("일본에서 가장 유명한 성 중 하나인 오사카 성은 방문객들에게 일본의 풍부한 역사와 문화를 엿볼 수 있는 곳입니다. 언덕 꼭대기에 위치한 이 성에는 도시의 숨막히는 전경을 감상할 수 있는 박물관과 전망대가 있습니다. 멋진 건축물과 아름다운 정원이 있는 오사카 성은 여유로운 산책을 즐기기에 완벽한 장소입니다.")
         self.contents[2].setText("수천 개의 밝은 주황색 도리이 문으로 유명한 후시미이나리 신사는 교토의 상징이자 일본의 가장 상징적인 명소 중 하나입니다. 산의 산책로는 계절에 관계없이 신비롭고 고요한 경험을 제공하며 교토의 멋진 전망을 감상할 수 있는 유명한 정상으로 이어집니다. 카메라를 꼭 지참하세요!")
-        self.reviewPoints[0].setText("1")
+        self.reviewPoints[0].setText("1.0")
         self.reviewPoints[1].setText("4.7")
         self.reviewPoints[2].setText("3.4")
         self.reviewPoints[3].setText("0.4")
@@ -274,10 +287,18 @@ class Ui_MainWindow(QMainWindow):
     #새 스레드 만들어서 시작: 메인 스레드는 그대로라 로딩중 응답없음이 안 뜸
         actionSearch = Search_loading(parent=self)
         actionSearch.start()
-    #새 스레드에서 작업 완료했으면 saveUrls에 저장된 html을 imgs에 세팅    
-        for i in range(0,5):
-            self.imgs[i].setUrl(self.saveUrls[i])        
-        
+    
+    #새 스레드에서 작업 완료했으면 saveUrls에 저장된 html을 imgs에 세팅
+        while not self.SearchEnd:
+            self.SearchLoading.setText("내용을 불러오고 있습니다.\n잠시만 기다려 주세요.")
+            QtTest.QTest.qWait(1000)
+            self.SearchLoading.setText("내용을 불러오고 있습니다.\n잠시만 기다려 주세요..")
+            QtTest.QTest.qWait(1000)
+            self.SearchLoading.setText("내용을 불러오고 있습니다.\n잠시만 기다려 주세요...")
+            QtTest.QTest.qWait(1000)
+        for i in range(0,5,1):
+            self.imgs[i].setUrl(QUrl("%s"%self.saveUrls[i]))        
+    
         
 #deleteButton 눌렀을 때 이벤트: 버튼들이랑 체크박스 나타남
     def deleteClicked(self):
@@ -287,7 +308,7 @@ class Ui_MainWindow(QMainWindow):
     #체크박스들 나타나고 리뷰들 제목을 옆으로 좀 옮김
         for i in range(0,5,1):
             self.checkBoxes[i].show()
-            self.names[i].setGeometry(QtCore.QRect(35, 8+175*i, 415, 31))
+            self.names[i].setGeometry(QtCore.QRect(35, 8+175*i, 475, 31))
         
         
 #cancelBtn 눌렀을 때 이벤트: 체크박스 안보이게 원상복귀, 체크상태 해제
@@ -299,7 +320,7 @@ class Ui_MainWindow(QMainWindow):
         for i in range(0,5,1):
             self.checkBoxes[i].hide()
             self.checkBoxes[i].setChecked(False)
-            self.names[i].setGeometry(QtCore.QRect(10, 8+175*i, 415, 31))
+            self.names[i].setGeometry(QtCore.QRect(10, 8+175*i, 535, 31))
         
         
 #trashCan 눌렀을 때 이벤트: index_list에 체크된 아이템 추가, 다시 돌림
@@ -315,12 +336,12 @@ class Ui_MainWindow(QMainWindow):
                 index_list.append(i)    
             self.checkBoxes[i].hide()
             self.checkBoxes[i].setChecked(False)
-            self.names[i].setGeometry(QtCore.QRect(10, 8+175*i, 415, 31))
+            self.names[i].setGeometry(QtCore.QRect(10, 8+175*i, 535, 31))
         self.process_call(topic,index_list,1)
 
             
 #ChangeBtn 눌렀을 때 이벤트: 리뷰들 위치 교환할 창 열림
-    def changeOpen(self, Form):
+    def changeOpen(self):
     #change창 크기 지정, 왼쪽에 나타나게 함
         self.Form.resize(392, 500)
         self.Form.move(500, 200)
@@ -373,8 +394,8 @@ class Ui_MainWindow(QMainWindow):
         self.cancelChangeBtn.clicked.connect(self.cancelChange)
 
     #창 제목 지정하고서 열기
-        Form.setWindowTitle("옮기기")
-        Form.show()
+        self.Form.setWindowTitle("옮기기")
+        self.Form.show()
         
 
 #위치 교환 창에서 1~10번 제목버튼 눌렀을 때 이벤트: 라벨로 전환되고 이동 버튼들 나옴
@@ -450,8 +471,8 @@ class Ui_MainWindow(QMainWindow):
             self.reviewPoints[i].setText(self.reviewPoints[i].text())
             self.reviews[i].setText(self.reviews[i].text())
             
-            self.names[i].setGeometry(QtCore.QRect(10, 8+175*i, 415, 31))
-            self.contents[i].setGeometry(QtCore.QRect(145, 64+175*i, 420, 110))
+            self.names[i].setGeometry(QtCore.QRect(10, 8+175*i, 535, 31))
+            self.contents[i].setGeometry(QtCore.QRect(145, 64+175*i, 418, 110))
             self.imgs[i].setGeometry(QtCore.QRect(10, 42+175*i, 130, 130))
             self.reviewPoints[i].setGeometry(QtCore.QRect(144, 44+175*i, 51, 17))
             self.reviews[i].setGeometry(QtCore.QRect(258, 44+175*i, 101, 16))
@@ -551,7 +572,7 @@ class Ui_MainWindow(QMainWindow):
                     self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 175 * i, 2 + int(float(search_list[i][2][1]) * 14.1), 15))
                     self.reviews[i].setText(str(search_list[i][2][2]))
                     if search_list[i][3] != 'No Image':
-                        self.saveUrls = search_list[i][3] #saveUrl에 넣어두고 다 끝나면 메인 스레드에서 setUrl
+                        self.saveUrls[i] = search_list[i][3] #saveUrl에 넣어두고 다 끝나면 메인 스레드에서 setUrl
                     else:  # 이미지 없을땐
                         pass  # 알아서 지정
             self.PsContents.setText(ps)
@@ -583,8 +604,10 @@ class Ui_MainWindow(QMainWindow):
     # [0 ,'검색한 장소=검색한 결과의 장소','평점','리뷰 수','사진링크','lat','lng']
     # [1 ,'검색한 장소',('검색한 결과의 장소','평점','리뷰 수'),'사진링크','lat','lng']
     # result_list=[0 or 1,'검색한 장소=검색한 결과의 장소','평점','리뷰 수','사진링크', '좌표(lat)', '좌표(lng)']
+        
     
-
+    
+    
     
 class Search_loading(QThread):
     def __init__(self, parent):
@@ -608,6 +631,7 @@ class Search_loading(QThread):
         self.parent.SearchButton.setEnabled(True)
         self.parent.changeButton.setEnabled(True)
         self.parent.optimize.setEnabled(True)
+        self.parent.searchEnd = True
         self.quit()
         
 
