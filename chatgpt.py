@@ -21,52 +21,52 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
     "destinations": [
         {
             "name": "Shibuya Crossing",
-            "region": "Shibuya, Tokyo, Japan",
+            "address": "Shibuya, Tokyo, Japan",
             "description": "One of the most famous and busiest intersections in Tokyo, Shibuya Crossing is a must-visit destination for any shopper. Featuring a vast array of department stores, boutiques, and specialty shops, it's the perfect place to find the latest fashion trends and unique souvenirs."
         },
         {
             "name": "Ginza",
-            "region": "Chuo City, Tokyo, Japan",
+            "address": "Chuo City, Tokyo, Japan",
             "description": "Known as one of the most luxurious shopping districts in the world, Ginza is home to high-end stores like Chanel, Gucci, and Dior. Apart from luxury boutiques, the area is also home to department stores, art galleries, and traditional Japanese craft shops."
         },
         {
             "name": "Shinjuku",
-            "region": "Shinjuku City, Tokyo, Japan",
+            "address": "Shinjuku City, Tokyo, Japan",
             "description": "A shopping mecca, Shinjuku offers an incredible variety of stores, restaurants, and entertainment venues. Its bustling streets and towering skyscrapers house a seemingly endless range of shopping options, from major department stores like Isetan and Takashimaya to unique local boutiques."
         },
         {
             "name": "Harajuku",
-            "region": "Shibuya City, Tokyo, Japan",
+            "address": "Shibuya City, Tokyo, Japan",
             "description": "Famous for its vibrant street fashion, Harajuku is a haven for shoppers seeking the latest trends. Takeshita-dori street is the place to go for kawaii accessories, while Omotesando Avenue offers high-end designer shops and sleek modern architecture."
         },
         {
             "name": "Ameyoko Market",
-            "region": "Taito City, Tokyo, Japan",
+            "address": "Taito City, Tokyo, Japan",
             "description": "Located beneath the railway tracks near Ueno Station, Ameyoko Market is a bustling location famous for its vibrant street market atmosphere. With over 400 shops selling everything from clothing to seafood, this is the perfect place to discover a unique shopping experience."
         },
         {
             "name": "Nakamise Shopping Street",
-            "region": "Asakusa, Tokyo, Japan",
+            "address": "Asakusa, Tokyo, Japan",
             "description": "One of Tokyo's oldest shopping districts, Nakamise Shopping Street is a pedestrian street lined with traditional stores selling sweets, souvenirs, and other Japanese trinkets. Located directly in front of the ancient Senso-ji Temple, this is a destination not to be missed."
         },
         {
             "name": "Odaiba",
-            "region": "Minato City, Tokyo, Japan",
+            "address": "Minato City, Tokyo, Japan",
             "description": "A popular shopping and entertainment district, Odaiba offers something for everyone. From high-end boutiques and gourmet restaurants to family-friendly attractions like Legoland Discovery Center and Sega Joypolis, this futuristic island in Tokyo Bay is a must-visit."
         },
         {
             "name": "Musashi-Kosugi",
-            "region": "Kawasaki, Kanagawa Prefecture, Japan",
+            "address": "Kawasaki, Kanagawa Prefecture, Japan",
             "description": "Located just outside of Tokyo in the city of Kawasaki, Musashi-Kosugi is a popular destination for shopping and dining. With a large selection of department stores, restaurants, and specialty shops, this bustling area is frequented by both locals and tourists alike."
         },
         {
             "name": "Ikebukuro",
-            "region": "Toshima City, Tokyo, Japan",
+            "address": "Toshima City, Tokyo, Japan",
             "description": "One of Tokyo's three major hubs, Ikebukuro is a lively district with abundant shopping and dining options. Featuring several large department stores, specialty shops like the Pokemon Center, and the Sunshine City complex, there's no shortage of things to explore here."
         },
         {
             "name": "Kappabashi-dori",
-            "region": "Taito City, Tokyo, Japan",
+            "address": "Taito City, Tokyo, Japan",
             "description": "Known as the 'Kitchen Town' of Tokyo, Kappabashi-dori is home to over 170 shops selling cooking supplies and equipment. From exquisite Japanese knives to elaborate plastic food replicas, this unique shopping district is a must-visit for any food lover."
         }
     ],
@@ -90,13 +90,14 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
     You must write close destinations(destinations in same or close administrative region, district or area) back-to-back.
     You must arrange the destinations order so that all destinations are visited in an optimal path. >
     Step 2. Be sure to follow the precautions in Step 1 to ensure that condition is complete at all of each destination and if any of the conditions are not met, fix what you find.
-    Step 3. Follow the following conditions wrapped in angle brackets and find region name where the travel destinations belongs to.
-    < If the region is multiple, write the only one region that is most representative. >
+    Step 3. Follow the following conditions wrapped in angle brackets and find addresses where the travel destinations belongs to.
+    < first, write the addresses that is summarized as region and based on google map.
+    Second, If the addresses is multiple, write the only one region that is most representative. >
     Step 4. write 3 sentences introductions and to each destination.
     Step 5. lastly, write 2 sentences introductions about topic.
     Step 6. provide the output that is 10 of travel destinations related to topic in English and only json format. The order of the output must satisfy the conditions in Step 1.
     Your output should be in json format with two list and have the following fields in first list :
-     'name', 'region', 'description'. first list key is "destinations".
+     'name', 'address', 'description'. first list key is "destinations".
     In second list, You should write only introduction about topic. Second list key is "topic_introduction".
     """
 
@@ -172,7 +173,7 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
     elif len(result['destinations']) < n:  # 요구 갯수보다 적게 탐색해온 경우
         new_except_list = except_list[:]
         for i in result["destinations"]:
-            name_with_region = i['name'] + '(' + i['region'] + ')'
+            name_with_region = i['name'] + '(' + i['address'] + ')'
             new_except_list.append(name_with_region)
         new_n = n - len(result['destinations'])
         result['destinations'].extend(gpt(topic, new_n, new_except_list, 0, 1))
@@ -189,14 +190,14 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
 
     eng_name = []
     for dest in result['destinations']:  # 장소명과 지역명 결합
-        eng_name.append(dest['name'] + '(' + dest['region'] + ')')
+        eng_name.append(dest['name'] + '(' + dest['address'] + ')')
 
     ### 번역을 위한 데이터 처리 부분
 
     text = ""
 
     for dest in result['destinations']:  # 통으로 번역하기 위해 모든 결과값 한 문자열로 통합
-        text = text + dest['name'] + ' :: ' + dest['region'] + ' :: ' + dest['description'] + '\n'
+        text = text + dest['name'] + ' :: ' + dest['address'] + ' :: ' + dest['description'] + '\n'
 
     text += result['topic_introduction'][0]  # 같은 과정
 
