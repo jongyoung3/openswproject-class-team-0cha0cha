@@ -584,6 +584,7 @@ def search(input_search_locations=[], retry=0):
     
     except: # 예외 처리
         retry+=1
+        print("error in search")
         return search(input_search_locations, retry)
 
 #TEST
