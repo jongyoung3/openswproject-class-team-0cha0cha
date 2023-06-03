@@ -4,6 +4,8 @@ from PyQt5 import QtWebEngineWidgets
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5 import QtTest
+import os
+from urllib import parse
 
 import chatgpt
 import search
@@ -30,7 +32,7 @@ class Ui_MainWindow(QMainWindow):
         self.Psframe.setFrameShape(QtWidgets.QFrame.Box)
     #p.s. 적힌 글씨 라벨 크기
         self.PsTitle = QtWidgets.QLabel(self.Psframe)
-        self.PsTitle.setGeometry(QtCore.QRect(7, 4, 91, 21))
+        self.PsTitle.setGeometry(QtCore.QRect(7, 4, 591, 21))
     #ps에 적힌 내용물 라벨 크기 지정, 크기보다 크면 줄바꿈
         self.PsContents = QtWidgets.QLabel(self.Psframe)
         self.PsContents.setGeometry(QtCore.QRect(20, 10, 561, 110))
@@ -80,7 +82,7 @@ class Ui_MainWindow(QMainWindow):
         self.trashCan.hide()
     #쓰레기통 버튼 아이콘 지정
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap("trashcan.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        icon1.addPixmap(QtGui.QPixmap("./trashcan.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
         self.trashCan.setIcon(icon1)
     #삭제 취소버튼 크기 지정, 숨김
         self.cancelBtn = QtWidgets.QPushButton(self.centralwidget)
@@ -91,7 +93,7 @@ class Ui_MainWindow(QMainWindow):
         self.changeButton.setGeometry(QtCore.QRect(590, 65, 70, 31))
     #변경버튼 아이콘 지정
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap("change.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        icon1.addPixmap(QtGui.QPixmap("./change.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
         self.changeButton.setIconSize(QtCore.QSize(70,25))
         self.changeButton.setIcon(icon1)
     # 리무브 관련 체크여부를 확인할 인덱스 리스트
@@ -103,7 +105,12 @@ class Ui_MainWindow(QMainWindow):
     #맵 관련: 지금은 같이 올린 html 파일 주소 입력되어 있음
         self.Map = QtWebEngineWidgets.QWebEngineView(self.centralwidget)
         self.Map.setGeometry(QtCore.QRect(20, 10, 551, 641))
-        self.Map.setUrl(QtCore.QUrl("map.html"))
+        map_path = 'map.html'
+        abs_map_path = os.path.abspath(map_path)
+        self.PsTitle.setText(abs_map_path)
+        abs_map_path = abs_map_path.replace('\\','/')
+        self.Map.setUrl(QtCore.QUrl(abs_map_path))
+        
     #최적화 버튼 크기 지정
         self.optimize = QtWidgets.QPushButton(self.centralwidget)
         self.optimize.setGeometry(QtCore.QRect(470, 17, 94, 28))
@@ -173,7 +180,7 @@ class Ui_MainWindow(QMainWindow):
 
     #글자 내용들
         MainWindow.setWindowTitle("TripWithGPT")
-        self.PsTitle.setText("P.S.")
+        #self.PsTitle.setText("P.S.")
         self.PsContents.setText("일본은 최첨단 기술뿐만 아니라 고대 문화가 풍부한 대조적인 나라로 가득합니다. 상징적인 랜드마크와 번화한 도시부터 산과 바다의 고요한 자연의 아름다움까지, 이 매혹적인 나라에는 모두를 위한 무언가가 있습니다. 전통과 현대의 독특한 조화를 경험할 준비를 하시고 여행 중에 맛있는 현지 요리를 맛보는 것도 잊지 마세요!")
         self.deleteButton.setText("Check to delete")
         self.cancelBtn.setText("Cancel")
@@ -320,6 +327,7 @@ class Ui_MainWindow(QMainWindow):
     #검색 끝났으면 SearchEnd를 false로 바꾸고 로딩안내문 숨김
         if (self.errorHappened == True):
             self.ErrorOpen()
+            self.errorHappened = False
         self.SearchEnd = False
         self.SearchLoading.hide()
 
@@ -396,6 +404,7 @@ class Ui_MainWindow(QMainWindow):
         self.SearchLoading.hide()
         if (self.errorHappened == True):
             self.ErrorOpen()
+            self.errorHappened = False
         for i in range(0, 5, 1):
             self.imgs[i].setUrl(QUrl("%s" % self.saveUrls[i]))
 
@@ -692,7 +701,6 @@ class Ui_MainWindow(QMainWindow):
     # [0 ,'검색한 장소=검색한 결과의 장소','평점','리뷰 수','사진링크','lat','lng']
     # [1 ,'검색한 장소',('검색한 결과의 장소','평점','리뷰 수'),'사진링크','lat','lng']
     # result_list=[0 or 1,'검색한 장소=검색한 결과의 장소','평점','리뷰 수','사진링크', '좌표(lat)', '좌표(lng)']
-
 
     def ErrorOpen(self):
         self.ErrorDialog.setObjectName("Dialog")
