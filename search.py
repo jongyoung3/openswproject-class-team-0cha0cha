@@ -10,9 +10,10 @@ from apikey import GoogleMap_API_KEY
 # 폐업상태 제외하기
 # ㄴ 최종 결과 리스트(result_list)에 '-1' 뜨는 건 아무리 걸러도 폐업한 것만 있을때 넣어논 거임
 # ㄴ완료
-# result_list=[0 or 1,'검색한 장소','검색한 결과의 장소','평점','리뷰 수','사진링크', '좌표(lat)', '좌표(lng)']
+# result_list=[0 or 1,'검색한 장소','검색한 결과의 장소(1인 경우 주변검색 중 가장 평점, 리뷰수가 높은 것)','평점','리뷰 수','사진링크', '좌표(lat)', '좌표(lng)']
 # 에러 났을때 재시도 3번 이상이면 -99 리턴
 # 중복 체크 완료
+# 1인 경우(지역인 경우)-> 지역사진으로 넘김, 없는 경우 'No Image'로 넘김
 #############################################################################################################################
           # chat-gpt 로 받아올 데이터, 반복회수
 def search(input_search_locations=[], retry=0):
@@ -34,7 +35,7 @@ def search(input_search_locations=[], retry=0):
         for locations in input_search_locations:
             response = map_clinet.places(query=locations) # 데이터를 api로 보냄
             destination = [] 
-            
+           
             if(response['status'] !='ZERO_RESULTS'): #검색데이터 결과가 빈 리스트로 오는 경우(=검색결과가 없을때)를 걸러줌
                 if('rating' in response['results'][0]): # 인덱스 번호에 따라 영업점 나오는 듯. 기준으로만 일단 만듬
                     if('business_status' in response['results'][0]): #'business_status'가 없는 경우 분류
@@ -178,10 +179,11 @@ def search(input_search_locations=[], retry=0):
                                     attractions.append((name,rating,reviews))
                         
                     
-
-                        if('photos' in res_lo['results'][max_index]):  # 'photos'가 아예없는 경우 제외
+                        
+                        
+                        if('photos' in response['results'][0]):  # 'photos'가 아예없는 경우 제외
                             #사진 요청
-                            photo_reference=res_lo['results'][max_index]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
+                            photo_reference=response['results'][0]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
                             photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=1600&photoreference={photo_reference}&key={api_key}"
                             response_photo = requests.get(photo_url)
                             res_photo=response_photo.url
@@ -252,8 +254,9 @@ def search(input_search_locations=[], retry=0):
                             if rating >= min_rating:
                                 attractions.append((name, rating, reviews))
 
-                        if('photos' in res_lo['results'][max_index]):  # 'photos'가 아예없는 경우 제외
-                            photo_reference=res_lo['results'][max_index]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
+                        if('photos' in response['results'][0]):  # 'photos'가 아예없는 경우 제외
+                            #사진 요청
+                            photo_reference=response['results'][0]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
                             photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=1600&photoreference={photo_reference}&key={api_key}"
                             response_photo = requests.get(photo_url)
                             res_photo=response_photo.url
@@ -323,9 +326,9 @@ def search(input_search_locations=[], retry=0):
                         if rating >= min_rating:
                             attractions.append((name, rating, reviews))
 
-                    if('photos' in data['results'][max_index]):  # 'photos'가 아예없는 경우 제외
+                    if('photos' in data['results'][0]):  # 'photos'가 아예없는 경우 제외
                         #사진 요청
-                        photo_reference=data['results'][max_index]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
+                        photo_reference=data['results'][0]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
                         photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=1600&photoreference={photo_reference}&key={api_key}"
                         response_photo = requests.get(photo_url)
                         res_photo=response_photo.url
@@ -477,9 +480,9 @@ def search(input_search_locations=[], retry=0):
                                         if attractions!=(name,rating,reviews): #리스트 내에 있는 관광명소와 중복방지
                                             attractions.append((name,rating,reviews))
                                                     
-                                if('photos' in res_lo['results'][max_index]):  # 'photos'가 아예없는 경우 제외
+                                if('photos' in response_blank['results'][0]):  # 'photos'가 아예없는 경우 제외
                                     #사진 요청
-                                    photo_reference=res_lo['results'][max_index]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
+                                    photo_reference=response_blank['results'][0]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
                                     photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=1600&photoreference={photo_reference}&key={api_key}"
                                     response_photo = requests.get(photo_url)
                                     res_photo=response_photo.url
@@ -547,9 +550,9 @@ def search(input_search_locations=[], retry=0):
                                     if rating >= min_rating:
                                         attractions.append((name, rating, reviews))
 
-                                if('photos' in data['results'][max_index]): # 'photos'가 아예없는 경우 제외
+                                if('photos' in response_blank['results'][0]):  # 'photos'가 아예없는 경우 제외
                                     #사진 요청
-                                    photo_reference=data['results'][max_index]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
+                                    photo_reference=response_blank['results'][0]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
                                     photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=1600&photoreference={photo_reference}&key={api_key}"
                                     response_photo = requests.get(photo_url)
                                     res_photo=response_photo.url
@@ -584,7 +587,7 @@ def search(input_search_locations=[], retry=0):
         return search(input_search_locations, retry)
 
 #TEST
-# res_sol=search(['Tokyo(Kanto Region, Japan)', 'Kyoto(Kansai Region, Japan)', 'Osaka(Kansai Region, Japan)', 'Hiroshima(Chugoku Region, Japan)', 'Nara(Kansai Region, Japan)'])
+res_sol=search(['Nara(Kansai Region, Japan)'])
 
-# print(res_sol)
+print(res_sol)
 #['Tokyo(Kanto Region, Japan)', 'Kyoto(Kansai Region, Japan)', 'Osaka(Kansai Region, Japan)', 'Hiroshima(Chugoku Region, Japan)', 'Nara(Kansai Region, Japan)']
