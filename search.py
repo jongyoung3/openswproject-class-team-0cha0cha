@@ -8,7 +8,7 @@ from apikey import GoogleMap_API_KEY
 # result_list에 사진 값도 추가하긴 했는데 값이 길어서 이건 어떻게 할 건지 정하기(url로 대체함 안되면 content로 변경)
 # ㄴ되는 거 확인되서 그대로 유지
 # 폐업상태 제외하기
-# ㄴ 최종 결과 리스트(result_list)에 '-1' 뜨는 건 아무리 걸러도 폐업한 것만 있을때 넣어논 거임
+# ㄴ 최종 결과 리스트(result_list)에 '-1' 뜨는 건 아무리 걸러도 폐업한 것과 아무리 걸러도 지역 주변에 관광이 없는 거임
 # ㄴ완료
 # result_list=[0 or 1,'검색한 장소','검색한 결과의 장소(1인 경우 주변검색 중 가장 평점, 리뷰수가 높은 것)','평점','리뷰 수','사진링크', '좌표(lat)', '좌표(lng)']
 # 에러 났을때 재시도 3번 이상이면 [-99] 리턴
@@ -207,7 +207,7 @@ def search(input_search_locations=[], retry=0):
                         destination.append(search_location_lng)
                     #검색데이터 결과가 빈 리스트로 오는 경우(=검색결과가 없을때) 텍스트 검색으로 다시 찾기
                     else: 
-                        url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query={locations}&key={api_key}"
+                        url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query={text_lo}&key={api_key}"
                         response = requests.get(url)
                         data = response.json()
                         
@@ -244,42 +244,47 @@ def search(input_search_locations=[], retry=0):
                                     if reviews >= max_reviewer:
                                         max_reviewer = reviews
                                         max_index = i
-                                
-                        name = data['results'][max_index]['name']
-                        rating = data['results'][max_index]['rating']
-                        reviews = data['results'][max_index]['user_ratings_total']
-
+                        if 'rating' in data['results'][max_index]:        
+                            name = data['results'][max_index]['name']
+                            rating = data['results'][max_index]['rating']
+                            reviews = data['results'][max_index]['user_ratings_total']
+                            
                             # 이름, 평점, 리뷰가 있는 것만 추가
-                        if name is not None and rating is not None and reviews is not None:
-                            if rating >= min_rating:
-                                attractions.append((name, rating, reviews))
+                            if name is not None and rating is not None and reviews is not None:
+                                if rating >= min_rating:
+                                    attractions.append((name, rating, reviews))
 
-                        if('photos' in response['results'][0]):  # 'photos'가 아예없는 경우 제외
-                            #사진 요청
-                            photo_reference=response['results'][0]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
-                            photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=1600&photoreference={photo_reference}&key={api_key}"
-                            response_photo = requests.get(photo_url)
-                            res_photo=response_photo.url
-                            attractions.append(res_photo)
+                            if('photos' in response['results'][0]):  # 'photos'가 아예없는 경우 제외
+                                #사진 요청
+                                photo_reference=response['results'][0]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
+                                photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=1600&photoreference={photo_reference}&key={api_key}"
+                                response_photo = requests.get(photo_url)
+                                res_photo=response_photo.url
+                                attractions.append(res_photo)
+                            else:
+                                attractions.append('No Image')
+
+                            
+                            # 받아온 데이터가 공백리스트가 아닌 경우만 destination 리스트에 추가
+                            if(attractions!=[]):
+                                destination.append(1)
+                                destination.append(locations) # 검색한 지역이름
+                                destination.extend(attractions)
+                                except_list_name.append(res_lo['results'][max_index]['name'])
+                                
+                            # 좌표
+                            search_location_lat=(res_lo['results'][max_index]['geometry']['location']['lat'])
+                            search_location_lng=(res_lo['results'][max_index]['geometry']['location']['lng'])
+                            destination.append(search_location_lat)
+                            destination.append(search_location_lng)
                         else:
-                            attractions.append('No Image')
+                              destination.append(-1)
+                            
 
                         
-                        # 받아온 데이터가 공백리스트가 아닌 경우만 destination 리스트에 추가
-                        if(attractions!=[]):
-                            destination.append(1)
-                            destination.append(locations) # 검색한 지역이름
-                            destination.extend(attractions)
-                            except_list_name.append(res_lo['results'][max_index]['name'])
-                            
-                        # 좌표
-                        search_location_lat=(res_lo['results'][max_index]['geometry']['location']['lat'])
-                        search_location_lng=(res_lo['results'][max_index]['geometry']['location']['lng'])
-                        destination.append(search_location_lat)
-                        destination.append(search_location_lng)
                         
             else: #검색데이터 결과가 빈 리스트로 오는 경우(=검색결과가 없을때) 텍스트 검색으로 다시 찾기
-                url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query={locations}&key={api_key}"
+                url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query={text_lo}&key={api_key}"
                 response = requests.get(url)
                 data = response.json()
 
@@ -588,7 +593,8 @@ def search(input_search_locations=[], retry=0):
         return search(input_search_locations, retry)
 
 #TEST
-# res_sol=search(['Nara(Kansai Region, Japan)'])
+res_sol=search(['Great Barrier Reef(Queensland, Australia)', 'Uluru-Kata Tjuta National Park(Northern Territory, Australia)', 'Port Douglas(Queensland, Australia)', 'Melbourne(Victoria, Australia)'])
 
-# print(res_sol)
+print(res_sol)
 #['Tokyo(Kanto Region, Japan)', 'Kyoto(Kansai Region, Japan)', 'Osaka(Kansai Region, Japan)', 'Hiroshima(Chugoku Region, Japan)', 'Nara(Kansai Region, Japan)']
+#['Sydney Opera House(Sydney, New South Wales, Australia)', 'Great Barrier Reef(Queensland, Australia)', 'Uluru-Kata Tjuta National Park(Northern Territory, Australia)', 'Port Douglas(Queensland, Australia)', 'Melbourne(Victoria, Australia)']
