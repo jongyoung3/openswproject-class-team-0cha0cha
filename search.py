@@ -28,7 +28,7 @@ def search(input_search_locations=[], retry=0):
     min_reviews = 0  # 최소 리뷰 수
 
     if retry>=5: # 재시도 3번 이상이면 -99 리턴
-        return -99
+        return [-99]
     
     try:
     # 지도에 데이터 보낼 때 좌표로 보내는 걸로 코드 바꾸기(원한다면)
