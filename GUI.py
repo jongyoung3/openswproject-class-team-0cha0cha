@@ -7,6 +7,7 @@ from PyQt5 import QtTest
 
 import chatgpt
 import search
+import map
 
 class Ui_MainWindow(QMainWindow):
 #메인창 내용물
@@ -57,9 +58,8 @@ class Ui_MainWindow(QMainWindow):
         self.SearchLoading = QtWidgets.QLabel(self.centralwidget)
         self.SearchLoading.setGeometry(470,210,300,100)
         self.SearchLoading.setAlignment(Qt.AlignCenter)
-    # 리무브 관련 체크여부를 확인할 인덱스 리스트
-        self.index_list = []
-        
+
+
     #스크롤바 관련
     #스크롤바 틀 크기 지정
         self.scrollArea = QtWidgets.QScrollArea(self.centralwidget)
@@ -67,8 +67,8 @@ class Ui_MainWindow(QMainWindow):
     #스크롤바 내용물 크기 지정
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
         self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 561, 900))
-             
-        
+
+
     #삭제 관련, 교체 관련
     #삭제 버튼(check to delete) 크기 지정
         self.deleteButton = QtWidgets.QPushButton(self.centralwidget)
@@ -93,12 +93,16 @@ class Ui_MainWindow(QMainWindow):
         icon1.addPixmap(QtGui.QPixmap("change.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
         self.changeButton.setIconSize(QtCore.QSize(70,25))
         self.changeButton.setIcon(icon1)
-        
-        
+    # 리무브 관련 체크여부를 확인할 인덱스 리스트
+        self.index_list = []
+        self.lat_list = []
+        self.lng_list = []
+
+
     #맵 관련: 지금은 같이 올린 html 파일 주소 입력되어 있음
         self.Map = QtWebEngineWidgets.QWebEngineView(self.centralwidget)
         self.Map.setGeometry(QtCore.QRect(20, 10, 551, 641))
-        self.Map.setUrl(QtCore.QUrl("./map.html"))
+        self.Map.setUrl(QtCore.QUrl("map.html"))
     #최적화 버튼 크기 지정
         self.optimize = QtWidgets.QPushButton(self.centralwidget)
         self.optimize.setGeometry(QtCore.QRect(470, 17, 94, 28))
@@ -324,6 +328,8 @@ class Ui_MainWindow(QMainWindow):
             self.reviewStars[i].show()
             self.imgs[i].show()
             self.imgs[i].setUrl(QUrl("%s"%self.saveUrls[i]))
+            self.LandmarksName[i].show()
+            self.Landmarks[i].show()
         self.deleteButton.show()
         self.changeButton.show()
         self.PsContents.show()
@@ -576,13 +582,13 @@ class Ui_MainWindow(QMainWindow):
         if recall == 1:  # 중복 제외후,  재검색하는 케이스 # index_list는 원래 부분에서 삭제하고, 교체할 부분을 나타냄
             n = len(index_list)  # 같은 주제 재탐색하는, 중복제외 필요시 상황 ( 검색버튼 다시누른 케이스가 아니라, 삭제후 재탐색으로 들어온 케이스)
             temp = chatgpt.gpt(process_topic, n, except_list)
-            if temp == [-99]:
+            if temp == [-99]: ## 에러 발생시
                 return
             eng_list, kor_name, kor_introduce, ps = temp
             except_list.extend(eng_list)
 
             search_list = search.search(eng_list)
-            if search_list == [-99]:
+            if search_list == [-99]: ## 에러 발생시
                 return
 
             error_count = search_list.count([-1])
@@ -594,13 +600,13 @@ class Ui_MainWindow(QMainWindow):
         else:
             except_list.clear()
             temp = chatgpt.gpt(process_topic, n)
-            if temp == [-99]:
+            if temp == [-99]: ## 에러 발생시
                 return
             eng_list, kor_name, kor_introduce, ps = temp
             except_list.extend(eng_list)
 
             search_list = search.search(eng_list)
-            if search_list == [-99]:
+            if search_list == [-99]: ## 에러 발생시
                 return
             error_count = search_list.count([-1])
 
@@ -609,7 +615,6 @@ class Ui_MainWindow(QMainWindow):
                 while chk != 0:  # 한번 끝난 후에도 해결이 안됐다면 재진입, 해결될때까지 재진입할것
                     chk, next_error_counter = search_error_index(process_topic, next_error_counter)
 
-        ####################### 좌표 데이터 가지고 map함수 call 부분 필요
         ## 내용 지정 관련 조건문
         if recall == 0: # 다 바꿔야하는 경우
             for i in range(n):  #### 내용 지정부
@@ -623,20 +628,26 @@ class Ui_MainWindow(QMainWindow):
                     self.reviewPoints[i].setText(str("%.1f"%search_list[i][2]))
                     self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 175 * i, 2 + int(float(search_list[i][2]) * 14.1), 15))
                     self.reviews[i].setText(str(format(search_list[i][3], ',')))
+                    #self.LandmarksName[i].setText()
+                    self.lat_list.append(search_list[i][5])
+                    self.lng_list.append(search_list[i][6])
                     if search_list[i][4] != 'No Image':
                        self.saveUrls[i] = search_list[i][4] #saveUrl에 넣어두고 다 끝나면 메인 스레드에서 setUrl
                     else:  # 이미지 없을땐
-                        self.saveUrls[i] = ''
+                        self.saveUrls[i] = "no_image"
 
                 else:  # 1, 즉 지역일때
                     ########### 리뷰 대신, 추천지역 관련 변수 추가로 요구됨 (search_list[i][2][1])
                     self.reviewPoints[i].setText(str("%.1f"%search_list[i][2][1]))
                     self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 175 * i, 2 + int(float(search_list[i][2][1]) * 14.1), 15))
                     self.reviews[i].setText(str(format(search_list[i][2][2], ',')))
+                    #self.LandmarksName[i].setText(search_list[i][2][1])
+                    self.lat_list.append(search_list[i][4])
+                    self.lng_list.append(search_list[i][5])
                     if search_list[i][3] != 'No Image':
                         self.saveUrls[i] = search_list[i][3] #saveUrl에 넣어두고 다 끝나면 메인 스레드에서 setUrl
                     else:  # 이미지 없을땐
-                        self.saveUrls[i] = ''
+                        self.saveUrls[i] = "no_image"
             self.PsContents.setText(ps)
 
         else: # 일부 인덱스만 교체해주면 되는 경우(리콜된 경우)
@@ -648,25 +659,34 @@ class Ui_MainWindow(QMainWindow):
                     self.reviewPoints[index].setText(str(search_list[i][2]))
                     self.reviewStars[index].setGeometry(QtCore.QRect(175, 44 + 175 * index, 2 + int(float(search_list[i][2]) * 14.1), 15))
                     self.reviews[index].setText(str(search_list[i][3]))
+                    #self.LandmarksName[i].setText(search_list[i][2][1])
+                    self.lat_list[index] = search_list[i][5]
+                    self.lng_list[index] = search_list[i][6]
                     if search_list[i][4] != 'No Image':
                         self.saveUrls[index] = search_list[i][4]  # saveUrl에 넣어두고 다 끝나면 메인 스레드에서 setUrl
                     else:  # 이미지 없을땐
-                        self.saveUrls[index] = ''
+                        self.saveUrls[index] = "no_image"
 
                 else:  # 1, 즉 지역일때
                     # 리뷰 대신, 추천지역 관련 변수 추가로 요구됨 (search_list[i][2][1])
                     self.reviewPoints[index].setText(str(search_list[i][2][1]))
                     self.reviewStars[index].setGeometry(QtCore.QRect(175, 44 + 175 * index, 2 + int(float(search_list[i][2][1]) * 14.1), 15))
                     self.reviews[index].setText(str(search_list[i][2][2]))
+                    #self.LandmarksName[index].setText(search_list[i][2][1])
+                    self.lat_list[index] = search_list[i][4]
+                    self.lng_list[index] = search_list[i][5]
                     if search_list[i][3] != 'No Image':
                         self.saveUrls[index] = search_list[i][3]  # saveUrl에 넣어두고 다 끝나면 메인 스레드에서 setUrl
                     else:  # 이미지 없을땐
-                        self.saveUrls[index] = ''
+                        self.saveUrls[index] = "no_image"
+        # map 함수 호출
+        ####################### 좌표 데이터 가지고 map함수 call 부분 필요
+        # map.MainFunc()
 
     # [0 ,'검색한 장소=검색한 결과의 장소','평점','리뷰 수','사진링크','lat','lng']
     # [1 ,'검색한 장소',('검색한 결과의 장소','평점','리뷰 수'),'사진링크','lat','lng']
     # result_list=[0 or 1,'검색한 장소=검색한 결과의 장소','평점','리뷰 수','사진링크', '좌표(lat)', '좌표(lng)']
-        
+
 
     def ErrorOpen(self):
         self.ErrorDialog.setObjectName("Dialog")

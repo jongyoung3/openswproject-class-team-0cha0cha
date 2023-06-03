@@ -87,7 +87,6 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
     < You must only write places that can be cited and verified on Google Maps.
     You must only write places you can drive to.
     You should include places that are heavily visited and has high ratings by tourists.
-    destinations must be close each other. So, The distances between all of each travel destinations must be less than 10km.
     You must write close destinations(destinations in same or close administrative region, district or area) back-to-back.
     You must arrange the destinations order so that all destinations are visited in an optimal path. >
     Step 2. Be sure to follow the precautions in Step 1 to ensure that condition is complete at all of each destination and if any of the conditions are not met, fix what you find.
