@@ -8,7 +8,7 @@ import os
 from urllib import parse
 
 import chatgpt
-import search
+import search_7
 import map
 
 
@@ -337,9 +337,10 @@ class Ui_MainWindow(QMainWindow):
             self.reviews[i].show()
             self.reviewPoints[i].show()
             self.reviewStars[i].show()
-            self.imgs[i].show()
-            self.imgs[i].setUrl(QUrl("%s"%self.saveUrls[i]))
             self.LandmarksName[i].show()
+            self.imgs[i].show()
+            self.imgs[i].setUrl(QUrl("%s" % self.saveUrls[i]))
+        self.optimize.show()
         self.deleteButton.show()
         self.changeButton.show()
         self.PsContents.show()
@@ -354,8 +355,8 @@ class Ui_MainWindow(QMainWindow):
         for i in range(0,5,1):
             self.checkBoxes[i].show()
             self.names[i].setGeometry(QtCore.QRect(35, 8+195*i, 475, 31))
-        
-        
+
+
 #cancelBtn 눌렀을 때 이벤트: 체크박스 안보이게 원상복귀, 체크상태 해제
     def removeEnd(self):
         self.deleteButton.show()
@@ -575,7 +576,7 @@ class Ui_MainWindow(QMainWindow):
 
             temp_eng_list, temp_kor_name, temp_kor_introduce, trash = chatgpt.gpt(process_topic, error_count, except_list)  # 에러 개수만큼 탐색, temp에 저장
             except_list.extend(temp_eng_list)  # 새로 탐색한것도 exceptlist에 추가해둠
-            temp_search_list = search.search(temp_eng_list)  # search 데이터 temp에 저장
+            temp_search_list = search_7.search(temp_eng_list)  # search 데이터 temp에 저장
             # 일단 바깥의 사용용 데이터들 전부 새 데이터로 교체
             j = 0
             for i in minus1_index:
@@ -600,7 +601,7 @@ class Ui_MainWindow(QMainWindow):
             eng_list, kor_name, kor_introduce, ps = temp
             except_list.extend(eng_list)
 
-            search_list = search.search(eng_list)
+            search_list = search_7.search(eng_list)
             if search_list == [-99]: ## 에러 발생시
                 self.errorHappened = True
                 return
@@ -619,7 +620,7 @@ class Ui_MainWindow(QMainWindow):
             eng_list, kor_name, kor_introduce, ps = temp
             except_list.extend(eng_list)
 
-            search_list = search.search(eng_list)
+            search_list = search_7.search(eng_list)
             if search_list == [-99]: ## 에러 발생시
                 self.errorHappened = True
                 return
