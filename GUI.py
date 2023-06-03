@@ -144,6 +144,7 @@ class Ui_MainWindow(QMainWindow):
     #메인창 말고 about창, 위치변경창도 Dialog(창)으로 정의
         self.Dialog = QDialog()
         self.Form = QDialog()
+        self.ErrorDialog = QDialog()
         
     #로딩 안내문이 맨 앞으로 오게 raise로 당겨주기
         self.SearchLoading.raise_()    
@@ -633,6 +634,30 @@ class Ui_MainWindow(QMainWindow):
     # [1 ,'검색한 장소',('검색한 결과의 장소','평점','리뷰 수'),'사진링크','lat','lng']
     # result_list=[0 or 1,'검색한 장소=검색한 결과의 장소','평점','리뷰 수','사진링크', '좌표(lat)', '좌표(lng)']
         
+    
+    def ErrorOpen(self):
+        self.ErrorDialog.setObjectName("Dialog")
+        self.ErrorDialog.resize(400, 300)
+       
+        self.label = QtWidgets.QLabel(self.ErrorDialog)
+        self.label.setGeometry(QtCore.QRect(70, 80, 64, 91))
+        
+        font = QtGui.QFont()
+        font.setPointSize(60)
+        self.label.setFont(font)
+        
+        self.label_2 = QtWidgets.QLabel(self.ErrorDialog)
+        self.label_2.setGeometry(QtCore.QRect(70, 100, 271, 51))
+        self.label_2.setAlignment(QtCore.Qt.AlignCenter)
+        
+        self.pushButton = QtWidgets.QPushButton(self.ErrorDialog)
+        self.pushButton.setGeometry(QtCore.QRect(150, 200, 93, 28))
+        
+        self.ErrorDialog.setWindowTitle("Error!")
+        self.label.setText("!")
+        self.label_2.setText("오류가 발생했습니다.\n다시 시도해 주세요.")
+        self.pushButton.setText("확인")
+
         
 class Search_loading(QThread):
     def __init__(self, parent):
