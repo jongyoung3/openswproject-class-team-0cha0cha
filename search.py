@@ -37,8 +37,8 @@ def search(input_search_locations=[], retry=0):
             destination = [] 
             
             locations_blank_text_one=locations.split("(")
-                    
             text_lo_2=locations_blank_text_one[0]
+            
             if(response['status'] !='ZERO_RESULTS'): #검색데이터 결과가 빈 리스트로 오는 경우(=검색결과가 없을때)를 걸러줌
                 if(len(response['results'])>1):
                     name_list=[]
@@ -47,15 +47,15 @@ def search(input_search_locations=[], retry=0):
                     for i in range(len(response['results'])):
                             # 리뷰 수가 높은 순으로 정렬 필요
                             #print(i)
-                            pro_chk = 0
+                            # pro_chk = 0
                             if ('rating' in response['results'][i]):
-                                # 지역 중복방지
-                                for k in except_list_name:
-                                    if(response['results'][i]['name']==k):
-                                        pro_chk = 1
-                                        break
-                                if pro_chk == 1:
-                                    continue
+                                # # 지역 중복방지
+                                # for k in except_list_name:
+                                #     if(response['results'][i]['name']==k):
+                                #         pro_chk = 1
+                                #         break
+                                # if pro_chk == 1:
+                                #     continue
                                 if('business_status' in response['results'][i]): #'business_status'가 없는 경우 분류
                                     if(response['results'][i]['business_status']!='CLOSED_PERMANENTLY'): #폐업인 경우 제외
                                         name_list.append(response['results'][i]['name'])
@@ -701,7 +701,7 @@ def search(input_search_locations=[], retry=0):
         return search(input_search_locations, retry)
 
 #TEST
-res_sol=search(['Hiroshima(Chugoku Region, Japan)'])
+res_sol=search(['Tokyo(Kanto Region, Japan)', 'Kyoto(Kansai Region, Japan)', 'Osaka(Kansai Region, Japan)', 'Hiroshima(Chugoku Region, Japan)', 'Nara(Kansai Region, Japan)'])
 #res_sol=search(['Hiroshima(Chugoku Region, Japan)'])
 
 print(res_sol)
