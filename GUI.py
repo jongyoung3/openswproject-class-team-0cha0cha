@@ -256,8 +256,8 @@ class Ui_MainWindow(QMainWindow):
 
     #별점은 중대사항: 디폴트 지정에 맞춰 별 갯수 노출 세팅
         for i in range(0,5,1):
-            a = float(self.reviewPoints[i].text()) * 14.12
-            self.reviewStars[i].setGeometry(QtCore.QRect(175, 24+195*i, 1+int(a), 15))
+            a = float(self.reviewPoints[i].text().replace(',','')) * 14.12
+            self.reviewStars[i].setGeometry(QtCore.QRect(175, 44+195*i, 1+int(a), 15))
         
         
 #메뉴바에 about 눌렀을 때 이벤트: 팀 정보창 열림
@@ -548,7 +548,7 @@ class Ui_MainWindow(QMainWindow):
             self.reviews[i].setGeometry(QtCore.QRect(258, 44+195*i, 101, 16))
 
         #바뀐 별점에 따라 별 갯수 노출도 변화
-            a = float(self.reviewPoints[i].text()) * 14.12
+            a = float(self.reviewPoints[i].text().replace(',','')) * 14.12
             self.reviewStars[i].setGeometry(QtCore.QRect(175, 44+195*i, 1+int(a), 15))
 
 
@@ -642,7 +642,7 @@ class Ui_MainWindow(QMainWindow):
 
                 if search_list[i][0] == 0:  # 0, 즉 장소일때
                     self.reviewPoints[i].setText(str("%.1f"%search_list[i][2]))
-                    self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 195 * i, 1 + int(float(search_list[i][2]) * 14.12), 15))
+                    self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 195 * i, 1 + int(search_list[i][2]*14.12), 15))
                     self.reviews[i].setText(str(format(search_list[i][3], ',')))
                     self.LandmarksName[i].setText(str(""))
                     self.lat_list.append(search_list[i][5])
@@ -655,7 +655,7 @@ class Ui_MainWindow(QMainWindow):
                 else:  # 1, 즉 지역일때
                     ########### 리뷰 대신, 추천지역 관련 변수 추가로 요구됨 (search_list[i][2][1])
                     self.reviewPoints[i].setText(str("%.1f"%search_list[i][2][1]))
-                    self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 195 * i, 1 + int(float(search_list[i][2][1]) * 14.12), 15))
+                    self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 195 * i, 1 + int(search_list[i][2][1]*14.12), 15))
                     self.reviews[i].setText(str(format(search_list[i][2][2], ',')))
                     self.LandmarksName[i].setText(str("(주변 인기 관광지 " + search_list[i][2][0] + " 의 평점)"))
                     self.lat_list.append(search_list[i][4])
@@ -673,7 +673,7 @@ class Ui_MainWindow(QMainWindow):
 
                 if search_list[i][0] == 0:  # 0, 즉 장소일때
                     self.reviewPoints[index].setText(str("%.1f"%(search_list[i][2])))
-                    self.reviewStars[index].setGeometry(QtCore.QRect(175, 44 + 195 * index, 2 + int(float(search_list[i][2]) * 14.12), 15))
+                    self.reviewStars[index].setGeometry(QtCore.QRect(175, 44 + 195 * index, 1 + int(search_list[i][2]*14.12), 15))
                     self.reviews[index].setText(str(format(search_list[i][3], ',')))
                     self.LandmarksName[i].setText(str(""))
                     self.lat_list[index] = search_list[i][5]
@@ -686,7 +686,7 @@ class Ui_MainWindow(QMainWindow):
                 else:  # 1, 즉 지역일때
                     # 리뷰 대신, 추천지역 관련 변수 추가로 요구됨 (search_list[i][2][1])
                     self.reviewPoints[index].setText(str("%.1f"%(search_list[i][2][1])))
-                    self.reviewStars[index].setGeometry(QtCore.QRect(175, 44 + 195 * index, 2 + int(float(search_list[i][2][1]) * 14.12), 15))
+                    self.reviewStars[index].setGeometry(QtCore.QRect(175, 44 + 195 * index, 1 + int(search_list[i][2][1]*14.12), 15))
                     self.reviews[index].setText(str(format(search_list[i][3], ',')))
                     self.LandmarksName[index].setText(str("(주변 인기 관광지 " + search_list[i][2][0] + "의 평점)"))
                     self.lat_list[index] = search_list[i][4]
