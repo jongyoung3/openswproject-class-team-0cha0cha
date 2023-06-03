@@ -49,7 +49,7 @@ class Ui_MainWindow(QMainWindow):
         self.SearchButton.setGeometry(QtCore.QRect(540, 10, 40, 32))
     #검색 버튼 아이콘
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("TeamProjects/ClueIcon.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        icon.addPixmap(QtGui.QPixmap("ClueIcon.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
         self.SearchButton.setIcon(icon)
     #검색 종료 여부에 사용될 bool타입 변수
         self.SearchEnd = bool(False)
@@ -78,7 +78,7 @@ class Ui_MainWindow(QMainWindow):
         self.trashCan.hide()
     #쓰레기통 버튼 아이콘 지정
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap("TeamProjects/trashcan.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        icon1.addPixmap(QtGui.QPixmap("trashcan.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
         self.trashCan.setIcon(icon1)
     #삭제 취소버튼 크기 지정, 숨김
         self.cancelBtn = QtWidgets.QPushButton(self.centralwidget)
@@ -89,7 +89,7 @@ class Ui_MainWindow(QMainWindow):
         self.changeButton.setGeometry(QtCore.QRect(590, 65, 70, 31))
     #변경버튼 아이콘 지정
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap("TeamProjects/change.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        icon1.addPixmap(QtGui.QPixmap("change.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
         self.changeButton.setIconSize(QtCore.QSize(70,25))
         self.changeButton.setIcon(icon1)
         
@@ -97,7 +97,7 @@ class Ui_MainWindow(QMainWindow):
     #맵 관련: 지금은 같이 올린 html 파일 주소 입력되어 있음
         self.Map = QtWebEngineWidgets.QWebEngineView(self.centralwidget)
         self.Map.setGeometry(QtCore.QRect(20, 10, 551, 641))
-        self.Map.setUrl(QtCore.QUrl("file:///C:/Users/31125/Desktop/python_files/TeamProjects/map.html"))
+        self.Map.setUrl(QtCore.QUrl("file:///C:/Users/31125/Desktop/python_files/map.html"))
     #최적화 버튼 크기 지정
         self.optimize = QtWidgets.QPushButton(self.centralwidget)
         self.optimize.setGeometry(QtCore.QRect(470, 17, 94, 28))
@@ -183,12 +183,22 @@ class Ui_MainWindow(QMainWindow):
         self.checkBoxes = [QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents)]
     #메인 스레드에서 setUrl을 하기 위해 saveUrls에 검색으로 얻은 Url들 저장
         self.saveUrls = [str,str,str,str,str]
+    #지역 유명장소 리턴 공간: 그냥 별점 옆에 하면 안댐??
+        self.Landmarks = [QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents)]
+        self.LandmarksName = [QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents)]
+
+    #이미지 없을 때 띄울 no_image를 위한 라벨
+        self.no_imgs = [QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents)]
 
     #리뷰 제목에 적용할 폰트
         font = QtGui.QFont()
         font.setFamily("한컴산뜻돋움")
         font.setPointSize(14)
         font.setWeight(50)
+
+    #Qpixmap으로 no_imgs에 사진 넣기
+        pixmap = QPixmap("no_image.png")
+        pixmap = pixmap.scaled(130,115)
 
         for i in range(0,5,1):
     #리뷰 제목들 위치, 폰트, text 세팅
@@ -199,8 +209,12 @@ class Ui_MainWindow(QMainWindow):
             self.contents[i].setGeometry(QtCore.QRect(145, 64+175*i, 418, 110))
             self.contents[i].setText(("%s번째 내용물") % str(i+1))
             self.contents[i].setWordWrap(True)
+            self.contents[i].setAlignment(QtCore.Qt.AlignTop)
     #리뷰 이미지, 별점들, 체크박스 위치 및 text 세팅, 체크박스 숨김
             self.imgs[i].setGeometry(QtCore.QRect(10, 42+175*i, 130, 130))
+            self.no_imgs[i].setGeometry(QtCore.QRect(10, 42+175*i, 130, 130))
+            self.no_imgs[i].setPixmap(pixmap)
+
             self.reviewPoints[i].setGeometry(QtCore.QRect(144, 44+175*i, 51, 17))
             self.reviewPoints[i].setText("4.0")
             self.reviewStars[i].setText("★★★★★")
@@ -208,7 +222,10 @@ class Ui_MainWindow(QMainWindow):
             self.reviews[i].setText("1,234")
             self.checkBoxes[i].setGeometry(13, 0+175*i, 130, 55)
             self.checkBoxes[i].hide()
-            
+            self.Landmarks[i].setGeometry(QtCore.QRect(330, 44+175*i, 90, 16))
+            self.Landmarks[i].setText("인기 관광지:: ")
+            self.LandmarksName[i].setGeometry(QtCore.QRect(422, 44+175*i, 101, 16))
+
     #리뷰 내용들 처음엔 안보이게, 버튼도 비활성화
         for i in range(0,5,1):
             self.names[i].hide()
@@ -217,10 +234,12 @@ class Ui_MainWindow(QMainWindow):
             self.reviewPoints[i].hide()
             self.reviewStars[i].hide()
             self.imgs[i].hide()
+            self.no_imgs[i].hide()
+            self.Landmarks[i].hide()
+            self.LandmarksName[i].hide()
             self.deleteButton.hide()
             self.changeButton.hide()
         self.PsContents.hide()
-
 
     #별점은 중대사항: 디폴트 지정에 맞춰 별 갯수 노출 세팅
         for i in range(0,5,1):
@@ -614,10 +633,31 @@ class Ui_MainWindow(QMainWindow):
     # [1 ,'검색한 장소',('검색한 결과의 장소','평점','리뷰 수'),'사진링크','lat','lng']
     # result_list=[0 or 1,'검색한 장소=검색한 결과의 장소','평점','리뷰 수','사진링크', '좌표(lat)', '좌표(lng)']
         
-    
-    
-    
-    
+
+    def ErrorOpen(self):
+        self.ErrorDialog.setObjectName("Dialog")
+        self.ErrorDialog.resize(400, 300)
+
+        self.label = QtWidgets.QLabel(self.ErrorDialog)
+        self.label.setGeometry(QtCore.QRect(70, 80, 64, 91))
+
+        font = QtGui.QFont()
+        font.setPointSize(60)
+        self.label.setFont(font)
+
+        self.label_2 = QtWidgets.QLabel(self.ErrorDialog)
+        self.label_2.setGeometry(QtCore.QRect(70, 100, 271, 51))
+        self.label_2.setAlignment(QtCore.Qt.AlignCenter)
+
+        self.pushButton = QtWidgets.QPushButton(self.ErrorDialog)
+        self.pushButton.setGeometry(QtCore.QRect(150, 200, 93, 28))
+
+        self.ErrorDialog.setWindowTitle("Error!")
+        self.label.setText("!")
+        self.label_2.setText("오류가 발생했습니다.\n다시 시도해 주세요.")
+        self.pushButton.setText("확인")
+
+
 class Search_loading(QThread):
     def __init__(self, parent):
         super().__init__(parent)
