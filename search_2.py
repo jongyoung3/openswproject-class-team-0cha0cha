@@ -35,10 +35,7 @@ def search(input_search_locations=[], retry=0):
         for locations in input_search_locations:
             response = map_clinet.places(query=locations) # 데이터를 api로 보냄
             destination = [] 
-            
-            locations_blank_text_one=locations.split("(")
-            text_lo_2=locations_blank_text_one[0]
-            
+                        
             if(response['status'] !='ZERO_RESULTS'): #검색데이터 결과가 빈 리스트로 오는 경우(=검색결과가 없을때)를 걸러줌                    
                 if(('rating' in response['results'][0]) and (len(response['results'])==1)): # 인덱스 번호에 따라 영업점 나오는 듯. 기준으로만 일단 만듬
                     if('business_status' in response['results'][0]): #'business_status'가 없는 경우 분류
