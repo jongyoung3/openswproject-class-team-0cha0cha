@@ -51,7 +51,7 @@ class Ui_MainWindow(QMainWindow):
         self.SearchButton.setGeometry(QtCore.QRect(540, 10, 40, 32))
     #검색 버튼 아이콘
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("ClueIcon.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        icon.addPixmap(QtGui.QPixmap("./ClueIcon.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
         self.SearchButton.setIcon(icon)
     #검색 종료 여부에 사용될 bool타입 변수
         self.SearchEnd = bool(False)
@@ -157,6 +157,7 @@ class Ui_MainWindow(QMainWindow):
 
     #로딩 안내문이 맨 앞으로 오게 raise로 당겨주기
         self.SearchLoading.raise_()
+        self.errorHappened = bool(False)
 
 
 #메인창 내용물에 text들 채워줌
@@ -317,6 +318,8 @@ class Ui_MainWindow(QMainWindow):
             self.SearchLoading.setText("내용을 불러오고 있습니다.\n잠시만 기다려 주세요...")
             QtTest.QTest.qWait(1000)
     #검색 끝났으면 SearchEnd를 false로 바꾸고 로딩안내문 숨김
+        if (self.errorHappened == True):
+            self.ErrorOpen()
         self.SearchEnd = False
         self.SearchLoading.hide()
 
@@ -391,6 +394,8 @@ class Ui_MainWindow(QMainWindow):
         # 검색 끝났으면 SearchEnd를 false로 바꾸고 로딩안내문 숨김
         self.SearchEnd = False
         self.SearchLoading.hide()
+        if (self.errorHappened == True):
+            self.ErrorOpen()
         for i in range(0, 5, 1):
             self.imgs[i].setUrl(QUrl("%s" % self.saveUrls[i]))
 
@@ -581,16 +586,15 @@ class Ui_MainWindow(QMainWindow):
             n = len(index_list)  # 같은 주제 재탐색하는, 중복제외 필요시 상황 ( 검색버튼 다시누른 케이스가 아니라, 삭제후 재탐색으로 들어온 케이스)
             temp = chatgpt.gpt(process_topic, n, except_list)
             if temp == [-99]: ## 에러 발생시
-                self.ErrorOpen()
+                self.errorHappened = True
                 return
             eng_list, kor_name, kor_introduce, ps = temp
             except_list.extend(eng_list)
 
             search_list = search.search(eng_list)
             if search_list == [-99]: ## 에러 발생시
-                self.ErrorOpen()
+                self.errorHappened = True
                 return
-
             error_count = search_list.count([-1])
 
             if error_count != 0:  # 폐업점 등으로 일부 재탐색 필요시
@@ -601,14 +605,14 @@ class Ui_MainWindow(QMainWindow):
             except_list.clear()
             temp = chatgpt.gpt(process_topic, n)
             if temp == [-99]: ## 에러 발생시
-                self.ErrorOpen()
+                self.errorHappened = True
                 return
             eng_list, kor_name, kor_introduce, ps = temp
             except_list.extend(eng_list)
 
             search_list = search.search(eng_list)
             if search_list == [-99]: ## 에러 발생시
-                self.ErrorOpen()
+                self.errorHappened = True
                 return
             error_count = search_list.count([-1])
 
@@ -749,10 +753,10 @@ class Remove_loading(QThread):
 
     def run(self):
         # 버튼들 비활성화
-        #self.parent.deleteButton.setEnabled(False)
+        self.parent.deleteButton.setEnabled(False)
         self.parent.SearchButton.setEnabled(False)
         #self.parent.changeButton.setEnabled(False) ######## 알수 없는 이유로 팅김
-        #self.parent.optimize.setEnabled(False)
+        self.parent.optimize.setEnabled(False)
 
         # 검색하는 함수들 여기에 연결해주시면 됩니다
         # 메인윈도우 클래스꺼는 self.parent.붙여서 돌리시면 됩니다!
@@ -760,10 +764,10 @@ class Remove_loading(QThread):
         self.parent.process_call(topic, self.parent.index_list, 1)
 
         # 다 끝나고 버튼 활성화, 스레드 끝내주기
-        #self.parent.deleteButton.setEnabled(True)
+        self.parent.deleteButton.setEnabled(True)
         self.parent.SearchButton.setEnabled(True)
-        #self.parent.changeButton.setEnabled(True)
-        #self.parent.optimize.setEnabled(True)
+        self.parent.changeButton.setEnabled(True)
+        self.parent.optimize.setEnabled(True)
         self.parent.SearchEnd = True
         self.parent.index_list.clear()
         self.quit()
