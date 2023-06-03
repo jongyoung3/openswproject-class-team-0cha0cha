@@ -253,7 +253,7 @@ class Ui_MainWindow(QMainWindow):
 
     #별점은 중대사항: 디폴트 지정에 맞춰 별 갯수 노출 세팅
         for i in range(0,5,1):
-            a = float(self.reviewPoints[i].text()) * 14.1
+            a = float(self.reviewPoints[i].text()) * 14.12
             self.reviewStars[i].setGeometry(QtCore.QRect(175, 44+195*i, 1+int(a), 15))
         
         
@@ -386,7 +386,6 @@ class Ui_MainWindow(QMainWindow):
         actionSearch.start()
 
         # 새 스레드에서 작업 완료되기 전까지 띄울 로딩 안내문
-        self.SearchLoading.setStyleSheet("background-color: #FFFFFF")
         self.SearchLoading.show()
         while not self.SearchEnd:
             self.SearchLoading.setText("내용을 불러오고 있습니다.\n잠시만 기다려 주세요.")
@@ -540,7 +539,7 @@ class Ui_MainWindow(QMainWindow):
             self.reviews[i].setGeometry(QtCore.QRect(258, 44+195*i, 101, 16))
 
         #바뀐 별점에 따라 별 갯수 노출도 변화
-            a = float(self.reviewPoints[i].text()) * 14.1
+            a = float(self.reviewPoints[i].text()) * 14.12
             self.reviewStars[i].setGeometry(QtCore.QRect(175, 44+195*i, 1+int(a), 15))
 
 
@@ -588,13 +587,15 @@ class Ui_MainWindow(QMainWindow):
             n = len(index_list)  # 같은 주제 재탐색하는, 중복제외 필요시 상황 ( 검색버튼 다시누른 케이스가 아니라, 삭제후 재탐색으로 들어온 케이스)
             temp = chatgpt.gpt(process_topic, n, except_list)
             if temp == [-99]: ## 에러 발생시
+                self.ErrorOpen()
                 return
             eng_list, kor_name, kor_introduce, ps = temp
             except_list.extend(eng_list)
 
             search_list = search.search(eng_list)
             if search_list == [-99]: ## 에러 발생시
-                return
+                self.ErrorOpen()
+                return 
 
             error_count = search_list.count([-1])
 
@@ -606,12 +607,14 @@ class Ui_MainWindow(QMainWindow):
             except_list.clear()
             temp = chatgpt.gpt(process_topic, n)
             if temp == [-99]: ## 에러 발생시
+                self.ErrorOpen()
                 return
             eng_list, kor_name, kor_introduce, ps = temp
             except_list.extend(eng_list)
 
             search_list = search.search(eng_list)
             if search_list == [-99]: ## 에러 발생시
+                self.ErrorOpen()
                 return
             error_count = search_list.count([-1])
 
@@ -631,7 +634,7 @@ class Ui_MainWindow(QMainWindow):
 
                 if search_list[i][0] == 0:  # 0, 즉 장소일때
                     self.reviewPoints[i].setText(str("%.1f"%search_list[i][2]))
-                    self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 195 * i, 1 + int(float(search_list[i][2]) * 14.1), 15))
+                    self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 195 * i, 1 + int(float(search_list[i][2]) * 14.12), 15))
                     self.reviews[i].setText(str(format(search_list[i][3], ',')))
                     #self.LandmarksName[i].setText()
                     self.lat_list.append(search_list[i][5])
@@ -644,7 +647,7 @@ class Ui_MainWindow(QMainWindow):
                 else:  # 1, 즉 지역일때
                     ########### 리뷰 대신, 추천지역 관련 변수 추가로 요구됨 (search_list[i][2][1])
                     self.reviewPoints[i].setText(str("%.1f"%search_list[i][2][1]))
-                    self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 195 * i, 1 + int(float(search_list[i][2][1]) * 14.1), 15))
+                    self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 195 * i, 1 + int(float(search_list[i][2][1]) * 14.12), 15))
                     self.reviews[i].setText(str(format(search_list[i][2][2], ',')))
                     #self.LandmarksName[i].setText(search_list[i][2][1])
                     self.lat_list.append(search_list[i][4])
@@ -661,9 +664,9 @@ class Ui_MainWindow(QMainWindow):
                 self.contents[index].setText(kor_introduce[i])
 
                 if search_list[i][0] == 0:  # 0, 즉 장소일때
-                    self.reviewPoints[index].setText(str(search_list[i][2]))
-                    self.reviewStars[index].setGeometry(QtCore.QRect(175, 44 + 195 * index, 2 + int(float(search_list[i][2]) * 14.1), 15))
-                    self.reviews[index].setText(str(search_list[i][3]))
+                    self.reviewPoints[index].setText(str("%.1f"%(search_list[i][2])))
+                    self.reviewStars[index].setGeometry(QtCore.QRect(175, 44 + 195 * index, 2 + int(float(search_list[i][2]) * 14.12), 15))
+                    self.reviews[index].setText(str(format(search_list[i][3], ',')))
                     #self.LandmarksName[i].setText(search_list[i][2][1])
                     self.lat_list[index] = search_list[i][5]
                     self.lng_list[index] = search_list[i][6]
@@ -674,9 +677,9 @@ class Ui_MainWindow(QMainWindow):
 
                 else:  # 1, 즉 지역일때
                     # 리뷰 대신, 추천지역 관련 변수 추가로 요구됨 (search_list[i][2][1])
-                    self.reviewPoints[index].setText(str(search_list[i][2][1]))
-                    self.reviewStars[index].setGeometry(QtCore.QRect(175, 44 + 195 * index, 2 + int(float(search_list[i][2][1]) * 14.1), 15))
-                    self.reviews[index].setText(str(search_list[i][2][2]))
+                    self.reviewPoints[index].setText(str("%.1f"%(search_list[i][2][1])))
+                    self.reviewStars[index].setGeometry(QtCore.QRect(175, 44 + 195 * index, 2 + int(float(search_list[i][2][1]) * 14.12), 15))
+                    self.reviews[index].setText(str(format(search_list[i][3], ',')))
                     #self.LandmarksName[index].setText(search_list[i][2][1])
                     self.lat_list[index] = search_list[i][4]
                     self.lng_list[index] = search_list[i][5]
@@ -753,7 +756,7 @@ class Remove_loading(QThread):
     def run(self):
         # 버튼들 비활성화
         #self.parent.deleteButton.setEnabled(False)
-        #self.parent.SearchButton.setEnabled(False)
+        self.parent.SearchButton.setEnabled(False)
         #self.parent.changeButton.setEnabled(False) ######## 알수 없는 이유로 팅김
         #self.parent.optimize.setEnabled(False)
 
@@ -763,10 +766,10 @@ class Remove_loading(QThread):
         self.parent.process_call(topic, self.parent.index_list, 1)
 
         # 다 끝나고 버튼 활성화, 스레드 끝내주기
-        self.parent.deleteButton.setEnabled(True)
+        #self.parent.deleteButton.setEnabled(True)
         self.parent.SearchButton.setEnabled(True)
-        self.parent.changeButton.setEnabled(True)
-        self.parent.optimize.setEnabled(True)
+        #self.parent.changeButton.setEnabled(True)
+        #self.parent.optimize.setEnabled(True)
         self.parent.SearchEnd = True
         self.parent.index_list.clear()
         self.quit()
