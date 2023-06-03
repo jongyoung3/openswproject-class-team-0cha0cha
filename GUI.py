@@ -107,7 +107,6 @@ class Ui_MainWindow(QMainWindow):
         self.Map.setGeometry(QtCore.QRect(20, 10, 551, 641))
         map_path = 'map.html'
         abs_map_path = os.path.abspath(map_path)
-        self.PsTitle.setText(abs_map_path)
         abs_map_path = abs_map_path.replace('\\','/')
         self.Map.setUrl(QtCore.QUrl(abs_map_path))
         
