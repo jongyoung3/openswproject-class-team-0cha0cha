@@ -219,7 +219,7 @@ def search(input_search_locations=[], retry=0):
                         max_reviewer = -1
                         max_index = -1
                         
-                        for i in range(len(res_lo['results'])):
+                        for i in range(len(data['results'])):
                             # 리뷰 수가 높은 순으로 정렬 필요
                             #print(i)
                             # 지역 중복방지
@@ -523,7 +523,7 @@ def search(input_search_locations=[], retry=0):
                                 attractions = []
                                 max_reviewer = -1
                                 max_index = -1
-                                for i in range(len(res_lo['results'])):
+                                for i in range(len(data['results'])):
                                     # 리뷰 수가 높은 순으로 정렬 필요
                                     #print(i)
                                     # 지역 중복방지
