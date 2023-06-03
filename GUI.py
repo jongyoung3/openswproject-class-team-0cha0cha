@@ -55,7 +55,7 @@ class Ui_MainWindow(QMainWindow):
         self.SearchEnd = bool(False)
     #검색 중 나올 로딩 안내문
         self.SearchLoading = QtWidgets.QLabel(self.centralwidget)
-        self.SearchLoading.setGeometry(460,190,300,250)
+        self.SearchLoading.setGeometry(470,210,300,100)
         self.SearchLoading.setAlignment(Qt.AlignCenter)
         
         
@@ -145,7 +145,7 @@ class Ui_MainWindow(QMainWindow):
         self.Dialog = QDialog()
         self.Form = QDialog()
         
-    #로딩 화살표가 맨 앞으로 오게 raise로 당겨주기
+    #로딩 안내문이 맨 앞으로 오게 raise로 당겨주기
         self.SearchLoading.raise_()    
         
 
@@ -183,6 +183,7 @@ class Ui_MainWindow(QMainWindow):
         self.checkBoxes = [QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents),QtWidgets.QCheckBox(self.scrollAreaWidgetContents)]
     #메인 스레드에서 setUrl을 하기 위해 saveUrls에 검색으로 얻은 Url들 저장
         self.saveUrls = [str,str,str,str,str]
+        
     #리뷰 제목에 적용할 폰트
         font = QtGui.QFont()
         font.setFamily("한컴산뜻돋움")
@@ -208,25 +209,18 @@ class Ui_MainWindow(QMainWindow):
             self.checkBoxes[i].setGeometry(13, 0+175*i, 130, 55)
             self.checkBoxes[i].hide()
             
-    #디폴트로 해놓은 내용물들
-        self.imgs[0].setUrl(QtCore.QUrl("https://lh3.googleusercontent.com/places/ANJU3DuXkXR4mLpUC8HveQxr6Q6xNSxuiaEWj2fTS0wCxhqg37hk_96rjlQyKfH7mD7tk8AwXdqb9ylUc5pdMO7pd2f8rdHD18-yZis=s1600-w400"))
-        self.names[0].setText("도쿄 디즈니랜드(우라야스, 지바현, 일본)")
-        self.names[1].setText("오사카 성(오사카, 일본)")
-        self.names[2].setText("후시미이나리 신사(교토, 일본)")
-        self.contents[0].setText("가족과 디즈니 팬이라면 꼭 방문해야 하는 도쿄 디즈니랜드는 캘리포니아에 있는 오리지널 디즈니랜드의 모든 마법을 체험할 수 있는 곳입니다. 다양한 테마 공간, 화려한 퍼레이드와 쇼, 다양한 캐릭터를 만날 수 있는 도쿄 디즈니랜드는 즐거운 당일치기 여행에 완벽한 장소입니다.")
-        self.contents[1].setText("일본에서 가장 유명한 성 중 하나인 오사카 성은 방문객들에게 일본의 풍부한 역사와 문화를 엿볼 수 있는 곳입니다. 언덕 꼭대기에 위치한 이 성에는 도시의 숨막히는 전경을 감상할 수 있는 박물관과 전망대가 있습니다. 멋진 건축물과 아름다운 정원이 있는 오사카 성은 여유로운 산책을 즐기기에 완벽한 장소입니다.")
-        self.contents[2].setText("수천 개의 밝은 주황색 도리이 문으로 유명한 후시미이나리 신사는 교토의 상징이자 일본의 가장 상징적인 명소 중 하나입니다. 산의 산책로는 계절에 관계없이 신비롭고 고요한 경험을 제공하며 교토의 멋진 전망을 감상할 수 있는 유명한 정상으로 이어집니다. 카메라를 꼭 지참하세요!")
-        self.reviewPoints[0].setText("1.0")
-        self.reviewPoints[1].setText("4.7")
-        self.reviewPoints[2].setText("3.4")
-        self.reviewPoints[3].setText("0.4")
-        self.reviewPoints[4].setText("2.4")
-        self.reviews[0].setText("(9, 487)")
-        self.reviews[1].setText("(16, 529)")
-        self.reviews[2].setText("(1, 326)")
-        self.reviewStars[0].setText("★★★★★")
-        self.reviewStars[1].setText("★★★★★")
-        self.reviewStars[2].setText("★★★★★")
+    #리뷰 내용들 처음엔 안보이게, 버튼도 비활성화
+        for i in range(0,5,1):
+            self.names[i].hide()
+            self.contents[i].hide()
+            self.reviews[i].hide()
+            self.reviewPoints[i].hide()
+            self.reviewStars[i].hide()
+            self.imgs[i].hide()
+            self.deleteButton.hide()
+            self.changeButton.hide()
+        self.PsContents.hide()
+
 
     #별점은 중대사항: 디폴트 지정에 맞춰 별 갯수 노출 세팅
         for i in range(0,5,1):
@@ -288,7 +282,9 @@ class Ui_MainWindow(QMainWindow):
         actionSearch = Search_loading(parent=self)
         actionSearch.start()
     
-    #새 스레드에서 작업 완료했으면 saveUrls에 저장된 html을 imgs에 세팅
+    #새 스레드에서 작업 완료되기 전까지 띄울 로딩 안내문
+        self.SearchLoading.setStyleSheet("background-color: #FFFFFF")
+        self.SearchLoading.show()
         while not self.SearchEnd:
             self.SearchLoading.setText("내용을 불러오고 있습니다.\n잠시만 기다려 주세요.")
             QtTest.QTest.qWait(1000)
@@ -296,9 +292,22 @@ class Ui_MainWindow(QMainWindow):
             QtTest.QTest.qWait(1000)
             self.SearchLoading.setText("내용을 불러오고 있습니다.\n잠시만 기다려 주세요...")
             QtTest.QTest.qWait(1000)
+    #검색 끝났으면 SearchEnd를 false로 바꾸고 로딩안내문 숨김 
+        self.SearchEnd = False
+        self.SearchLoading.hide()
+        
         for i in range(0,5,1):
+            self.names[i].show()
+            self.contents[i].show()
+            self.reviews[i].show()
+            self.reviewPoints[i].show()
+            self.reviewStars[i].show()
+            self.imgs[i].show()
             self.imgs[i].setUrl(QUrl("%s"%self.saveUrls[i]))        
-    
+        self.deleteButton.show()
+        self.changeButton.show()
+        self.PsContents.show()
+            
         
 #deleteButton 눌렀을 때 이벤트: 버튼들이랑 체크박스 나타남
     def deleteClicked(self):
@@ -558,7 +567,7 @@ class Ui_MainWindow(QMainWindow):
                 # self.reviewStars[0].setGeometry(QtCore.QRect(175, 44 + 175 * 0, 2 + int(a), 15))
 
                 if search_list[i][0] == 0:  # 0, 즉 장소일때
-                    self.reviewPoints[i].setText(str(search_list[i][2]))
+                    self.reviewPoints[i].setText(str("%.1f"%search_list[i][2]))
                     self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 175 * i, 2 + int(float(search_list[i][2]) * 14.1), 15))
                     self.reviews[i].setText(str(search_list[i][3]))
                     if search_list[i][4] != 'No Image':
@@ -568,7 +577,7 @@ class Ui_MainWindow(QMainWindow):
 
                 else:  # 1, 즉 지역일때
                     ########### 리뷰 대신, 추천지역 관련 변수 추가로 요구됨 (search_list[i][2][1])
-                    self.reviewPoints[i].setText(str(search_list[i][2][1]))
+                    self.reviewPoints[i].setText(str("%.1f"%search_list[i][2][1]))
                     self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 175 * i, 2 + int(float(search_list[i][2][1]) * 14.1), 15))
                     self.reviews[i].setText(str(search_list[i][2][2]))
                     if search_list[i][3] != 'No Image':
@@ -605,10 +614,7 @@ class Ui_MainWindow(QMainWindow):
     # [1 ,'검색한 장소',('검색한 결과의 장소','평점','리뷰 수'),'사진링크','lat','lng']
     # result_list=[0 or 1,'검색한 장소=검색한 결과의 장소','평점','리뷰 수','사진링크', '좌표(lat)', '좌표(lng)']
         
-    
-    
-    
-    
+        
 class Search_loading(QThread):
     def __init__(self, parent):
         super().__init__(parent)
@@ -631,10 +637,9 @@ class Search_loading(QThread):
         self.parent.SearchButton.setEnabled(True)
         self.parent.changeButton.setEnabled(True)
         self.parent.optimize.setEnabled(True)
-        self.parent.searchEnd = True
+        self.parent.SearchEnd = True
         self.quit()
         
-
 
 if __name__ == "__main__":
     import sys
