@@ -6,7 +6,7 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
     # topic = 토픽, n = 탐색 개수, except_list = 중복 검색 방지를 위해, 제외하고 검색할 장소 목록,
     # retry = 재귀 횟수, add = gpt함수 내 갯수 부족 등으로 result extend 필요시 활용위한 표시 변수
     if retry >= 3:
-        return []  # 다차례 오류 발생시 공백리스트 리턴
+        return [-99]  # 다차례 오류 발생시 공백리스트 리턴
     import openai
 
     openai.api_key = OPENAI_API_KEY
@@ -105,16 +105,9 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
 
     # 하시마 섬 등 드라이빙으로 경로를 알아낼 수 없는 경우. #############
 
-    # 2. 먼거리 추천 에러 step1 요구사항 3,4,5번 라인###
+    # 2. 먼거리 추천 에러 step1 요구사항 3,4,5번 라인  ###
 
 
-
-
-
-    # 재검색시 지역전체소개는 빼도록 하면 속도개선 가능. (0으로 대충 답변하게 추가는 했지만, 잘 x), 주요기능은 x
-    # 3. 특정 지역 제외 후 재검색 기능 비작동 ( 영국 시계탑 중복 추천 등 일부 chatgpt가 실수하는 경우 있음. 드문 빈도. 다만, 관찰 필요. 무시해도 가능할 정도로 보임.) 주요문제는 x
-    # 번역에서의 오류. 왜 나는거지.? 해결된 것으로 보이나, 관찰 필요
-    # 개수 체크 필요 자꾸 1개 달라는데 최초 케이스에서, 5개 주고 막 그럼. 아마 prev 데이터 때문에 헷갈려하는거 같아. 해결된 것으로 보이나, 관찰 필요
     prev_query = f"""
     in next answer, You must find Exactly {n} of travel destinations related to topic in English. 
     So, your output has {n} of travel destinations related to topic.
@@ -149,7 +142,13 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
             {"role": "user", "content": query}
         ]
 
-    response = openai.ChatCompletion.create(model=model, messages=messages)
+    try:
+        response = openai.ChatCompletion.create(model=model, messages=messages)
+    except:
+        print("re-try\n\n")
+        print("Error in chat")
+        retry += 1
+        return gpt(topic, n, except_list, retry)
 
     answer = response['choices'][0]['message']['content']  # 응답 부분
 
@@ -219,14 +218,29 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
         "X-RapidAPI-Host": "deepl-translator.p.rapidapi.com"
     }
 
-    response = requests.post(url, json=payload, headers=headers)
+    try:
+        response = requests.post(url, json=payload, headers=headers)
+    except:
+        print('error in translate requests')
+        try:
+            response = requests.post(url, json=payload, headers=headers)
+        except:
+            print("error in translate request 2, retry")
+            retry += 1
+            return gpt(topic, n, except_list, retry)
 
     try:
         translated_text = response.json()['text']  # 번역받아온 결과 변환하여 저장  ########################################### 번역도 종종 에러가 난다. 확인 필요.
     except:
         print(response)
-        response = requests.post(url, json=payload, headers=headers)
-        translated_text = response.json()['text']
+        print('error after translated to json')
+        try:
+            response = requests.post(url, json=payload, headers=headers)
+            translated_text = response.json()['text']
+        except:
+            print('error after translated to json 2, retry')
+            retry += 1
+            return gpt(topic, n, except_list, retry)
     try:  # api 관련하여, 번역 과정에서의 혹시 모를 오류 방지를 위해 try except 사용
 
         ### 아래는 리턴을 위한 데이터 처리 부분

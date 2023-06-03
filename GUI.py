@@ -57,7 +57,8 @@ class Ui_MainWindow(QMainWindow):
         self.SearchLoading = QtWidgets.QLabel(self.centralwidget)
         self.SearchLoading.setGeometry(470,210,300,100)
         self.SearchLoading.setAlignment(Qt.AlignCenter)
-
+    # 리무브 관련 체크여부를 확인할 인덱스 리스트
+        self.index_list = []
         
     #스크롤바 관련
     #스크롤바 틀 크기 지정
@@ -97,7 +98,7 @@ class Ui_MainWindow(QMainWindow):
     #맵 관련: 지금은 같이 올린 html 파일 주소 입력되어 있음
         self.Map = QtWebEngineWidgets.QWebEngineView(self.centralwidget)
         self.Map.setGeometry(QtCore.QRect(20, 10, 551, 641))
-        self.Map.setUrl(QtCore.QUrl("file:///C:/Users/31125/Desktop/python_files/map.html"))
+        self.Map.setUrl(QtCore.QUrl("./map.html"))
     #최적화 버튼 크기 지정
         self.optimize = QtWidgets.QPushButton(self.centralwidget)
         self.optimize.setGeometry(QtCore.QRect(470, 17, 94, 28))
@@ -144,10 +145,10 @@ class Ui_MainWindow(QMainWindow):
     #메인창 말고 about창, 위치변경창도 Dialog(창)으로 정의
         self.Dialog = QDialog()
         self.Form = QDialog()
-        
+
     #로딩 안내문이 맨 앞으로 오게 raise로 당겨주기
-        self.SearchLoading.raise_()    
-        
+        self.SearchLoading.raise_()
+
 
 #메인창 내용물에 text들 채워줌
     def setTexts(self, MainWindow):
@@ -300,7 +301,7 @@ class Ui_MainWindow(QMainWindow):
     #새 스레드 만들어서 시작: 메인 스레드는 그대로라 로딩중 응답없음이 안 뜸
         actionSearch = Search_loading(parent=self)
         actionSearch.start()
-    
+
     #새 스레드에서 작업 완료되기 전까지 띄울 로딩 안내문
         self.SearchLoading.setStyleSheet("background-color: #FFFFFF")
         self.SearchLoading.show()
@@ -356,16 +357,38 @@ class Ui_MainWindow(QMainWindow):
         self.deleteButton.show()
         self.trashCan.hide()
         self.cancelBtn.hide()
-        index_list = []
-        ############ searched_well 변수 등을 만들어서, process 함수와 이어준 뒤, 한번 이상 서치가 잘 이루어진 후에만 동작하도록 만들어야 할듯
-        ############ 일부 장소는 주제를 바꿔서 탐색할수도 있게 해도 괜찮을 듯, 고려 필요.
+        ##################### searched_well 변수 등을 만들어서, process 함수와 이어준 뒤, 한번 이상 서치가 잘 이루어진 후에만 동작하도록 만들어야 할듯
+        ###################### 일부 장소는 주제를 바꿔서 탐색할수도 있게 해도 괜찮을 듯, 고려 필요.
+        # global topic
+        # topic = "일본 여행"
         for i in range(0,5,1):
             if (self.checkBoxes[i].isChecked()):
-                index_list.append(i)    
+                self.index_list.append(i)
             self.checkBoxes[i].hide()
             self.checkBoxes[i].setChecked(False)
             self.names[i].setGeometry(QtCore.QRect(10, 8+175*i, 535, 31))
-        self.process_call(topic,index_list,1)
+
+            # self.process_call(topic,index_list,1)
+            # 새 스레드 만들어서 시작: 메인 스레드는 그대로라 로딩중 응답없음이 안 뜸
+
+        actionSearch = Remove_loading(parent=self)
+        actionSearch.start()
+
+        # 새 스레드에서 작업 완료되기 전까지 띄울 로딩 안내문
+        self.SearchLoading.setStyleSheet("background-color: #FFFFFF")
+        self.SearchLoading.show()
+        while not self.SearchEnd:
+            self.SearchLoading.setText("내용을 불러오고 있습니다.\n잠시만 기다려 주세요.")
+            QtTest.QTest.qWait(1000)
+            self.SearchLoading.setText("내용을 불러오고 있습니다.\n잠시만 기다려 주세요..")
+            QtTest.QTest.qWait(1000)
+            self.SearchLoading.setText("내용을 불러오고 있습니다.\n잠시만 기다려 주세요...")
+            QtTest.QTest.qWait(1000)
+        # 검색 끝났으면 SearchEnd를 false로 바꾸고 로딩안내문 숨김
+        self.SearchEnd = False
+        self.SearchLoading.hide()
+        for i in range(0, 5, 1):
+            self.imgs[i].setUrl(QUrl("%s" % self.saveUrls[i]))
 
             
 #ChangeBtn 눌렀을 때 이벤트: 리뷰들 위치 교환할 창 열림
@@ -549,13 +572,19 @@ class Ui_MainWindow(QMainWindow):
             else:  # 아직도 비해결 시에는, 에러메시지인 1과 오류수 보냄
                 return [1, error_count]
 
-
+        ## 내용 검색 관련 조건문
         if recall == 1:  # 중복 제외후,  재검색하는 케이스 # index_list는 원래 부분에서 삭제하고, 교체할 부분을 나타냄
             n = len(index_list)  # 같은 주제 재탐색하는, 중복제외 필요시 상황 ( 검색버튼 다시누른 케이스가 아니라, 삭제후 재탐색으로 들어온 케이스)
-            eng_list, kor_name, kor_introduce, ps = chatgpt.gpt(process_topic, n, except_list)
+            temp = chatgpt.gpt(process_topic, n, except_list)
+            if temp == [-99]:
+                return
+            eng_list, kor_name, kor_introduce, ps = temp
             except_list.extend(eng_list)
 
             search_list = search.search(eng_list)
+            if search_list == [-99]:
+                return
+
             error_count = search_list.count([-1])
 
             if error_count != 0:  # 폐업점 등으로 일부 재탐색 필요시
@@ -564,10 +593,15 @@ class Ui_MainWindow(QMainWindow):
                     chk, next_error_counter = search_error_index(process_topic, next_error_counter)
         else:
             except_list.clear()
-            eng_list, kor_name, kor_introduce, ps = chatgpt.gpt(process_topic, n)
+            temp = chatgpt.gpt(process_topic, n)
+            if temp == [-99]:
+                return
+            eng_list, kor_name, kor_introduce, ps = temp
             except_list.extend(eng_list)
 
             search_list = search.search(eng_list)
+            if search_list == [-99]:
+                return
             error_count = search_list.count([-1])
 
             if error_count != 0:  # 폐업점 등으로 일부 재탐색 필요시
@@ -575,8 +609,8 @@ class Ui_MainWindow(QMainWindow):
                 while chk != 0:  # 한번 끝난 후에도 해결이 안됐다면 재진입, 해결될때까지 재진입할것
                     chk, next_error_counter = search_error_index(process_topic, next_error_counter)
 
-        #### 좌표 데이터 가지고 map함수 call 부분 필요
-
+        ####################### 좌표 데이터 가지고 map함수 call 부분 필요
+        ## 내용 지정 관련 조건문
         if recall == 0: # 다 바꿔야하는 경우
             for i in range(n):  #### 내용 지정부
                 self.names[i].setText(kor_name[i])
@@ -592,7 +626,7 @@ class Ui_MainWindow(QMainWindow):
                     if search_list[i][4] != 'No Image':
                        self.saveUrls[i] = search_list[i][4] #saveUrl에 넣어두고 다 끝나면 메인 스레드에서 setUrl
                     else:  # 이미지 없을땐
-                        pass  # 알아서 지정
+                        self.saveUrls[i] = ''
 
                 else:  # 1, 즉 지역일때
                     ########### 리뷰 대신, 추천지역 관련 변수 추가로 요구됨 (search_list[i][2][1])
@@ -602,7 +636,7 @@ class Ui_MainWindow(QMainWindow):
                     if search_list[i][3] != 'No Image':
                         self.saveUrls[i] = search_list[i][3] #saveUrl에 넣어두고 다 끝나면 메인 스레드에서 setUrl
                     else:  # 이미지 없을땐
-                        pass  # 알아서 지정
+                        self.saveUrls[i] = ''
             self.PsContents.setText(ps)
 
         else: # 일부 인덱스만 교체해주면 되는 경우(리콜된 경우)
@@ -615,9 +649,9 @@ class Ui_MainWindow(QMainWindow):
                     self.reviewStars[index].setGeometry(QtCore.QRect(175, 44 + 175 * index, 2 + int(float(search_list[i][2]) * 14.1), 15))
                     self.reviews[index].setText(str(search_list[i][3]))
                     if search_list[i][4] != 'No Image':
-                        self.imgs[index].setUrl(QtCore.QUrl(search_list[i][4]))
+                        self.saveUrls[index] = search_list[i][4]  # saveUrl에 넣어두고 다 끝나면 메인 스레드에서 setUrl
                     else:  # 이미지 없을땐
-                        pass  # 알아서 지정
+                        self.saveUrls[index] = ''
 
                 else:  # 1, 즉 지역일때
                     # 리뷰 대신, 추천지역 관련 변수 추가로 요구됨 (search_list[i][2][1])
@@ -625,9 +659,9 @@ class Ui_MainWindow(QMainWindow):
                     self.reviewStars[index].setGeometry(QtCore.QRect(175, 44 + 175 * index, 2 + int(float(search_list[i][2][1]) * 14.1), 15))
                     self.reviews[index].setText(str(search_list[i][2][2]))
                     if search_list[i][3] != 'No Image':
-                        self.imgs[index].setUrl(QtCore.QUrl(search_list[i][3]))
+                        self.saveUrls[index] = search_list[i][3]  # saveUrl에 넣어두고 다 끝나면 메인 스레드에서 setUrl
                     else:  # 이미지 없을땐
-                        pass  # 알아서 지정
+                        self.saveUrls[index] = ''
 
     # [0 ,'검색한 장소=검색한 결과의 장소','평점','리뷰 수','사진링크','lat','lng']
     # [1 ,'검색한 장소',('검색한 결과의 장소','평점','리뷰 수'),'사진링크','lat','lng']
@@ -669,7 +703,7 @@ class Search_loading(QThread):
         self.parent.SearchButton.setEnabled(False)
         self.parent.changeButton.setEnabled(False)
         self.parent.optimize.setEnabled(False)
-        
+
         # 검색하는 함수들 여기에 연결해주시면 됩니다
         # 메인윈도우 클래스꺼는 self.parent.붙여서 돌리시면 됩니다!
         self.parent.text = self.parent.SearchEdit.text()
@@ -682,7 +716,34 @@ class Search_loading(QThread):
         self.parent.optimize.setEnabled(True)
         self.parent.SearchEnd = True
         self.quit()
-        
+
+
+class Remove_loading(QThread):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.parent = parent
+
+    def run(self):
+        # 버튼들 비활성화
+        # self.parent.deleteButton.setEnabled(False)
+        # self.parent.SearchButton.setEnabled(False)
+        # self.parent.changeButton.setEnabled(False) ######## 알수 없는 이유로 팅김
+        # self.parent.optimize.setEnabled(False)
+
+        # 검색하는 함수들 여기에 연결해주시면 됩니다
+        # 메인윈도우 클래스꺼는 self.parent.붙여서 돌리시면 됩니다!
+        global topic
+        self.parent.process_call(topic, self.parent.index_list, 1)
+
+        # 다 끝나고 버튼 활성화, 스레드 끝내주기
+        self.parent.deleteButton.setEnabled(True)
+        self.parent.SearchButton.setEnabled(True)
+        self.parent.changeButton.setEnabled(True)
+        self.parent.optimize.setEnabled(True)
+        self.parent.SearchEnd = True
+        self.parent.index_list.clear()
+        self.quit()
+
 
 
 if __name__ == "__main__":

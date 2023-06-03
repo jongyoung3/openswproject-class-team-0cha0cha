@@ -584,10 +584,11 @@ def search(input_search_locations=[], retry=0):
 
     except: # 예외 처리
         retry+=1
+        print("error in search")
         return search(input_search_locations, retry)
 
 #TEST
-res_sol=search(['Nara(Kansai Region, Japan)'])
+# res_sol=search(['Nara(Kansai Region, Japan)'])
 
-print(res_sol)
+# print(res_sol)
 #['Tokyo(Kanto Region, Japan)', 'Kyoto(Kansai Region, Japan)', 'Osaka(Kansai Region, Japan)', 'Hiroshima(Chugoku Region, Japan)', 'Nara(Kansai Region, Japan)']
