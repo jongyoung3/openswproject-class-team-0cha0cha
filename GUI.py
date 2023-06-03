@@ -569,7 +569,7 @@ class Ui_MainWindow(QMainWindow):
                 if search_list[i][0] == 0:  # 0, 즉 장소일때
                     self.reviewPoints[i].setText(str("%.1f"%search_list[i][2]))
                     self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 175 * i, 2 + int(float(search_list[i][2]) * 14.1), 15))
-                    self.reviews[i].setText(str(search_list[i][3]))
+                    self.reviews[i].setText(str(format(search_list[i][3], ',')))
                     if search_list[i][4] != 'No Image':
                        self.saveUrls[i] = search_list[i][4] #saveUrl에 넣어두고 다 끝나면 메인 스레드에서 setUrl
                     else:  # 이미지 없을땐
@@ -579,7 +579,7 @@ class Ui_MainWindow(QMainWindow):
                     ########### 리뷰 대신, 추천지역 관련 변수 추가로 요구됨 (search_list[i][2][1])
                     self.reviewPoints[i].setText(str("%.1f"%search_list[i][2][1]))
                     self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 175 * i, 2 + int(float(search_list[i][2][1]) * 14.1), 15))
-                    self.reviews[i].setText(str(search_list[i][2][2]))
+                    self.reviews[i].setText(str(format(search_list[i][2][2], ',')))
                     if search_list[i][3] != 'No Image':
                         self.saveUrls[i] = search_list[i][3] #saveUrl에 넣어두고 다 끝나면 메인 스레드에서 setUrl
                     else:  # 이미지 없을땐
