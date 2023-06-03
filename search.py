@@ -15,7 +15,6 @@ from apikey import GoogleMap_API_KEY
 # 중복 체크 완료
 # 1인 경우(지역인 경우)-> 지역사진으로 넘김, 없는 경우 'No Image'로 넘김
 #############################################################################################################################
-search_index_list = [] #재 검색시 중복방지 전역변수
           # chat-gpt 로 받아올 데이터, 반복회수
 def search(input_search_locations=[], retry=0):
     api_key = GoogleMap_API_KEY
@@ -24,11 +23,6 @@ def search(input_search_locations=[], retry=0):
     result_list = [] #최종 결과물 리스트
     result_ex=[] #최종 결과물 리스트 전 단계
     except_list_name=[] # 지역 중복방지
-    
-    if(search_index_list!=[]):
-        except_list_name.extend(search_index_list)
-    
-    
     
     min_rating = 0  # 최소 평점
     min_reviews = 0  # 최소 리뷰 수
@@ -585,7 +579,6 @@ def search(input_search_locations=[], retry=0):
         
         # [0 ,'검색한 장소=검색한 결과의 장소','평점','리뷰 수','사진링크','lat','lng']
         # [1 ,'검색한 장소','검색한 결과의 장소','평점','리뷰 수','사진링크','lat','lng']
-        search_index_list.extend(result_ex) # 재검색 중복방지
         
         return result_list #최종 리턴값
     
