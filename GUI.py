@@ -66,7 +66,7 @@ class Ui_MainWindow(QMainWindow):
         self.scrollArea.setGeometry(QtCore.QRect(590, 100, 591, 411))
     #스크롤바 내용물 크기 지정
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 561, 900))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 561, 1000))
 
 
     #삭제 관련, 교체 관련
@@ -118,12 +118,14 @@ class Ui_MainWindow(QMainWindow):
     #메뉴바에 Menu 써진 메뉴 생성
         self.menuabout = QtWidgets.QMenu(self.menuBar)
         MainWindow.setMenuBar(self.menuBar)
-    #Menu 누르면 나오는 action에 About과 Quit 생성
+    #Menu 누르면 나오는 action에 About과 Quit, error(시험용) 생성
         self.actionAbout = QtWidgets.QAction(MainWindow)
         self.actionQuit = QtWidgets.QAction(MainWindow)
+        self.actionError = QtWidgets.QAction(MainWindow)
     #생성된 About과 Quit을 Menu에 추가, 메뉴바에 Menu 추가
         self.menuabout.addAction(self.actionAbout)
         self.menuabout.addAction(self.actionQuit)
+        self.menuabout.addAction(self.actionError)
         self.menuBar.addAction(self.menuabout.menuAction())
 
 
@@ -140,6 +142,7 @@ class Ui_MainWindow(QMainWindow):
         self.changeButton.clicked.connect(self.changeOpen)
         self.actionAbout.triggered.connect(self.aboutOpen)
         self.actionQuit.triggered.connect(app.quit)
+        self.actionError.triggered.connect(self.ErrorOpen)
         self.SearchButton.clicked.connect(self.SearchClicked)
         
         self.deleteButton.clicked.connect(self.deleteClicked)
@@ -149,7 +152,8 @@ class Ui_MainWindow(QMainWindow):
     #메인창 말고 about창, 위치변경창도 Dialog(창)으로 정의
         self.Dialog = QDialog()
         self.Form = QDialog()
-
+        self.ErrorDialog = QDialog()
+        
     #로딩 안내문이 맨 앞으로 오게 raise로 당겨주기
         self.SearchLoading.raise_()
 
@@ -175,6 +179,7 @@ class Ui_MainWindow(QMainWindow):
         self.actionAbout.setText("About")
         self.optimize.setText("경로 최적화")
         self.actionQuit.setText("Exit")
+        self.actionError.setText("Error")
 
 
 #리뷰들에 들어가는 제목, 내용물, 리뷰 별과 갯수, 이미지, 체크박스를 생성
@@ -207,29 +212,29 @@ class Ui_MainWindow(QMainWindow):
 
         for i in range(0,5,1):
     #리뷰 제목들 위치, 폰트, text 세팅
-            self.names[i].setGeometry(QtCore.QRect(10, 8+175*i, 535, 31))
+            self.names[i].setGeometry(QtCore.QRect(10, 8+195*i, 535, 31))
             self.names[i].setFont(font)
             self.names[i].setText(("%s번째") % str(i+1))
     #리뷰 제목들 위치, text, 줄바꿈 세팅
-            self.contents[i].setGeometry(QtCore.QRect(145, 64+175*i, 418, 110))
+            self.contents[i].setGeometry(QtCore.QRect(145, 84+195*i, 418, 110))
             self.contents[i].setText(("%s번째 내용물") % str(i+1))
             self.contents[i].setWordWrap(True)
             self.contents[i].setAlignment(QtCore.Qt.AlignTop)
     #리뷰 이미지, 별점들, 체크박스 위치 및 text 세팅, 체크박스 숨김
-            self.imgs[i].setGeometry(QtCore.QRect(10, 42+175*i, 130, 130))
-            self.no_imgs[i].setGeometry(QtCore.QRect(10, 42+175*i, 130, 130))
+            self.imgs[i].setGeometry(QtCore.QRect(10, 42+195*i, 130, 130))
+            self.no_imgs[i].setGeometry(QtCore.QRect(10, 42+195*i, 130, 130))
             self.no_imgs[i].setPixmap(pixmap)
 
-            self.reviewPoints[i].setGeometry(QtCore.QRect(144, 44+175*i, 51, 17))
+            self.reviewPoints[i].setGeometry(QtCore.QRect(144, 44+195*i, 51, 17))
             self.reviewPoints[i].setText("4.0")
             self.reviewStars[i].setText("★★★★★")
-            self.reviews[i].setGeometry(QtCore.QRect(258, 44+175*i, 101, 16))
+            self.reviews[i].setGeometry(QtCore.QRect(258, 44+195*i, 101, 16))
             self.reviews[i].setText("1,234")
-            self.checkBoxes[i].setGeometry(13, 0+175*i, 130, 55)
+            self.checkBoxes[i].setGeometry(13, 0+195*i, 130, 55)
             self.checkBoxes[i].hide()
-            self.Landmarks[i].setGeometry(QtCore.QRect(330, 44+175*i, 90, 16))
+            self.Landmarks[i].setGeometry(QtCore.QRect(145, 64+195*i, 90, 16))
             self.Landmarks[i].setText("인기 관광지:: ")
-            self.LandmarksName[i].setGeometry(QtCore.QRect(422, 44+175*i, 101, 16))
+            self.LandmarksName[i].setGeometry(QtCore.QRect(145, 64+195*i, 101, 16))
 
     #리뷰 내용들 처음엔 안보이게, 버튼도 비활성화
         for i in range(0,5,1):
@@ -249,7 +254,7 @@ class Ui_MainWindow(QMainWindow):
     #별점은 중대사항: 디폴트 지정에 맞춰 별 갯수 노출 세팅
         for i in range(0,5,1):
             a = float(self.reviewPoints[i].text()) * 14.1
-            self.reviewStars[i].setGeometry(QtCore.QRect(175, 44+175*i, 2+int(a), 15))
+            self.reviewStars[i].setGeometry(QtCore.QRect(175, 44+195*i, 1+int(a), 15))
         
         
 #메뉴바에 about 눌렀을 때 이벤트: 팀 정보창 열림
@@ -343,7 +348,7 @@ class Ui_MainWindow(QMainWindow):
     #체크박스들 나타나고 리뷰들 제목을 옆으로 좀 옮김
         for i in range(0,5,1):
             self.checkBoxes[i].show()
-            self.names[i].setGeometry(QtCore.QRect(35, 8+175*i, 475, 31))
+            self.names[i].setGeometry(QtCore.QRect(35, 8+195*i, 475, 31))
         
         
 #cancelBtn 눌렀을 때 이벤트: 체크박스 안보이게 원상복귀, 체크상태 해제
@@ -355,7 +360,7 @@ class Ui_MainWindow(QMainWindow):
         for i in range(0,5,1):
             self.checkBoxes[i].hide()
             self.checkBoxes[i].setChecked(False)
-            self.names[i].setGeometry(QtCore.QRect(10, 8+175*i, 535, 31))
+            self.names[i].setGeometry(QtCore.QRect(10, 8+195*i, 535, 31))
         
         
 #trashCan 눌렀을 때 이벤트: index_list에 체크된 아이템 추가, 다시 돌림
@@ -372,7 +377,7 @@ class Ui_MainWindow(QMainWindow):
                 self.index_list.append(i)
             self.checkBoxes[i].hide()
             self.checkBoxes[i].setChecked(False)
-            self.names[i].setGeometry(QtCore.QRect(10, 8+175*i, 535, 31))
+            self.names[i].setGeometry(QtCore.QRect(10, 8+195*i, 535, 31))
 
             # self.process_call(topic,index_list,1)
             # 새 스레드 만들어서 시작: 메인 스레드는 그대로라 로딩중 응답없음이 안 뜸
@@ -528,15 +533,15 @@ class Ui_MainWindow(QMainWindow):
             self.reviewPoints[i].setText(self.reviewPoints[i].text())
             self.reviews[i].setText(self.reviews[i].text())
             
-            self.names[i].setGeometry(QtCore.QRect(10, 8+175*i, 535, 31))
-            self.contents[i].setGeometry(QtCore.QRect(145, 64+175*i, 418, 110))
-            self.imgs[i].setGeometry(QtCore.QRect(10, 42+175*i, 130, 130))
-            self.reviewPoints[i].setGeometry(QtCore.QRect(144, 44+175*i, 51, 17))
-            self.reviews[i].setGeometry(QtCore.QRect(258, 44+175*i, 101, 16))
+            self.names[i].setGeometry(QtCore.QRect(10, 8+195*i, 535, 31))
+            self.contents[i].setGeometry(QtCore.QRect(145, 64+195*i, 418, 110))
+            self.imgs[i].setGeometry(QtCore.QRect(10, 42+195*i, 130, 130))
+            self.reviewPoints[i].setGeometry(QtCore.QRect(144, 44+195*i, 51, 17))
+            self.reviews[i].setGeometry(QtCore.QRect(258, 44+195*i, 101, 16))
 
         #바뀐 별점에 따라 별 갯수 노출도 변화
             a = float(self.reviewPoints[i].text()) * 14.1
-            self.reviewStars[i].setGeometry(QtCore.QRect(175, 44+175*i, 2+int(a), 15))
+            self.reviewStars[i].setGeometry(QtCore.QRect(175, 44+195*i, 1+int(a), 15))
 
 
 #ChatGPT에게 검색창에 나온 내용으로 검색 요청하기
@@ -626,7 +631,7 @@ class Ui_MainWindow(QMainWindow):
 
                 if search_list[i][0] == 0:  # 0, 즉 장소일때
                     self.reviewPoints[i].setText(str("%.1f"%search_list[i][2]))
-                    self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 175 * i, 2 + int(float(search_list[i][2]) * 14.1), 15))
+                    self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 195 * i, 1 + int(float(search_list[i][2]) * 14.1), 15))
                     self.reviews[i].setText(str(format(search_list[i][3], ',')))
                     #self.LandmarksName[i].setText()
                     self.lat_list.append(search_list[i][5])
@@ -639,7 +644,7 @@ class Ui_MainWindow(QMainWindow):
                 else:  # 1, 즉 지역일때
                     ########### 리뷰 대신, 추천지역 관련 변수 추가로 요구됨 (search_list[i][2][1])
                     self.reviewPoints[i].setText(str("%.1f"%search_list[i][2][1]))
-                    self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 175 * i, 2 + int(float(search_list[i][2][1]) * 14.1), 15))
+                    self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 195 * i, 1 + int(float(search_list[i][2][1]) * 14.1), 15))
                     self.reviews[i].setText(str(format(search_list[i][2][2], ',')))
                     #self.LandmarksName[i].setText(search_list[i][2][1])
                     self.lat_list.append(search_list[i][4])
@@ -657,7 +662,7 @@ class Ui_MainWindow(QMainWindow):
 
                 if search_list[i][0] == 0:  # 0, 즉 장소일때
                     self.reviewPoints[index].setText(str(search_list[i][2]))
-                    self.reviewStars[index].setGeometry(QtCore.QRect(175, 44 + 175 * index, 2 + int(float(search_list[i][2]) * 14.1), 15))
+                    self.reviewStars[index].setGeometry(QtCore.QRect(175, 44 + 195 * index, 2 + int(float(search_list[i][2]) * 14.1), 15))
                     self.reviews[index].setText(str(search_list[i][3]))
                     #self.LandmarksName[i].setText(search_list[i][2][1])
                     self.lat_list[index] = search_list[i][5]
@@ -670,7 +675,7 @@ class Ui_MainWindow(QMainWindow):
                 else:  # 1, 즉 지역일때
                     # 리뷰 대신, 추천지역 관련 변수 추가로 요구됨 (search_list[i][2][1])
                     self.reviewPoints[index].setText(str(search_list[i][2][1]))
-                    self.reviewStars[index].setGeometry(QtCore.QRect(175, 44 + 175 * index, 2 + int(float(search_list[i][2][1]) * 14.1), 15))
+                    self.reviewStars[index].setGeometry(QtCore.QRect(175, 44 + 195 * index, 2 + int(float(search_list[i][2][1]) * 14.1), 15))
                     self.reviews[index].setText(str(search_list[i][2][2]))
                     #self.LandmarksName[index].setText(search_list[i][2][1])
                     self.lat_list[index] = search_list[i][4]
@@ -705,11 +710,13 @@ class Ui_MainWindow(QMainWindow):
 
         self.pushButton = QtWidgets.QPushButton(self.ErrorDialog)
         self.pushButton.setGeometry(QtCore.QRect(150, 200, 93, 28))
+        self.pushButton.clicked.connect(self.ErrorDialog.close)
 
         self.ErrorDialog.setWindowTitle("Error!")
         self.label.setText("!")
         self.label_2.setText("오류가 발생했습니다.\n다시 시도해 주세요.")
         self.pushButton.setText("확인")
+        self.ErrorDialog.show()
 
 
 class Search_loading(QThread):
@@ -745,10 +752,10 @@ class Remove_loading(QThread):
 
     def run(self):
         # 버튼들 비활성화
-        # self.parent.deleteButton.setEnabled(False)
-        # self.parent.SearchButton.setEnabled(False)
-        # self.parent.changeButton.setEnabled(False) ######## 알수 없는 이유로 팅김
-        # self.parent.optimize.setEnabled(False)
+        #self.parent.deleteButton.setEnabled(False)
+        #self.parent.SearchButton.setEnabled(False)
+        #self.parent.changeButton.setEnabled(False) ######## 알수 없는 이유로 팅김
+        #self.parent.optimize.setEnabled(False)
 
         # 검색하는 함수들 여기에 연결해주시면 됩니다
         # 메인윈도우 클래스꺼는 self.parent.붙여서 돌리시면 됩니다!
