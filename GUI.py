@@ -195,7 +195,6 @@ class Ui_MainWindow(QMainWindow):
     #메인 스레드에서 setUrl을 하기 위해 saveUrls에 검색으로 얻은 Url들 저장
         self.saveUrls = [str,str,str,str,str]
     #지역 유명장소 리턴 공간: 그냥 별점 옆에 하면 안댐??
-        self.Landmarks = [QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents)]
         self.LandmarksName = [QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents),QtWidgets.QLabel(self.scrollAreaWidgetContents)]
 
     #이미지 없을 때 띄울 no_image를 위한 라벨
@@ -233,8 +232,6 @@ class Ui_MainWindow(QMainWindow):
             self.reviews[i].setText("1,234")
             self.checkBoxes[i].setGeometry(13, 0+195*i, 130, 55)
             self.checkBoxes[i].hide()
-            self.Landmarks[i].setGeometry(QtCore.QRect(145, 64+195*i, 90, 16))
-            self.Landmarks[i].setText("인기 관광지:: ")
             self.LandmarksName[i].setGeometry(QtCore.QRect(145, 64+195*i, 101, 16))
 
     #리뷰 내용들 처음엔 안보이게, 버튼도 비활성화
@@ -247,8 +244,9 @@ class Ui_MainWindow(QMainWindow):
             self.imgs[i].hide()
             self.no_imgs[i].hide()
             self.LandmarksName[i].hide()
-            self.deleteButton.hide()
-            self.changeButton.hide()
+        self.optimize.hide()
+        self.deleteButton.hide()
+        self.changeButton.hide()
         self.PsContents.hide()
 
     #별점은 중대사항: 디폴트 지정에 맞춰 별 갯수 노출 세팅
@@ -648,7 +646,7 @@ class Ui_MainWindow(QMainWindow):
                     self.reviewPoints[i].setText(str("%.1f"%search_list[i][2][1]))
                     self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 195 * i, 1 + int(float(search_list[i][2][1]) * 14.12), 15))
                     self.reviews[i].setText(str(format(search_list[i][2][2], ',')))
-                    self.LandmarksName[i].setText(str(str("(주변 인기 관광지 " + search_list[i][2][0] + " 의 평점)")))
+                    self.LandmarksName[i].setText(str("(주변 인기 관광지 " + search_list[i][2][0] + " 의 평점)"))
                     self.lat_list.append(search_list[i][4])
                     self.lng_list.append(search_list[i][5])
                     if search_list[i][3] != 'No Image':
