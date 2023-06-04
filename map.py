@@ -12,8 +12,6 @@ def FindLatLon(API_KEY,site):
     n=len(site)
     
     
-    gmaps = googlemaps.Client(key=API_KEY)
-    
     # Geocoding API 엔드포인트
     geocode_url = 'https://maps.googleapis.com/maps/api/geocode/json'
 
@@ -80,9 +78,9 @@ def CreateMap(origin):
     return map
 
 #마커찍기
-def mark(map,n):
+def mark(map,point,n):
     for i in range(n):
-        folium.Marker([lat[i], lon[i]], popup=site[i]).add_to(map)
+        folium.Marker([point[i][0],point[i][1]]).add_to(map)
         
 #경로 그리기        
 def DrawDirec(origin,destination,locations,gmaps,map,opt,n):
@@ -106,8 +104,8 @@ def DrawDirec(origin,destination,locations,gmaps,map,opt,n):
             folium.PolyLine(points, color='blue', weight=5).add_to(map)
             
         
-        else:
-            print("No directions found")
+    else:
+        print("No directions found")
 
 # HTML 파일로 저장
 def ReturnHTML(map):
@@ -118,9 +116,11 @@ def ReturnHTML(map):
 # 생성된 HTML 파일 열기
 def OpenMap(html):
     webbrowser.open(html)
-#
-def MainFunc(point,opt=0):
+    
+# 총괄 함수
+def MainFunc(API_KEY,point,opt=0):
     n=len(point)
+    gmaps = googlemaps.Client(key=API_KEY)
     locations=[]
     # 시작점, 도착점
     if (opt==1):
@@ -134,8 +134,10 @@ def MainFunc(point,opt=0):
     map=CreateMap(origin)
 
     #마커 찍기 함수
-    mark(map,n)
+    mark(map,point,n)
     
     DrawDirec(origin,destination,locations,gmaps,map,opt,n)
     
-    return ReturnHTML(map)
+    html=ReturnHTML(map)
+    OpenMap(html)
+    return html
