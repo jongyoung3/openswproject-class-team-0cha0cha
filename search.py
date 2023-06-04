@@ -33,16 +33,16 @@ def search(input_search_locations=[], retry=0, z=0):
     try:
     # 지도에 데이터 보낼 때 좌표로 보내는 걸로 코드 바꾸기(원한다면)
         if z == 0:
-            count = 0
+            
             for i, locations in enumerate(input_search_locations):
                 response = map_clinet.places(query=locations)
                 if (response['status'] != 'ZERO_RESULTS'):
                     if len(response['results']) != 1:
-                        count += 1
+                        
                         temp1, temp2 = locations.split('(')
                         input_search_locations[i] = temp1
-            if count > 0:
-                return search(input_search_locations, retry, z=1)
+            
+            return search(input_search_locations, retry, z=1)
         else:
             for locations in input_search_locations:
                 response = map_clinet.places(query=locations) # 데이터를 api로 보냄
@@ -137,7 +137,7 @@ def search(input_search_locations=[], retry=0, z=0):
                         # 장소 '1'에 해당되는 장소의 좌표값
                         location_lat=response_blank_one['results'][0]['geometry']['location']['lat']
                         location_lng=response_blank_one['results'][0]['geometry']['location']['lng']
-                        radius=30000 # 반경 3,000m
+                        radius=20000 # 반경 2,000m
 
                         # 장소 세부요청 (전달받은 위치의 반경 2000m에 있는 관광명소 탐색)
                         payload={}
@@ -291,7 +291,7 @@ def search(input_search_locations=[], retry=0, z=0):
                                 destination.append(search_location_lat)
                                 destination.append(search_location_lng)
                             else:
-                                  destination.append(-1)
+                                destination.append(-1)
 
 
 
@@ -445,7 +445,7 @@ def search(input_search_locations=[], retry=0, z=0):
                                 location_lat=response_blank['results'][0]['geometry']['location']['lat']
                                 location_lng=response_blank['results'][0]['geometry']['location']['lng']
 
-                                radius=30000 # 반경 3,000m
+                                radius=20000 # 반경 2,000m
 
                                 # 장소 세부요청 (전달받은 위치의 반경 2000m에 있는 관광명소 탐색)
                                 payload={}
@@ -609,9 +609,10 @@ def search(input_search_locations=[], retry=0, z=0):
         return search(input_search_locations, retry)
 
 #TEST
-# res_sol=search(['Tokyo(Kanto Region, Japan)', 'Kyoto(Kansai Region, Japan)', 'Osaka(Kansai Region, Japan)', 'Hiroshima(Chugoku Region, Japan)', 'Nara(Kansai Region, Japan)'])
+#res_sol=search(['Okinawa'])
 # #res_sol=search(['Hiroshima(Chugoku Region, Japan)'])
 #
-# print(res_sol)
+#print(res_sol)
 #['Tokyo(Kanto Region, Japan)', 'Kyoto(Kansai Region, Japan)', 'Osaka(Kansai Region, Japan)', 'Hiroshima(Chugoku Region, Japan)', 'Nara(Kansai Region, Japan)']
+#['New York City(New York, United States)', 'Miami Beach(Florida, United States)', 'Grand Canyon National Park(Arizona, United States)', 'Las Vegas(Nevada, United States)', 'Hawaii(United States)']
 #['Sydney Opera House(Sydney, New South Wales, Australia)', 'Great Barrier Reef(Queensland, Australia)', 'Uluru-Kata Tjuta National Park(Northern Territory, Australia)', 'Port Douglas(Queensland, Australia)', 'Melbourne(Victoria, Australia)']
