@@ -349,7 +349,13 @@ class Ui_MainWindow(QMainWindow):
                 self.reviewStars[i].show()
                 self.LandmarksName[i].show()
                 self.imgs[i].show()
-                self.imgs[i].setUrl(QUrl("%s" % self.saveUrls[i]))
+                if self.saveUrls[i] != "no_image.png":
+                    self.imgs[i].setUrl(QUrl("%s" % self.saveUrls[i]))
+                else:
+                    abs_save_Urls = os.path.abspath(self.saveUrls[i])
+                    abs_save_Urls = abs_save_Urls.replace('\\', '/')
+                    self.imgs[i].setUrl(QtCore.QUrl(abs_save_Urls))
+                    self.imgs[i].show()
             self.optimize.show()
             self.deleteButton.show()
             self.changeButton.show()
