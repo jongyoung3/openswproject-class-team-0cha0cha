@@ -33,16 +33,14 @@ def search(input_search_locations=[], retry=0, z=0):
     try:
     # 지도에 데이터 보낼 때 좌표로 보내는 걸로 코드 바꾸기(원한다면)
         if z == 0:
-            count = 0
             for i, locations in enumerate(input_search_locations):
                 response = map_clinet.places(query=locations)
                 if (response['status'] != 'ZERO_RESULTS'):
                     if len(response['results']) != 1:
-                        count += 1
                         temp1, temp2 = locations.split('(')
                         input_search_locations[i] = temp1
-            if count > 0:
-                return search(input_search_locations, retry, z=1)
+            return search(input_search_locations, retry, z=1)
+
         else:
             for locations in input_search_locations:
                 response = map_clinet.places(query=locations) # 데이터를 api로 보냄

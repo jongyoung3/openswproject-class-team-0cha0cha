@@ -326,27 +326,40 @@ class Ui_MainWindow(QMainWindow):
     #검색 끝났으면 SearchEnd를 false로 바꾸고 로딩안내문 숨김
         if (self.errorHappened == True):
             self.ErrorOpen()
+            for i in range(0, 5, 1):
+                self.names[i].hide()
+                self.contents[i].hide()
+                self.reviews[i].hide()
+                self.reviewPoints[i].hide()
+                self.reviewStars[i].hide()
+                self.imgs[i].hide()
+                self.no_imgs[i].hide()
+                self.LandmarksName[i].hide()
+            self.optimize.hide()
+            self.deleteButton.hide()
+            self.changeButton.hide()
+            self.PsContents.hide()
             self.errorHappened = False
+        else:
+            for i in range(0,5,1):
+                self.names[i].show()
+                self.contents[i].show()
+                self.reviews[i].show()
+                self.reviewPoints[i].show()
+                self.reviewStars[i].show()
+                self.LandmarksName[i].show()
+                self.imgs[i].show()
+                self.imgs[i].setUrl(QUrl("%s" % self.saveUrls[i]))
+            self.optimize.show()
+            self.deleteButton.show()
+            self.changeButton.show()
+            self.PsContents.show()
+            abs_map_path = os.path.abspath(self.map_path)
+            abs_map_path = abs_map_path.replace('\\', '/')
+            self.Map.setUrl(QtCore.QUrl(abs_map_path))
+            self.Map.show()
         self.SearchEnd = False
         self.SearchLoading.hide()
-
-        for i in range(0,5,1):
-            self.names[i].show()
-            self.contents[i].show()
-            self.reviews[i].show()
-            self.reviewPoints[i].show()
-            self.reviewStars[i].show()
-            self.LandmarksName[i].show()
-            self.imgs[i].show()
-            self.imgs[i].setUrl(QUrl("%s" % self.saveUrls[i]))
-        self.optimize.show()
-        self.deleteButton.show()
-        self.changeButton.show()
-        self.PsContents.show()
-        abs_map_path = os.path.abspath(self.map_path)
-        abs_map_path = abs_map_path.replace('\\', '/')
-        self.Map.setUrl(QtCore.QUrl(abs_map_path))
-        self.Map.show()
 
 
         
@@ -378,10 +391,7 @@ class Ui_MainWindow(QMainWindow):
         self.deleteButton.show()
         self.trashCan.hide()
         self.cancelBtn.hide()
-        ##################### searched_well 변수 등을 만들어서, process 함수와 이어준 뒤, 한번 이상 서치가 잘 이루어진 후에만 동작하도록 만들어야 할듯
         ###################### 일부 장소는 주제를 바꿔서 탐색할수도 있게 해도 괜찮을 듯, 고려 필요.
-        # global topic
-        # topic = "일본 여행"
         for i in range(0,5,1):
             if (self.checkBoxes[i].isChecked()):
                 self.index_list.append(i)
@@ -702,7 +712,7 @@ class Ui_MainWindow(QMainWindow):
                     # 리뷰 대신, 추천지역 관련 변수 추가로 요구됨 (search_list[i][2][1])
                     self.reviewPoints[index].setText(str("%.1f"%(search_list[i][2][1])))
                     self.reviewStars[index].setGeometry(QtCore.QRect(175, 44 + 195 * index, 1 + int(search_list[i][2][1]*14.12), 15))
-                    self.reviews[index].setText(str(format(search_list[i][3], ',')))
+                    self.reviews[index].setText(str(format(search_list[i][2][2], ',')))
                     self.LandmarksName[index].setText(str("(주변 인기 관광지 " + search_list[i][2][0] + "의 평점)"))
                     self.point_list[index] = (search_list[i][4],search_list[i][5])
                     if search_list[i][3] != 'No Image':
@@ -729,6 +739,9 @@ class Ui_MainWindow(QMainWindow):
     def ErrorOpen(self):
         self.ErrorDialog.setObjectName("Dialog")
         self.ErrorDialog.resize(400, 300)
+        self.ErrorDialog.setMinimumSize(QtCore.QSize(400, 300))
+        self.ErrorDialog.setMaximumSize(QtCore.QSize(400, 300))
+        self.centralwidget = QtWidgets.QWidget(self.ErrorDialog)
 
         self.label = QtWidgets.QLabel(self.ErrorDialog)
         self.label.setGeometry(QtCore.QRect(70, 80, 64, 91))
@@ -745,11 +758,13 @@ class Ui_MainWindow(QMainWindow):
         self.pushButton.setGeometry(QtCore.QRect(150, 200, 93, 28))
         self.pushButton.clicked.connect(self.ErrorDialog.close)
 
+
         self.ErrorDialog.setWindowTitle("Error!")
         self.label.setText("!")
         self.label_2.setText("오류가 발생했습니다.\n다시 시도해 주세요.")
         self.pushButton.setText("확인")
         self.ErrorDialog.show()
+
 
 
 class Search_loading(QThread):
