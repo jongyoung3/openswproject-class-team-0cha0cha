@@ -8,7 +8,7 @@ import os
 from urllib import parse
 
 import chatgpt
-import search_7
+import search
 import map
 
 
@@ -98,15 +98,14 @@ class Ui_MainWindow(QMainWindow):
         self.changeButton.setIcon(icon1)
     # 리무브 관련 체크여부를 확인할 인덱스 리스트
         self.index_list = []
-        self.lat_list = []
-        self.lng_list = []
+        self.point_list = []
 
 
     #맵 관련: 지금은 같이 올린 html 파일 주소 입력되어 있음
         self.Map = QtWebEngineWidgets.QWebEngineView(self.centralwidget)
         self.Map.setGeometry(QtCore.QRect(20, 10, 551, 641))
-        map_path = 'map.html'
-        abs_map_path = os.path.abspath(map_path)
+        self.map_path = 'map.html'
+        abs_map_path = os.path.abspath(self.map_path)
         abs_map_path = abs_map_path.replace('\\','/')
         self.Map.setUrl(QtCore.QUrl(abs_map_path))
 
@@ -344,6 +343,11 @@ class Ui_MainWindow(QMainWindow):
         self.deleteButton.show()
         self.changeButton.show()
         self.PsContents.show()
+        abs_map_path = os.path.abspath(self.map_path)
+        abs_map_path = abs_map_path.replace('\\', '/')
+        self.Map.setUrl(QtCore.QUrl(abs_map_path))
+        self.Map.show()
+
 
         
 #deleteButton 눌렀을 때 이벤트: 버튼들이랑 체크박스 나타남
@@ -515,13 +519,14 @@ class Ui_MainWindow(QMainWindow):
             second_num-=1
         
     #pop할 내용 임시 저장
-        self.temps = [self.names.pop(first_num),self.contents.pop(first_num),self.imgs.pop(first_num),self.reviewPoints.pop(first_num),self.reviews.pop(first_num)]
+        self.temps = [self.names.pop(first_num),self.contents.pop(first_num),self.imgs.pop(first_num),self.reviewPoints.pop(first_num),self.reviews.pop(first_num),self.point_list.pop(first_num)]
     
         self.names.insert(second_num,self.temps[0])
         self.contents.insert(second_num,self.temps[1])
         self.imgs.insert(second_num,self.temps[2])
         self.reviewPoints.insert(second_num,self.temps[3])
         self.reviews.insert(second_num,self.temps[4])
+        self.point_list.insert(second_num,self.temps[5])
         
         for i in range(0,5,1):
             self.changeLabels[i].clear()
@@ -550,6 +555,18 @@ class Ui_MainWindow(QMainWindow):
         #바뀐 별점에 따라 별 갯수 노출도 변화
             a = float(self.reviewPoints[i].text().replace(',','')) * 14.12
             self.reviewStars[i].setGeometry(QtCore.QRect(175, 44+195*i, 1+int(a), 15))
+        # 맵 다시 띄우기
+        mapchecker = map.MainFunc(self.point_list)
+        if mapchecker == "-99":
+            self.errorHappened = True
+            self.map_path = "map.html"
+            return
+        else:
+            self.map_path = 'route.html'
+        abs_map_path = os.path.abspath(self.map_path)
+        abs_map_path = abs_map_path.replace('\\', '/')
+        self.Map.setUrl(QtCore.QUrl(abs_map_path))
+        self.Map.show()
 
 
 #ChatGPT에게 검색창에 나온 내용으로 검색 요청하기
@@ -576,7 +593,7 @@ class Ui_MainWindow(QMainWindow):
 
             temp_eng_list, temp_kor_name, temp_kor_introduce, trash = chatgpt.gpt(process_topic, error_count, except_list)  # 에러 개수만큼 탐색, temp에 저장
             except_list.extend(temp_eng_list)  # 새로 탐색한것도 exceptlist에 추가해둠
-            temp_search_list = search_7.search(temp_eng_list)  # search 데이터 temp에 저장
+            temp_search_list = search.search(temp_eng_list)  # search 데이터 temp에 저장
             # 일단 바깥의 사용용 데이터들 전부 새 데이터로 교체
             j = 0
             for i in minus1_index:
@@ -601,7 +618,7 @@ class Ui_MainWindow(QMainWindow):
             eng_list, kor_name, kor_introduce, ps = temp
             except_list.extend(eng_list)
 
-            search_list = search_7.search(eng_list)
+            search_list = search.search(eng_list)
             if search_list == [-99]: ## 에러 발생시
                 self.errorHappened = True
                 return
@@ -613,6 +630,7 @@ class Ui_MainWindow(QMainWindow):
                     chk, next_error_counter = search_error_index(process_topic, next_error_counter)
         else:
             except_list.clear()
+            self.point_list.clear()
             temp = chatgpt.gpt(process_topic, n)
             if temp == [-99]: ## 에러 발생시
                 self.errorHappened = True
@@ -620,7 +638,7 @@ class Ui_MainWindow(QMainWindow):
             eng_list, kor_name, kor_introduce, ps = temp
             except_list.extend(eng_list)
 
-            search_list = search_7.search(eng_list)
+            search_list = search.search(eng_list)
             if search_list == [-99]: ## 에러 발생시
                 self.errorHappened = True
                 return
@@ -645,8 +663,7 @@ class Ui_MainWindow(QMainWindow):
                     self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 195 * i, 1 + int(search_list[i][2]*14.12), 15))
                     self.reviews[i].setText(str(format(search_list[i][3], ',')))
                     self.LandmarksName[i].setText(str(""))
-                    self.lat_list.append(search_list[i][5])
-                    self.lng_list.append(search_list[i][6])
+                    self.point_list.append((search_list[i][5],search_list[i][6]))
                     if search_list[i][4] != 'No Image':
                         self.saveUrls[i] = search_list[i][4]  # saveUrl에 넣어두고 다 끝나면 메인 스레드에서 setUrl
                     else:  # 이미지 없을땐
@@ -658,8 +675,7 @@ class Ui_MainWindow(QMainWindow):
                     self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 195 * i, 1 + int(search_list[i][2][1]*14.12), 15))
                     self.reviews[i].setText(str(format(search_list[i][2][2], ',')))
                     self.LandmarksName[i].setText(str("(주변 인기 관광지 " + search_list[i][2][0] + " 의 평점)"))
-                    self.lat_list.append(search_list[i][4])
-                    self.lng_list.append(search_list[i][5])
+                    self.point_list.append((search_list[i][4],search_list[i][5]))
                     if search_list[i][3] != 'No Image':
                         self.saveUrls[i] = search_list[i][3]  # saveUrl에 넣어두고 다 끝나면 메인 스레드에서 setUrl
                     else:  # 이미지 없을땐
@@ -676,8 +692,7 @@ class Ui_MainWindow(QMainWindow):
                     self.reviewStars[index].setGeometry(QtCore.QRect(175, 44 + 195 * index, 1 + int(search_list[i][2]*14.12), 15))
                     self.reviews[index].setText(str(format(search_list[i][3], ',')))
                     self.LandmarksName[i].setText(str(""))
-                    self.lat_list[index] = search_list[i][5]
-                    self.lng_list[index] = search_list[i][6]
+                    self.point_list[index] = (search_list[i][5],search_list[i][6])
                     if search_list[i][4] != 'No Image':
                         self.saveUrls[index] = search_list[i][4]  # saveUrl에 넣어두고 다 끝나면 메인 스레드에서 setUrl
                     else:  # 이미지 없을땐
@@ -689,15 +704,23 @@ class Ui_MainWindow(QMainWindow):
                     self.reviewStars[index].setGeometry(QtCore.QRect(175, 44 + 195 * index, 1 + int(search_list[i][2][1]*14.12), 15))
                     self.reviews[index].setText(str(format(search_list[i][3], ',')))
                     self.LandmarksName[index].setText(str("(주변 인기 관광지 " + search_list[i][2][0] + "의 평점)"))
-                    self.lat_list[index] = search_list[i][4]
-                    self.lng_list[index] = search_list[i][5]
+                    self.point_list[index] = (search_list[i][4],search_list[i][5])
                     if search_list[i][3] != 'No Image':
                         self.saveUrls[index] = search_list[i][3]  # saveUrl에 넣어두고 다 끝나면 메인 스레드에서 setUrl
                     else:  # 이미지 없을땐
                         self.saveUrls[index] = "no_image.png"
+
         # map 함수 호출
-        ####################### 좌표 데이터 가지고 map함수 call 부분 필요
-        # map.MainFunc()
+        # 좌표 데이터 가지고 map함수 call 부분 필요
+        mapchecker = map.MainFunc(self.point_list)
+        if mapchecker == "-99":
+            self.errorHappened = True
+            self.map_path = "map.html"
+            return
+        else:
+            self.map_path = 'route.html'
+
+
 
     # [0 ,'검색한 장소=검색한 결과의 장소','평점','리뷰 수','사진링크','lat','lng']
     # [1 ,'검색한 장소',('검색한 결과의 장소','평점','리뷰 수'),'사진링크','lat','lng']

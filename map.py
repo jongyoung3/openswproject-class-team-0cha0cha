@@ -2,47 +2,49 @@ import googlemaps
 import folium
 import webbrowser
 import requests
+from apikey import GoogleMap_API_KEY
 from geopy.distance import geodesic
+
 #lat,lon구하기
-def FindLatLon(API_KEY,site):
-    lat=[]
-    lon=[]
-    
-    #지점 개수
-    n=len(site)
-    
-    
-    # Geocoding API 엔드포인트
-    geocode_url = 'https://maps.googleapis.com/maps/api/geocode/json'
-
-    #site 별 좌표 찾기   
-    for i in range(n):
-        
-        wanted=site[i]
-        
-        # 요청 파라미터
-        params = {
-            'address': wanted,
-            'key': API_KEY,
-        }
-
-        # geocode API 요청 보내기
-        response = requests.get(geocode_url, params=params)
-
-        # 응답 처리, 좌표 구하기
-        if response.status_code == 200:
-            data = response.json()
-            if data['status'] == 'OK':
-                # 첫 번째 결과의 좌표 얻기
-                location = data['results'][0]['geometry']['location']
-                lat.append(location['lat'])
-                lon.append(location['lng'])
-            else:
-                print('장소를 찾을 수 없습니다.')
-        else:
-            print('API 요청 실패')
-
-    return lat,lon,gmaps,n
+# def FindLatLon(site):
+#     lat=[]
+#     lon=[]
+#
+#     #지점 개수
+#     n=len(site)
+#
+#
+#     # Geocoding API 엔드포인트
+#     geocode_url = 'https://maps.googleapis.com/maps/api/geocode/json'
+#
+#     #site 별 좌표 찾기
+#     for i in range(n):
+#
+#         wanted=site[i]
+#
+#         # 요청 파라미터
+#         params = {
+#             'address': wanted,
+#             'key': GoogleMap_API_KEY,
+#         }
+#
+#         # geocode API 요청 보내기
+#         response = requests.get(geocode_url, params=params)
+#
+#         # 응답 처리, 좌표 구하기
+#         if response.status_code == 200:
+#             data = response.json()
+#             if data['status'] == 'OK':
+#                 # 첫 번째 결과의 좌표 얻기
+#                 location = data['results'][0]['geometry']['location']
+#                 lat.append(location['lat'])
+#                 lon.append(location['lng'])
+#             else:
+#                 print('장소를 찾을 수 없습니다.')
+#         else:
+#             print('API 요청 실패')
+#
+#     return lat,lon,gmaps,n
 
 # 지점 저장
 def ReturnPoint(lat,lon,n):
@@ -80,7 +82,7 @@ def CreateMap(origin):
 #마커찍기
 def mark(map,point,n):
     for i in range(n):
-        folium.Marker([point[i][0],point[i][1]]).add_to(map)
+        folium.Marker([point[i][0],point[i][1]]).add_to(map) # popup= 으로 위에 글 띄우기 가능
         
 #경로 그리기        
 def DrawDirec(origin,destination,locations,gmaps,map,opt,n):
@@ -118,26 +120,33 @@ def OpenMap(html):
     webbrowser.open(html)
     
 # 총괄 함수
-def MainFunc(API_KEY,point,opt=0):
-    n=len(point)
-    gmaps = googlemaps.Client(key=API_KEY)
-    locations=[]
-    # 시작점, 도착점
-    if (opt==1):
-        origin,destination,locations=FindOriDes(point,n)
-    else:
-        origin=point[0]
-        destination=point[n-1]
-        for i in range(1,n-1):
-            locations.append(point[i])
-            
-    map=CreateMap(origin)
+def MainFunc(point,opt=0,retry = 0):
+    if retry >= 3:
+        return "-99"
+    try:
+        n=len(point)
+        gmaps = googlemaps.Client(key=GoogleMap_API_KEY)
+        locations=[]
+        # 시작점, 도착점
+        if (opt==1):
+            origin,destination,locations=FindOriDes(point,n)
+        else:
+            origin=point[0]
+            destination=point[n-1]
+            for i in range(1,n-1):
+                locations.append(point[i])
 
-    #마커 찍기 함수
-    mark(map,point,n)
-    
-    DrawDirec(origin,destination,locations,gmaps,map,opt,n)
-    
-    html=ReturnHTML(map)
-    OpenMap(html)
-    return html
+        map=CreateMap(origin)
+
+        #마커 찍기 함수
+        mark(map,point,n)
+
+        DrawDirec(origin,destination,locations,gmaps,map,opt,n)
+
+        html=ReturnHTML(map)
+        # OpenMap(html)
+        return html
+    except:
+        retry += 1
+        print("google map error")
+        return MainFunc(point,opt,retry)
