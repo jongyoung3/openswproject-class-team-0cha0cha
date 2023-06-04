@@ -135,7 +135,7 @@ def search(input_search_locations=[], retry=0, z=0):
                         # 장소 '1'에 해당되는 장소의 좌표값
                         location_lat=response_blank_one['results'][0]['geometry']['location']['lat']
                         location_lng=response_blank_one['results'][0]['geometry']['location']['lng']
-                        radius=30000 # 반경 3,000m
+                        radius=20000 # 반경 2,000m
 
                         # 장소 세부요청 (전달받은 위치의 반경 2000m에 있는 관광명소 탐색)
                         payload={}
@@ -443,7 +443,7 @@ def search(input_search_locations=[], retry=0, z=0):
                                 location_lat=response_blank['results'][0]['geometry']['location']['lat']
                                 location_lng=response_blank['results'][0]['geometry']['location']['lng']
 
-                                radius=30000 # 반경 3,000m
+                                radius=20000 # 반경 2,000m
 
                                 # 장소 세부요청 (전달받은 위치의 반경 2000m에 있는 관광명소 탐색)
                                 payload={}

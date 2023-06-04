@@ -198,7 +198,10 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
     for dest in result['destinations']:  # 통으로 번역하기 위해 모든 결과값 한 문자열로 통합
         text = text + dest['name'] + ' :: ' + dest['region'] + ' :: ' + dest['description'] + '\n'
 
-    text += result['topic_introduction'][0]  # 같은 과정
+    if except_list == []:
+        text += result['topic_introduction'][0]  # 같은 과정
+    else:
+        text += "0"
 
     ### deepl api(번역)
 
