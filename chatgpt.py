@@ -261,8 +261,9 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
     except:  # 해당 번역 과정에서 문제시 함수 재진입 ( 차후 번역만 재실행 하는 방식으로 변경하면 좋음)))))))))))))))))))))))))))))
         retry += 1
         print("re-try in translate\n\n")
-        print(response['choices'][0]['message']['content'], '\n\n\n')
-        print(translated_text)
+        # print(response['choices'][0]['message']['content'], '\n\n\n')
+        print('answer :: \n', answer, sep='')
+        print('translated_text :: \n', translated_text, sep='')
         return gpt(topic, n, except_list, retry)
 
 
