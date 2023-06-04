@@ -299,10 +299,10 @@ def search(input_search_locations=[], retry=0, z=0):
 
 
                 else: #검색데이터 결과가 빈 리스트로 오는 경우(=검색결과가 없을때) 텍스트 검색으로 다시 찾기
-                    locations_blank_text_one=locations.split("(")
+                    #locations_blank_text_one=locations.split("(")
 
-                    text_lo=locations_blank_text_one[0]
-                    url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query={text_lo}&key={api_key}"
+                    #text_lo=locations_blank_text_one[0]
+                    url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query={locations}&key={api_key}"
                     response = requests.get(url)
                     data = response.json()
 
@@ -612,7 +612,7 @@ def search(input_search_locations=[], retry=0, z=0):
 
 #TEST
 #res_sol=search(['Tokyo(Kanto Region, Japan)', 'Kyoto(Kansai Region, Japan)', 'Osaka(Kansai Region, Japan)', 'Hiroshima(Chugoku Region, Japan)', 'Nara(Kansai Region, Japan)'])
-#res_sol=search(['Kobe(Hyogo Prefecture, Japan)'])
+#res_sol=search(['Okinawa(Taito Islands, Japan)'])
 #
 #print(res_sol)
 #['Tokyo(Kanto Region, Japan)', 'Kyoto(Kansai Region, Japan)', 'Osaka(Kansai Region, Japan)', 'Hiroshima(Chugoku Region, Japan)', 'Nara(Kansai Region, Japan)']
