@@ -445,7 +445,7 @@ def search(input_search_locations=[], retry=0, z=0):
                                 location_lat=response_blank['results'][0]['geometry']['location']['lat']
                                 location_lng=response_blank['results'][0]['geometry']['location']['lng']
 
-                                radius=150000 # 반경 15,000m
+                                radius=15000 # 반경 15,000m
 
                                 # 장소 세부요청 (전달받은 위치의 반경 15000m에 있는 관광명소 탐색)
                                 payload={}
