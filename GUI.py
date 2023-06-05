@@ -108,6 +108,7 @@ class Ui_MainWindow(QMainWindow):
         abs_map_path = os.path.abspath(self.map_path)
         abs_map_path = abs_map_path.replace('\\','/')
         self.Map.setUrl(QtCore.QUrl(abs_map_path))
+        self.place_names_list = []
 
     #최적화 버튼 크기 지정
         self.optimize = QtWidgets.QPushButton(self.centralwidget)
@@ -145,6 +146,7 @@ class Ui_MainWindow(QMainWindow):
         
 
     #각 버튼들 클릭시 연결된 이벤트 발생
+        self.optimize.clicked.connect(self.optimize_func)
         self.changeButton.clicked.connect(self.changeOpen)
         self.actionAbout.triggered.connect(self.aboutOpen)
         self.actionQuit.triggered.connect(app.quit)
@@ -428,6 +430,17 @@ class Ui_MainWindow(QMainWindow):
             self.errorHappened = False
         for i in range(0, 5, 1):
             self.imgs[i].setUrl(QUrl("%s" % self.saveUrls[i]))
+        mapchecker = map.MainFunc(self.point_list,self.place_names_list)
+        if mapchecker == "-99":
+            self.errorHappened = True
+            self.map_path = "map.html"
+            return
+        else:
+            self.map_path = 'route.html'
+        abs_map_path = os.path.abspath(self.map_path)
+        abs_map_path = abs_map_path.replace('\\', '/')
+        self.Map.setUrl(QtCore.QUrl(abs_map_path))
+        self.Map.show()
 
             
 #ChangeBtn 눌렀을 때 이벤트: 리뷰들 위치 교환할 창 열림
@@ -572,7 +585,7 @@ class Ui_MainWindow(QMainWindow):
             a = float(self.reviewPoints[i].text().replace(',','')) * 14.12
             self.reviewStars[i].setGeometry(QtCore.QRect(175, 44+195*i, 1+int(a), 15))
         # 맵 다시 띄우기
-        mapchecker = map.MainFunc(self.point_list)
+        mapchecker = map.MainFunc(self.point_list,self.place_names_list)
         if mapchecker == "-99":
             self.errorHappened = True
             self.map_path = "map.html"
@@ -587,8 +600,7 @@ class Ui_MainWindow(QMainWindow):
 
 #ChatGPT에게 검색창에 나온 내용으로 검색 요청하기
     def process_call(self, process_topic, index_list=[], recall=0):
-        ############# 이상한 주제 등을 받거나 해서 비정상 동작하는 경우, 팅기는게 아니라 에러 메시지를 띄우고 재진행 할 수 있도록.
-        #### (gpt가 잘 모르겠다는 응답을 한다던가.)
+
         global except_list
         global topic
         topic = process_topic ## 변수 낭비일수도 있는데, 귀찮아서 추가함.
@@ -680,6 +692,7 @@ class Ui_MainWindow(QMainWindow):
                     self.reviews[i].setText(str(format(search_list[i][3], ',')))
                     self.LandmarksName[i].setText(str(""))
                     self.point_list.append((search_list[i][5],search_list[i][6]))
+                    self.place_names_list.append(search_list[i][1])
                     if search_list[i][4] != 'No Image':
                         self.saveUrls[i] = search_list[i][4]  # saveUrl에 넣어두고 다 끝나면 메인 스레드에서 setUrl
                     else:  # 이미지 없을땐
@@ -692,6 +705,7 @@ class Ui_MainWindow(QMainWindow):
                     self.reviews[i].setText(str(format(search_list[i][2][2], ',')))
                     self.LandmarksName[i].setText(str("(주변 인기 관광지 " + search_list[i][2][0] + " 의 평점)"))
                     self.point_list.append((search_list[i][4],search_list[i][5]))
+                    self.place_names_list.append(search_list[i][2][0])
                     if search_list[i][3] != 'No Image':
                         self.saveUrls[i] = search_list[i][3]  # saveUrl에 넣어두고 다 끝나면 메인 스레드에서 setUrl
                     else:  # 이미지 없을땐
@@ -709,6 +723,7 @@ class Ui_MainWindow(QMainWindow):
                     self.reviews[index].setText(str(format(search_list[i][3], ',')))
                     self.LandmarksName[i].setText(str(""))
                     self.point_list[index] = (search_list[i][5],search_list[i][6])
+                    self.place_names_list[index] = search_list[i][1]
                     if search_list[i][4] != 'No Image':
                         self.saveUrls[index] = search_list[i][4]  # saveUrl에 넣어두고 다 끝나면 메인 스레드에서 setUrl
                     else:  # 이미지 없을땐
@@ -721,6 +736,7 @@ class Ui_MainWindow(QMainWindow):
                     self.reviews[index].setText(str(format(search_list[i][2][2], ',')))
                     self.LandmarksName[index].setText(str("(주변 인기 관광지 " + search_list[i][2][0] + "의 평점)"))
                     self.point_list[index] = (search_list[i][4],search_list[i][5])
+                    self.place_names_list[index] = search_list[i][2][0]
                     if search_list[i][3] != 'No Image':
                         self.saveUrls[index] = search_list[i][3]  # saveUrl에 넣어두고 다 끝나면 메인 스레드에서 setUrl
                     else:  # 이미지 없을땐
@@ -728,7 +744,7 @@ class Ui_MainWindow(QMainWindow):
 
         # map 함수 호출
         # 좌표 데이터 가지고 map함수 call 부분 필요
-        mapchecker = map.MainFunc(self.point_list)
+        mapchecker = map.MainFunc(self.point_list,self.place_names_list)
         if mapchecker == "-99":
             self.errorHappened = True
             self.map_path = "map.html"
@@ -770,6 +786,24 @@ class Ui_MainWindow(QMainWindow):
         self.label_2.setText("오류가 발생했습니다.\n다시 시도해 주세요.")
         self.pushButton.setText("확인")
         self.ErrorDialog.show()
+
+    def optimize_func(self):
+
+        mapchecker, waypoint_array = map.MainFunc(self.point_list, self.place_names_list, 1)
+
+
+        if mapchecker == "-99":
+            self.errorHappened = True # 에러창이랑 연결 만들어줘야됨 따로.
+            self.map_path = "map.html"
+            return
+        else:
+            self.map_path = 'route.html'
+            abs_map_path = os.path.abspath(self.map_path)
+            abs_map_path = abs_map_path.replace('\\', '/')
+            self.Map.setUrl(QtCore.QUrl(abs_map_path))
+            self.Map.show()
+
+        ## 받아온거 바탕으로 리스트 교환하기
 
 
 
