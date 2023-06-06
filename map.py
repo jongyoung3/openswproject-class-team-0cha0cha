@@ -154,18 +154,18 @@ def MainFunc(point,names, opt=0,retry = 0):
         if opt == 1: # 웨이포인트 오더 데이터 정리 부분
             real_waypoint_order = [0, 0, 0, 0, 0]
             waypoint_order = DrawDirec(origin,destination,locations,gmaps,map,opt,n)
-
+            temp_p = point[:]
             real_waypoint_order[0] = index_ori
 
             real_waypoint_order[4] = index_dest
 
-            point[index_ori] = (-1,)
-            point[index_dest] = (-1,)
+            temp_p[index_ori] = (-1,)
+            temp_p[index_dest] = (-1,)
             for i in range(len(waypoint_order)):
                 k = 0
                 j = 0
                 while 1:
-                    if point[j] == (-1,):
+                    if temp_p[j] == (-1,):
                         j += 1
                         continue
                     if waypoint_order[i] == k:

@@ -36,12 +36,17 @@ def search(input_search_locations=[], retry=0, z=0):
             
             for i, locations in enumerate(input_search_locations):
                 response = map_clinet.places(query=locations)
+                temp1, temp2 = locations.split('(')
                 if (response['status'] != 'ZERO_RESULTS'):
-                    if len(response['results']) != 1:
-                        
-                        temp1, temp2 = locations.split('(')
+                    chk = 0
+                    for loc in response['results']:
+                        if loc['name'].lower() == temp1.lower():
+                            chk = 1
+                            break
+                    if chk == 0:
                         input_search_locations[i] = temp1
-            
+
+
             return search(input_search_locations, retry, z=1)
         else:
             for locations in input_search_locations:
@@ -611,10 +616,11 @@ def search(input_search_locations=[], retry=0, z=0):
         return search(input_search_locations, retry)
 
 #TEST
-#res_sol=search(['Tokyo(Kanto Region, Japan)', 'Kyoto(Kansai Region, Japan)', 'Osaka(Kansai Region, Japan)', 'Hiroshima(Chugoku Region, Japan)', 'Nara(Kansai Region, Japan)'])
-#res_sol=search(['Okinawa(Taito Islands, Japan)'])
-#
-#print(res_sol)
+# ['Taj Mahal(Agra, Uttar Pradesh, India)', 'Golden Temple(Amritsar, Punjab, India)', 'Hampi(Hampi, Karnataka, India)', 'Jaipur(Rajasthan, India)', 'Varanasi(Uttar Pradesh, India)']
+# res_sol=search(['Nara(Kansai Region, Japan)'])
+# # res_sol=search(chatgpt_test.gpt(input(),5))
+# #
+# print(res_sol)
 #['Tokyo(Kanto Region, Japan)', 'Kyoto(Kansai Region, Japan)', 'Osaka(Kansai Region, Japan)', 'Hiroshima(Chugoku Region, Japan)', 'Nara(Kansai Region, Japan)']
 #['New York City(New York, United States)', 'Miami Beach(Florida, United States)', 'Grand Canyon National Park(Arizona, United States)', 'Las Vegas(Nevada, United States)', 'Hawaii(United States)']
 #['Sydney Opera House(Sydney, New South Wales, Australia)', 'Great Barrier Reef(Queensland, Australia)', 'Uluru-Kata Tjuta National Park(Northern Territory, Australia)', 'Port Douglas(Queensland, Australia)', 'Melbourne(Victoria, Australia)']
