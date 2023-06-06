@@ -37,6 +37,7 @@ def search(input_search_locations=[], retry=0, z=0):
             for i, locations in enumerate(input_search_locations):
                 response = map_clinet.places(query=locations)
                 temp1= locations.split('(')
+                response_sec = map_clinet.places(query=temp1[0])
                 if (response['status'] != 'ZERO_RESULTS'):
                     chk_1 = 0
                     for loc in response['results']:
@@ -44,7 +45,16 @@ def search(input_search_locations=[], retry=0, z=0):
                         #if (temp1.lower() in loc['name'].lower()) :
                             chk_1 = 1
                             break
+                    if (response_sec['status'] == 'ZERO_RESULTS'):
+                        pass
+                    else:
+                        for loc in response_sec['results']: # 괄호를 떼면, 정확히 일치하는 장소명이 있고, 거기가 지역이라 현 검색어가 지역일 가능성이 높은 경우
+                            if loc['name'].lower() == temp1[0].lower():
+                                if 'rating' not in loc:
+                                    input_search_locations[i] = temp1[0]
+                                    continue
                     if chk_1 == 0:
+                        response_sec = map_clinet.places(query=temp1[0])
                         chk_2 = 1  # 완벽히 일치하는 장소를 찾지는 못했지만, 모든 검색 결과가 장소라서 장소일 가능성이 높은 검색어
                         for loc in response['results']:
                             if 'rating' not in loc:
@@ -53,6 +63,16 @@ def search(input_search_locations=[], retry=0, z=0):
                         if chk_2 == 0:
                             input_search_locations[i] = temp1[0]
                             continue
+                        # if (response_sec['status'] == 'ZERO_RESULTS'):
+                        #     pass
+                        # else:
+                        #     for loc in response_sec['results']: # 괄호를 떼면, 지역이 나와서 지역일 가능성이 갑자기 높아진 검색어
+                        #         if 'rating' not in loc:
+                        #             chk_2 = 0
+                        #             break
+                        #     if chk_2 == 0:
+                        #         input_search_locations[i] = temp1[0]
+                        #         continue
 
 
             return search(input_search_locations, retry, z=1)
@@ -640,9 +660,9 @@ def search(input_search_locations=[], retry=0, z=0):
 
 #TEST
 # ['Taj Mahal(Agra, Uttar Pradesh, India)', 'Golden Temple(Amritsar, Punjab, India)', 'Hampi(Hampi, Karnataka, India)', 'Jaipur(Rajasthan, India)', 'Varanasi(Uttar Pradesh, India)']
-# res_sol=search(['Nagoya(Chubu region of Japan)'])
-# #res_sol=search(chatgpt.gpt(input(),5))
-# # # #
+# res_sol=search(['Don Quijote Shibuya', 'Don Quijote Osaka', 'Don Quijote Akihabara(Chiyoda City, Tokyo, Japan)', 'Don Quijote Hakata', 'Don Quijote Namba'])
+# # # # #res_sol=search(chatgpt.gpt(input(),5))
+# # # # # # #
 # print(res_sol)
 #print(result_list)
 #['Tokyo(Kanto Region, Japan)', 'Kyoto(Kansai Region, Japan)', 'Osaka(Kansai Region, Japan)', 'Hiroshima(Chugoku Region, Japan)', 'Nara(Kansai Region, Japan)']
