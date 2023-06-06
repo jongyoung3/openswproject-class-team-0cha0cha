@@ -58,6 +58,7 @@ def search(input_search_locations=[], retry=0, z=0):
                 if(response['status'] !='ZERO_RESULTS'): #검색데이터 결과가 빈 리스트로 오는 경우(=검색결과가 없을때)를 걸러줌                    
                     # 밑에 부분 조건 and len(response['results'])==1 추가함
                     temp1 = locations.split('(')
+                    chk = 0
                     for index, loc in enumerate(response['results']):
                         if loc['name'].lower() == temp1[0].lower():
                             chk = 1
@@ -626,10 +627,10 @@ def search(input_search_locations=[], retry=0, z=0):
 
 #TEST
 # ['Taj Mahal(Agra, Uttar Pradesh, India)', 'Golden Temple(Amritsar, Punjab, India)', 'Hampi(Hampi, Karnataka, India)', 'Jaipur(Rajasthan, India)', 'Varanasi(Uttar Pradesh, India)']
-res_sol=search(['Taj Mahal(Agra, Uttar Pradesh, India)'])
+# res_sol=search(['Nagoya(Chubu region of Japan)'])
 # #res_sol=search(chatgpt.gpt(input(),5))
-# # #
-print(res_sol)
+# # # #
+# print(res_sol)
 #print(result_list)
 #['Tokyo(Kanto Region, Japan)', 'Kyoto(Kansai Region, Japan)', 'Osaka(Kansai Region, Japan)', 'Hiroshima(Chugoku Region, Japan)', 'Nara(Kansai Region, Japan)']
 #['New York City(New York, United States)', 'Miami Beach(Florida, United States)', 'Grand Canyon National Park(Arizona, United States)', 'Las Vegas(Nevada, United States)', 'Hawaii(United States)']
