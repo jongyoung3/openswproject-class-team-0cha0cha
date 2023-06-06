@@ -36,15 +36,16 @@ def search(input_search_locations=[], retry=0, z=0):
             
             for i, locations in enumerate(input_search_locations):
                 response = map_clinet.places(query=locations)
-                temp1, temp2 = locations.split('(')
+                temp1= locations.split('(')
                 if (response['status'] != 'ZERO_RESULTS'):
                     chk = 0
                     for loc in response['results']:
-                        if loc['name'].lower() == temp1.lower():
+                        if loc['name'].lower() == temp1[0].lower():
+                        #if (temp1.lower() in loc['name'].lower()) :
                             chk = 1
                             break
                     if chk == 0:
-                        input_search_locations[i] = temp1
+                        input_search_locations[i] = temp1[0]
 
 
             return search(input_search_locations, retry, z=1)
@@ -55,7 +56,15 @@ def search(input_search_locations=[], retry=0, z=0):
 
 
                 if(response['status'] !='ZERO_RESULTS'): #검색데이터 결과가 빈 리스트로 오는 경우(=검색결과가 없을때)를 걸러줌                    
-                    if('rating' in response['results'][0]): # 인덱스 번호에 따라 영업점 나오는 듯. 기준으로만 일단 만듬
+                    # 밑에 부분 조건 and len(response['results'])==1 추가함
+                    temp1 = locations.split('(')
+                    for index, loc in enumerate(response['results']):
+                        if loc['name'].lower() == temp1[0].lower():
+                            chk = 1
+                            response['results'][0], response['results'][index] = response['results'][index], response['results'][0]
+                            break
+
+                    if('rating' in response['results'][0] and chk == 1): # 인덱스 번호에 따라 영업점 나오는 듯. 기준으로만 일단 만듬
                         if('business_status' in response['results'][0]): #'business_status'가 없는 경우 분류
                             if(response['results'][0]['business_status']!='CLOSED_PERMANENTLY'): #폐업인 경우 제외
                                 # '0'->지역 외의 장소, 평점이 있는 것
@@ -613,14 +622,15 @@ def search(input_search_locations=[], retry=0, z=0):
     except: # 예외 처리
         retry+=1
         print("error in search")
-        return search(input_search_locations, retry)
+        return search(input_search_locations, retry, z)
 
 #TEST
 # ['Taj Mahal(Agra, Uttar Pradesh, India)', 'Golden Temple(Amritsar, Punjab, India)', 'Hampi(Hampi, Karnataka, India)', 'Jaipur(Rajasthan, India)', 'Varanasi(Uttar Pradesh, India)']
-# res_sol=search(['Nara(Kansai Region, Japan)'])
-# # res_sol=search(chatgpt_test.gpt(input(),5))
-# #
-# print(res_sol)
+res_sol=search(['Taj Mahal(Agra, Uttar Pradesh, India)'])
+# #res_sol=search(chatgpt.gpt(input(),5))
+# # #
+print(res_sol)
+#print(result_list)
 #['Tokyo(Kanto Region, Japan)', 'Kyoto(Kansai Region, Japan)', 'Osaka(Kansai Region, Japan)', 'Hiroshima(Chugoku Region, Japan)', 'Nara(Kansai Region, Japan)']
 #['New York City(New York, United States)', 'Miami Beach(Florida, United States)', 'Grand Canyon National Park(Arizona, United States)', 'Las Vegas(Nevada, United States)', 'Hawaii(United States)']
 #['Sydney Opera House(Sydney, New South Wales, Australia)', 'Great Barrier Reef(Queensland, Australia)', 'Uluru-Kata Tjuta National Park(Northern Territory, Australia)', 'Port Douglas(Queensland, Australia)', 'Melbourne(Victoria, Australia)']

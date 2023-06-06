@@ -675,6 +675,7 @@ class Ui_MainWindow(QMainWindow):
         else:
             except_list.clear()
             self.point_list.clear()
+            self.place_names_list.clear()
             temp = chatgpt.gpt(process_topic, n)
             if temp == [-99]: ## 에러 발생시
                 self.errorHappened = True
