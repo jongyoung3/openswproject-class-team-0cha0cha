@@ -38,14 +38,21 @@ def search(input_search_locations=[], retry=0, z=0):
                 response = map_clinet.places(query=locations)
                 temp1= locations.split('(')
                 if (response['status'] != 'ZERO_RESULTS'):
-                    chk = 0
+                    chk_1 = 0
                     for loc in response['results']:
                         if loc['name'].lower() == temp1[0].lower():
                         #if (temp1.lower() in loc['name'].lower()) :
-                            chk = 1
+                            chk_1 = 1
                             break
-                    if chk == 0:
-                        input_search_locations[i] = temp1[0]
+                    if chk_1 == 0:
+                        chk_2 = 1  # 완벽히 일치하는 장소를 찾지는 못했지만, 모든 검색 결과가 장소라서 장소일 가능성이 높은 검색어
+                        for loc in response['results']:
+                            if 'rating' not in loc:
+                                chk_2 = 0
+                                break
+                        if chk_2 == 0:
+                            input_search_locations[i] = temp1[0]
+                            continue
 
 
             return search(input_search_locations, retry, z=1)
@@ -64,8 +71,14 @@ def search(input_search_locations=[], retry=0, z=0):
                             chk = 1
                             response['results'][0], response['results'][index] = response['results'][index], response['results'][0]
                             break
+                    chk_2 = 1
+                    if chk == 0: # 완벽히 일치하는 장소를 찾지는 못했지만, 모든 검색 결과가 장소라서 장소일 가능성이 높은 검색어
+                        for loc in response['results']:
+                            if 'rating' not in loc:
+                                chk_2 = 0
+                                break
 
-                    if('rating' in response['results'][0] and chk == 1): # 인덱스 번호에 따라 영업점 나오는 듯. 기준으로만 일단 만듬
+                    if(('rating' in response['results'][0] and chk == 1) or ('rating' in response['results'][0] and chk_2 == 1)): # 인덱스 번호에 따라 영업점 나오는 듯. 기준으로만 일단 만듬
                         if('business_status' in response['results'][0]): #'business_status'가 없는 경우 분류
                             if(response['results'][0]['business_status']!='CLOSED_PERMANENTLY'): #폐업인 경우 제외
                                 # '0'->지역 외의 장소, 평점이 있는 것
