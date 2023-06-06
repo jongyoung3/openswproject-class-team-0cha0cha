@@ -21,7 +21,6 @@ class Ui_MainWindow(QMainWindow):
     #메인창 크기 조정 못하게
         MainWindow.setMinimumSize(QtCore.QSize(1200, 700))
         MainWindow.setMaximumSize(QtCore.QSize(1200, 700))
-        MainWindow.setAnimated(False)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         
         
@@ -180,7 +179,7 @@ class Ui_MainWindow(QMainWindow):
 
     #글자 내용들
         MainWindow.setWindowTitle("TripWithGPT")
-        #self.PsTitle.setText("P.S.")
+        self.PsTitle.setText("P.S.")
         self.PsContents.setText("일본은 최첨단 기술뿐만 아니라 고대 문화가 풍부한 대조적인 나라로 가득합니다. 상징적인 랜드마크와 번화한 도시부터 산과 바다의 고요한 자연의 아름다움까지, 이 매혹적인 나라에는 모두를 위한 무언가가 있습니다. 전통과 현대의 독특한 조화를 경험할 준비를 하시고 여행 중에 맛있는 현지 요리를 맛보는 것도 잊지 마세요!")
         self.deleteButton.setText("Check to delete")
         self.cancelBtn.setText("Cancel")
@@ -223,7 +222,7 @@ class Ui_MainWindow(QMainWindow):
             self.names[i].setFont(font)
             self.names[i].setText(("%s번째") % str(i+1))
     #리뷰 제목들 위치, text, 줄바꿈 세팅
-            self.contents[i].setGeometry(QtCore.QRect(145, 84+195*i, 418, 110))
+            self.contents[i].setGeometry(QtCore.QRect(145, 84+195*i, 418, 130))
             self.contents[i].setText(("%s번째 내용물") % str(i+1))
             self.contents[i].setWordWrap(True)
             self.contents[i].setAlignment(QtCore.Qt.AlignTop)
@@ -370,7 +369,7 @@ class Ui_MainWindow(QMainWindow):
         self.SearchLoading.hide()
 
 
-        
+
 #deleteButton 눌렀을 때 이벤트: 버튼들이랑 체크박스 나타남
     def deleteClicked(self):
         self.deleteButton.hide()
@@ -399,6 +398,12 @@ class Ui_MainWindow(QMainWindow):
         self.deleteButton.show()
         self.trashCan.hide()
         self.cancelBtn.hide()
+    #버튼 숨기기
+        self.deleteButton.setEnabled(False)
+        self.SearchButton.setEnabled(False)
+        self.changeButton.setEnabled(False)
+        self.optimize.setEnabled(False)
+
         ###################### 일부 장소는 주제를 바꿔서 탐색할수도 있게 해도 괜찮을 듯, 고려 필요.
         for i in range(0,5,1):
             if (self.checkBoxes[i].isChecked()):
@@ -422,6 +427,7 @@ class Ui_MainWindow(QMainWindow):
             QtTest.QTest.qWait(1000)
             self.SearchLoading.setText("내용을 불러오고 있습니다.\n잠시만 기다려 주세요...")
             QtTest.QTest.qWait(1000)
+
         # 검색 끝났으면 SearchEnd를 false로 바꾸고 로딩안내문 숨김
         self.SearchEnd = False
         self.SearchLoading.hide()
@@ -430,6 +436,13 @@ class Ui_MainWindow(QMainWindow):
             self.errorHappened = False
         for i in range(0, 5, 1):
             self.imgs[i].setUrl(QUrl("%s" % self.saveUrls[i]))
+
+    #버튼 보이게 하기
+        self.deleteButton.setEnabled(True)
+        self.SearchButton.setEnabled(True)
+        self.changeButton.setEnabled(True)
+        self.optimize.setEnabled(True)
+
         mapchecker = map.MainFunc(self.point_list,self.place_names_list)
         if mapchecker == "-99":
             self.errorHappened = True
@@ -499,7 +512,10 @@ class Ui_MainWindow(QMainWindow):
     #창 제목 지정하고서 열기
         self.Form.setWindowTitle("옮기기")
         self.Form.show()
-        
+
+    #창 닫아도 cancelChange 돌게 하는 소멸자 같은거
+        self.Form.finished['int'].connect(self.cancelChange)
+
 
 #위치 교환 창에서 1~10번 제목버튼 눌렀을 때 이벤트: 라벨로 전환되고 이동 버튼들 나옴
     def LabelSelect(self,num):
@@ -556,7 +572,7 @@ class Ui_MainWindow(QMainWindow):
         self.reviewPoints.insert(second_num,self.temps[3])
         self.reviews.insert(second_num,self.temps[4])
         self.point_list.insert(second_num,self.temps[5])
-        
+
         for i in range(0,5,1):
             self.changeLabels[i].clear()
             self.disableLabelBtns[i].hide()
@@ -576,7 +592,7 @@ class Ui_MainWindow(QMainWindow):
             self.reviews[i].setText(self.reviews[i].text())
             
             self.names[i].setGeometry(QtCore.QRect(10, 8+195*i, 535, 31))
-            self.contents[i].setGeometry(QtCore.QRect(145, 64+195*i, 418, 110))
+            self.contents[i].setGeometry(QtCore.QRect(145, 84+195*i, 418, 130))
             self.imgs[i].setGeometry(QtCore.QRect(10, 42+195*i, 130, 130))
             self.reviewPoints[i].setGeometry(QtCore.QRect(144, 44+195*i, 51, 17))
             self.reviews[i].setGeometry(QtCore.QRect(258, 44+195*i, 101, 16))
@@ -758,6 +774,8 @@ class Ui_MainWindow(QMainWindow):
     # [1 ,'검색한 장소',('검색한 결과의 장소','평점','리뷰 수'),'사진링크','lat','lng']
     # result_list=[0 or 1,'검색한 장소=검색한 결과의 장소','평점','리뷰 수','사진링크', '좌표(lat)', '좌표(lng)']
 
+
+#에러창 오픈 이벤트
     def ErrorOpen(self):
         self.ErrorDialog.setObjectName("Dialog")
         self.ErrorDialog.resize(400, 300)
@@ -807,6 +825,7 @@ class Ui_MainWindow(QMainWindow):
 
 
 
+#서치 로딩될 때 돌아가는 서브 스레드
 class Search_loading(QThread):
     def __init__(self, parent):
         super().__init__(parent)
@@ -832,29 +851,19 @@ class Search_loading(QThread):
         self.parent.SearchEnd = True
         self.quit()
 
-
+#일부 항목 삭제, 제외 후 재검색시 돌아가는 서브 스레드
 class Remove_loading(QThread):
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
 
     def run(self):
-        # 버튼들 비활성화
-        self.parent.deleteButton.setEnabled(False)
-        self.parent.SearchButton.setEnabled(False)
-        #self.parent.changeButton.setEnabled(False) ######## 알수 없는 이유로 팅김
-        self.parent.optimize.setEnabled(False)
-
         # 검색하는 함수들 여기에 연결해주시면 됩니다
         # 메인윈도우 클래스꺼는 self.parent.붙여서 돌리시면 됩니다!
         global topic
         self.parent.process_call(topic, self.parent.index_list, 1)
 
-        # 다 끝나고 버튼 활성화, 스레드 끝내주기
-        self.parent.deleteButton.setEnabled(True)
-        self.parent.SearchButton.setEnabled(True)
-        self.parent.changeButton.setEnabled(True)
-        self.parent.optimize.setEnabled(True)
+        # 다 끝나고 스레드 끝내주기
         self.parent.SearchEnd = True
         self.parent.index_list.clear()
         self.quit()
