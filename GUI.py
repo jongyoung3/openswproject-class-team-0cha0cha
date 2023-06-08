@@ -215,7 +215,7 @@ class Ui_MainWindow(QMainWindow):
 
     #Qpixmap으로 no_imgs에 사진 넣기
         pixmap = QPixmap("no_image.png")
-        pixmap = pixmap.scaled(130,100)
+        pixmap = pixmap.scaled(130,122)
 
         for i in range(0,5,1):
     #리뷰 제목들 위치, 폰트, text 세팅
@@ -228,8 +228,8 @@ class Ui_MainWindow(QMainWindow):
             self.contents[i].setWordWrap(True)
             self.contents[i].setAlignment(QtCore.Qt.AlignTop)
     #리뷰 이미지, 별점들, 체크박스 위치 및 text 세팅, 체크박스 숨김
-            self.imgs[i].setGeometry(QtCore.QRect(10, 42+195*i, 130, 100))
-            self.no_imgs[i].setGeometry(QtCore.QRect(10, 42+195*i, 130, 100))
+            self.imgs[i].setGeometry(QtCore.QRect(10, 52+195*i, 130, 122))
+            self.no_imgs[i].setGeometry(QtCore.QRect(10, 52+195*i, 130, 122))
             self.no_imgs[i].setPixmap(pixmap)
 
             self.reviewPoints[i].setGeometry(QtCore.QRect(144, 44+195*i, 51, 17))
@@ -241,19 +241,19 @@ class Ui_MainWindow(QMainWindow):
             self.checkBoxes[i].hide()
             self.LandmarksName[i].setGeometry(QtCore.QRect(145, 64+195*i, 418, 16))
     #리뷰 내용들 처음엔 안보이게, 버튼도 비활성화
-        # for i in range(0,5,1):
-        #     self.names[i].hide()
-        #     self.contents[i].hide()
-        #     self.reviews[i].hide()
-        #     self.reviewPoints[i].hide()
-        #     self.reviewStars[i].hide()
-        #     self.imgs[i].hide()
-        #     self.no_imgs[i].hide()
-        #     self.LandmarksName[i].hide()
-        # self.optimize.hide()
-        # self.deleteButton.hide()
-        # self.changeButton.hide()
-        # self.PsContents.hide()
+        for i in range(0,5,1):
+            self.names[i].hide()
+            self.contents[i].hide()
+            self.reviews[i].hide()
+            self.reviewPoints[i].hide()
+            self.reviewStars[i].hide()
+            self.imgs[i].hide()
+            self.no_imgs[i].hide()
+            self.LandmarksName[i].hide()
+        self.optimize.hide()
+        self.deleteButton.hide()
+        self.changeButton.hide()
+        self.PsContents.hide()
 
     #별점은 중대사항: 디폴트 지정에 맞춰 별 갯수 노출 세팅
         for i in range(0,5,1):
@@ -421,7 +421,6 @@ class Ui_MainWindow(QMainWindow):
 
         # 새 스레드에서 작업 완료되기 전까지 띄울 로딩 안내문
         self.SearchLoading.show()
-        print("랜드마크: %s"%self.LandmarksName[0].text())
         while not self.SearchEnd:
             self.SearchLoading.setText("내용을 불러오고 있습니다.\n잠시만 기다려 주세요.")
             QtTest.QTest.qWait(1000)
@@ -429,8 +428,7 @@ class Ui_MainWindow(QMainWindow):
             QtTest.QTest.qWait(1000)
             self.SearchLoading.setText("내용을 불러오고 있습니다.\n잠시만 기다려 주세요...")
             QtTest.QTest.qWait(1000)
-        print("랜드마크: %s"%self.LandmarksName[0].text())
-
+            
         # 검색 끝났으면 SearchEnd를 false로 바꾸고 로딩안내문 숨김
         self.SearchEnd = False
         self.SearchLoading.hide()
@@ -440,7 +438,7 @@ class Ui_MainWindow(QMainWindow):
         for i in range(0, 5, 1):
             self.imgs[i].setUrl(QUrl("%s" % self.saveUrls[i]))
 
-    #버튼 보이게 하기 
+    #버튼 보이게 하기
         self.deleteButton.setEnabled(True)
         self.SearchButton.setEnabled(True)
         self.changeButton.setEnabled(True)
@@ -458,7 +456,7 @@ class Ui_MainWindow(QMainWindow):
         self.Map.setUrl(QtCore.QUrl(abs_map_path))
         self.Map.show()
 
-            
+
 #ChangeBtn 눌렀을 때 이벤트: 리뷰들 위치 교환할 창 열림
     def changeOpen(self):
     #change창 크기 지정, 왼쪽에 나타나게 함
@@ -595,10 +593,10 @@ class Ui_MainWindow(QMainWindow):
             self.reviewPoints[i].setText(self.reviewPoints[i].text())
             self.reviews[i].setText(self.reviews[i].text())
             self.LandmarksName[i].setText(self.LandmarksName[i].text())
-            
+
             self.names[i].setGeometry(QtCore.QRect(10, 8+195*i, 535, 31))
             self.contents[i].setGeometry(QtCore.QRect(145, 84+195*i, 418, 130))
-            self.imgs[i].setGeometry(QtCore.QRect(10, 42+195*i, 130, 100))
+            self.imgs[i].setGeometry(QtCore.QRect(10, 42+195*i, 130, 122))
             self.reviewPoints[i].setGeometry(QtCore.QRect(144, 44+195*i, 51, 17))
             self.reviews[i].setGeometry(QtCore.QRect(258, 44+195*i, 101, 16))
             self.LandmarksName[i].setGeometry(QtCore.QRect(145, 64+195*i, 418, 16))
@@ -744,7 +742,7 @@ class Ui_MainWindow(QMainWindow):
                     self.reviewPoints[index].setText(str("%.1f"%(search_list[i][2])))
                     self.reviewStars[index].setGeometry(QtCore.QRect(175, 44 + 195 * index, 1 + int(search_list[i][2]*14.12), 15))
                     self.reviews[index].setText(str(format(search_list[i][3], ',')))
-                    self.LandmarksName[i].setText(str(""))
+                    self.LandmarksName[index].setText(str(""))
                     self.point_list[index] = (search_list[i][5],search_list[i][6])
                     self.place_names_list[index] = search_list[i][1]
                     if search_list[i][4] != 'No Image':
