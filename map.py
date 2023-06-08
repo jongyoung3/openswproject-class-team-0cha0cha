@@ -57,11 +57,11 @@ from geopy.distance import geodesic
 def FindOriDes(point,n):
     loong=0
     temp=[]
-    temp.extend(point)
-    index_ori = 0
-    index_dest = 0
-    for i in range(n-1):
-        j=i+1
+    temp = point[:]
+    index_ori = -1
+    index_dest = -1
+    for i in range(n):
+        j = i + 1
         for j in range(j,n):
             distance = geodesic(temp[i], temp[j]).meters
             if(distance > loong):
@@ -70,11 +70,13 @@ def FindOriDes(point,n):
                 index_ori = i
                 destination=temp[j]
                 index_dest = j
-                a=i
-                b=j
-        if (i==n-2):
-            del(temp[a])
-            del(temp[b-1])
+
+    temp[index_ori] = [-1]
+    temp[index_dest] = [-1]
+
+    temp.pop(temp.index([-1]))
+    temp.pop(temp.index([-1]))
+
     return origin,destination,temp, index_ori, index_dest
 
 #맵 생성
@@ -109,9 +111,11 @@ def DrawDirec(origin,destination,locations,gmaps,map,opt,n):
 
         if opt == 1: ##### 디렉션 리스폰스에서, 정렬된 데이터 관련 응답. 단, 웨이포인트 오더로 인한 갯수 오류가 있을지 우려됨
             return directions_response[0]['waypoint_order']
+        return 0
 
     else:
         print("No directions found")
+        return -1
 
 
 # HTML 파일로 저장
@@ -127,7 +131,7 @@ def OpenMap(html):
 # 총괄 함수
 def MainFunc(point,names, opt=0,retry = 0):
     if retry >= 3:
-        return "-99"
+        return "-99", 0
     try:
         n=len(point)
         gmaps = googlemaps.Client(key=GoogleMap_API_KEY)
@@ -149,7 +153,6 @@ def MainFunc(point,names, opt=0,retry = 0):
         map=CreateMap(origin)
 
         #마커 찍기 함수
-        mark(map,point,names, n)
 
         if opt == 1: # 웨이포인트 오더 데이터 정리 부분
             real_waypoint_order = [0, 0, 0, 0, 0]
@@ -174,14 +177,17 @@ def MainFunc(point,names, opt=0,retry = 0):
                         j += 1
                         k += 1
                 real_waypoint_order[1 + i] = j
-
+            dicts = dict(zip(names, real_waypoint_order))
+            names.sort(key=lambda x: dicts[x])
+            mark(map, point, names, n)
             html = ReturnHTML(map)
             return [html, real_waypoint_order]
         else:
-            DrawDirec(origin, destination, locations, gmaps, map, opt, n)
+            opti_checker = DrawDirec(origin, destination, locations, gmaps, map, opt, n)
+            mark(map, point, names, n)
             html=ReturnHTML(map)
             # OpenMap(html)
-            return html
+            return [html, opti_checker]
     except:
         retry += 1
         print("google map error")

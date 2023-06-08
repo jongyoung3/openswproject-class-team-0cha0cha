@@ -343,7 +343,7 @@ class Ui_MainWindow(QMainWindow):
             self.PsContents.hide()
             self.errorHappened = False
         else:
-            for i in range(0,5,1):
+            for i in range(0, 5, 1):
                 self.names[i].show()
                 self.contents[i].show()
                 self.reviews[i].show()
@@ -428,33 +428,82 @@ class Ui_MainWindow(QMainWindow):
             QtTest.QTest.qWait(1000)
             self.SearchLoading.setText("내용을 불러오고 있습니다.\n잠시만 기다려 주세요...")
             QtTest.QTest.qWait(1000)
-            
+
         # 검색 끝났으면 SearchEnd를 false로 바꾸고 로딩안내문 숨김
         self.SearchEnd = False
         self.SearchLoading.hide()
+
+        # 리무브 함수 진행 중 에러
         if (self.errorHappened == True):
             self.ErrorOpen()
+            for i in range(0, 5, 1):
+                self.names[i].hide()
+                self.contents[i].hide()
+                self.reviews[i].hide()
+                self.reviewPoints[i].hide()
+                self.reviewStars[i].hide()
+                self.imgs[i].hide()
+                self.no_imgs[i].hide()
+                self.LandmarksName[i].hide()
+            self.optimize.hide()
+            self.deleteButton.hide()
+            self.changeButton.hide()
+            self.PsContents.hide()
             self.errorHappened = False
-        for i in range(0, 5, 1):
-            self.imgs[i].setUrl(QUrl("%s" % self.saveUrls[i]))
-
-    #버튼 보이게 하기
-        self.deleteButton.setEnabled(True)
-        self.SearchButton.setEnabled(True)
-        self.changeButton.setEnabled(True)
-        self.optimize.setEnabled(True)
-
-        mapchecker = map.MainFunc(self.point_list,self.place_names_list)
-        if mapchecker == "-99":
-            self.errorHappened = True
             self.map_path = "map.html"
+            abs_map_path = os.path.abspath(self.map_path)
+            abs_map_path = abs_map_path.replace('\\', '/')
+            self.Map.setUrl(QtCore.QUrl(abs_map_path))
+            self.Map.show()
             return
         else:
-            self.map_path = 'route.html'
-        abs_map_path = os.path.abspath(self.map_path)
-        abs_map_path = abs_map_path.replace('\\', '/')
-        self.Map.setUrl(QtCore.QUrl(abs_map_path))
-        self.Map.show()
+            for i in range(0, 5, 1):
+                self.imgs[i].setUrl(QUrl("%s" % self.saveUrls[i]))
+            abs_map_path = os.path.abspath(self.map_path)
+            abs_map_path = abs_map_path.replace('\\', '/')
+            self.Map.setUrl(QtCore.QUrl(abs_map_path))
+            self.Map.show()
+            self.deleteButton.setEnabled(True)
+            self.SearchButton.setEnabled(True)
+            self.changeButton.setEnabled(True)
+            self.optimize.setEnabled(True)
+
+        # mapchecker, opti_checker = map.MainFunc(self.point_list,self.place_names_list)
+        # if mapchecker == "-99":
+        #     self.errorHappened = True
+        #     self.map_path = "map.html"
+        #     return
+        # else:
+        #     self.map_path = 'route.html'
+
+        # abs_map_path = os.path.abspath(self.map_path)
+        # abs_map_path = abs_map_path.replace('\\', '/')
+        # self.Map.setUrl(QtCore.QUrl(abs_map_path))
+        # self.Map.show()
+        #
+        # if opti_checker == -1:
+        #     self.optimize.setEnabled(False)
+        # # 리무브 함수 진행 중, 맵 이후에서 에러
+        # if (self.errorHappened == True):
+        #     self.ErrorOpen()
+        #     for i in range(0, 5, 1):
+        #         self.names[i].hide()
+        #         self.contents[i].hide()
+        #         self.reviews[i].hide()
+        #         self.reviewPoints[i].hide()
+        #         self.reviewStars[i].hide()
+        #         self.imgs[i].hide()
+        #         self.no_imgs[i].hide()
+        #         self.LandmarksName[i].hide()
+        #     self.optimize.hide()
+        #     self.deleteButton.hide()
+        #     self.changeButton.hide()
+        #     self.PsContents.hide()
+        #     self.errorHappened = False
+        # else:
+            # 버튼 보이게 하기
+
+
 
 
 #ChangeBtn 눌렀을 때 이벤트: 리뷰들 위치 교환할 창 열림
@@ -565,7 +614,7 @@ class Ui_MainWindow(QMainWindow):
             second_num-=1
         
     #pop할 내용 임시 저장
-        self.temps = [self.names.pop(first_num),self.contents.pop(first_num),self.imgs.pop(first_num),self.reviewPoints.pop(first_num),self.reviews.pop(first_num),self.point_list.pop(first_num),self.LandmarksName.pop(first_num)]
+        self.temps = [self.names.pop(first_num),self.contents.pop(first_num),self.imgs.pop(first_num),self.reviewPoints.pop(first_num),self.reviews.pop(first_num),self.point_list.pop(first_num),self.LandmarksName.pop(first_num),self.place_names_list.pop(first_num)]
     
         self.names.insert(second_num,self.temps[0])
         self.contents.insert(second_num,self.temps[1])
@@ -574,6 +623,7 @@ class Ui_MainWindow(QMainWindow):
         self.reviews.insert(second_num,self.temps[4])
         self.point_list.insert(second_num,self.temps[5])
         self.LandmarksName.insert(second_num,self.temps[6])
+        self.place_names_list.insert(second_num,self.temps[7])
 
         for i in range(0,5,1):
             self.changeLabels[i].clear()
@@ -605,17 +655,37 @@ class Ui_MainWindow(QMainWindow):
             a = float(self.reviewPoints[i].text().replace(',','')) * 14.12
             self.reviewStars[i].setGeometry(QtCore.QRect(175, 44+195*i, 1+int(a), 15))
         # 맵 다시 띄우기
-        mapchecker = map.MainFunc(self.point_list,self.place_names_list)
+        mapchecker, opti_checker = map.MainFunc(self.point_list,self.place_names_list)
         if mapchecker == "-99":
             self.errorHappened = True
             self.map_path = "map.html"
-            return
         else:
             self.map_path = 'route.html'
         abs_map_path = os.path.abspath(self.map_path)
         abs_map_path = abs_map_path.replace('\\', '/')
         self.Map.setUrl(QtCore.QUrl(abs_map_path))
         self.Map.show()
+
+        if opti_checker == -1:
+            self.optimize.setEnabled(False)
+        # 체인지 함수에서 에러
+        if (self.errorHappened == True):
+            self.ErrorOpen()
+            for i in range(0, 5, 1):
+                self.names[i].hide()
+                self.contents[i].hide()
+                self.reviews[i].hide()
+                self.reviewPoints[i].hide()
+                self.reviewStars[i].hide()
+                self.imgs[i].hide()
+                self.no_imgs[i].hide()
+                self.LandmarksName[i].hide()
+            self.optimize.hide()
+            self.deleteButton.hide()
+            self.changeButton.hide()
+            self.PsContents.hide()
+            self.errorHappened = False
+
 
 
 #ChatGPT에게 검색창에 나온 내용으로 검색 요청하기
@@ -765,13 +835,15 @@ class Ui_MainWindow(QMainWindow):
 
         # map 함수 호출
         # 좌표 데이터 가지고 map함수 call 부분 필요
-        mapchecker = map.MainFunc(self.point_list,self.place_names_list)
+        mapchecker, opti_checker = map.MainFunc(self.point_list,self.place_names_list)
         if mapchecker == "-99":
-            self.errorHappened = True
             self.map_path = "map.html"
-            return
+            self.errorHappened = True
         else:
             self.map_path = 'route.html'
+
+        if opti_checker == -1:
+            self.optimize.setEnabled(False)
 
 
 
@@ -818,15 +890,69 @@ class Ui_MainWindow(QMainWindow):
         if mapchecker == "-99":
             self.errorHappened = True # 에러창이랑 연결 만들어줘야됨 따로.
             self.map_path = "map.html"
-            return
         else:
             self.map_path = 'route.html'
-            abs_map_path = os.path.abspath(self.map_path)
-            abs_map_path = abs_map_path.replace('\\', '/')
-            self.Map.setUrl(QtCore.QUrl(abs_map_path))
-            self.Map.show()
+
+        abs_map_path = os.path.abspath(self.map_path)
+        abs_map_path = abs_map_path.replace('\\', '/')
+        self.Map.setUrl(QtCore.QUrl(abs_map_path))
+        self.Map.show()
+        # 옵티마이저 함수에서 에러
+        if (self.errorHappened == True):
+            self.ErrorOpen()
+            for i in range(0, 5, 1):
+                self.names[i].hide()
+                self.contents[i].hide()
+                self.reviews[i].hide()
+                self.reviewPoints[i].hide()
+                self.reviewStars[i].hide()
+                self.imgs[i].hide()
+                self.no_imgs[i].hide()
+                self.LandmarksName[i].hide()
+            self.optimize.hide()
+            self.deleteButton.hide()
+            self.changeButton.hide()
+            self.PsContents.hide()
+            self.errorHappened = False
+            return
 
         ## 받아온거 바탕으로 리스트 교환하기
+        dicts = dict(zip(self.place_names_list, waypoint_array))
+        self.place_names_list.sort(key=lambda x: dicts[x])
+        dicts = dict(zip(self.names, waypoint_array))
+        self.names.sort(key=lambda x: dicts[x])
+        dicts = dict(zip(self.contents, waypoint_array))
+        self.contents.sort(key=lambda x: dicts[x])
+        dicts = dict(zip(self.imgs, waypoint_array))
+        self.imgs.sort(key=lambda x: dicts[x])
+        dicts = dict(zip(self.reviewPoints, waypoint_array))
+        self.reviewPoints.sort(key=lambda x: dicts[x])
+        dicts = dict(zip(self.reviews, waypoint_array))
+        self.reviews.sort(key=lambda x: dicts[x])
+        dicts = dict(zip(self.point_list, waypoint_array))
+        self.point_list.sort(key=lambda x: dicts[x])
+        dicts = dict(zip(self.LandmarksName, waypoint_array))
+        self.LandmarksName.sort(key=lambda x: dicts[x])
+
+        # 단순히 insert만 해서는 내용 갱신이 안 돼서 다시 setText, setUrl, 위치 변경
+        for i in range(0, 5, 1):
+            self.names[i].setText(self.names[i].text())
+            self.contents[i].setText(self.contents[i].text())
+            self.imgs[i].setUrl(QtCore.QUrl(self.imgs[i].url().toString()))
+            self.reviewPoints[i].setText(self.reviewPoints[i].text())
+            self.reviews[i].setText(self.reviews[i].text())
+            self.LandmarksName[i].setText(self.LandmarksName[i].text())
+
+            self.names[i].setGeometry(QtCore.QRect(10, 8 + 195 * i, 535, 31))
+            self.contents[i].setGeometry(QtCore.QRect(145, 84 + 195 * i, 418, 130))
+            self.imgs[i].setGeometry(QtCore.QRect(10, 42 + 195 * i, 130, 122))
+            self.reviewPoints[i].setGeometry(QtCore.QRect(144, 44 + 195 * i, 51, 17))
+            self.reviews[i].setGeometry(QtCore.QRect(258, 44 + 195 * i, 101, 16))
+            self.LandmarksName[i].setGeometry(QtCore.QRect(145, 64 + 195 * i, 418, 16))
+
+            # 바뀐 별점에 따라 별 갯수 노출도 변화
+            a = float(self.reviewPoints[i].text().replace(',', '')) * 14.12
+            self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 195 * i, 1 + int(a), 15))
 
 
 
