@@ -742,7 +742,7 @@ class Ui_MainWindow(QMainWindow):
                     self.reviewPoints[index].setText(str("%.1f"%(search_list[i][2])))
                     self.reviewStars[index].setGeometry(QtCore.QRect(175, 44 + 195 * index, 1 + int(search_list[i][2]*14.12), 15))
                     self.reviews[index].setText(str(format(search_list[i][3], ',')))
-                    self.LandmarksName[i].setText(str(""))
+                    self.LandmarksName[index].setText(str(""))
                     self.point_list[index] = (search_list[i][5],search_list[i][6])
                     self.place_names_list[index] = search_list[i][1]
                     if search_list[i][4] != 'No Image':
