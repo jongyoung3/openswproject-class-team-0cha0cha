@@ -154,6 +154,8 @@ def MainFunc(point,names, opt=0,retry = 0):
 
         #마커 찍기 함수
 
+        mark(map, point, names, n)
+
         if opt == 1: # 웨이포인트 오더 데이터 정리 부분
             real_waypoint_order = [0, 0, 0, 0, 0]
             waypoint_order = DrawDirec(origin,destination,locations,gmaps,map,opt,n)
@@ -177,14 +179,10 @@ def MainFunc(point,names, opt=0,retry = 0):
                         j += 1
                         k += 1
                 real_waypoint_order[1 + i] = j
-            dicts = dict(zip(names, real_waypoint_order))
-            names.sort(key=lambda x: dicts[x])
-            mark(map, point, names, n)
             html = ReturnHTML(map)
             return [html, real_waypoint_order]
         else:
             opti_checker = DrawDirec(origin, destination, locations, gmaps, map, opt, n)
-            mark(map, point, names, n)
             html=ReturnHTML(map)
             # OpenMap(html)
             return [html, opti_checker]

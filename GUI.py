@@ -468,41 +468,6 @@ class Ui_MainWindow(QMainWindow):
             self.changeButton.setEnabled(True)
             self.optimize.setEnabled(True)
 
-        # mapchecker, opti_checker = map.MainFunc(self.point_list,self.place_names_list)
-        # if mapchecker == "-99":
-        #     self.errorHappened = True
-        #     self.map_path = "map.html"
-        #     return
-        # else:
-        #     self.map_path = 'route.html'
-
-        # abs_map_path = os.path.abspath(self.map_path)
-        # abs_map_path = abs_map_path.replace('\\', '/')
-        # self.Map.setUrl(QtCore.QUrl(abs_map_path))
-        # self.Map.show()
-        #
-        # if opti_checker == -1:
-        #     self.optimize.setEnabled(False)
-        # # 리무브 함수 진행 중, 맵 이후에서 에러
-        # if (self.errorHappened == True):
-        #     self.ErrorOpen()
-        #     for i in range(0, 5, 1):
-        #         self.names[i].hide()
-        #         self.contents[i].hide()
-        #         self.reviews[i].hide()
-        #         self.reviewPoints[i].hide()
-        #         self.reviewStars[i].hide()
-        #         self.imgs[i].hide()
-        #         self.no_imgs[i].hide()
-        #         self.LandmarksName[i].hide()
-        #     self.optimize.hide()
-        #     self.deleteButton.hide()
-        #     self.changeButton.hide()
-        #     self.PsContents.hide()
-        #     self.errorHappened = False
-        # else:
-            # 버튼 보이게 하기
-
 
 
 
@@ -916,7 +881,7 @@ class Ui_MainWindow(QMainWindow):
             self.errorHappened = False
             return
 
-        ## 받아온거 바탕으로 리스트 교환하기
+        ## 받아온거 바탕으로 리스트 교환하기(재정렬)
         dicts = dict(zip(self.place_names_list, waypoint_array))
         self.place_names_list.sort(key=lambda x: dicts[x])
         dicts = dict(zip(self.names, waypoint_array))
