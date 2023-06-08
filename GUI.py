@@ -215,7 +215,7 @@ class Ui_MainWindow(QMainWindow):
 
     #Qpixmap으로 no_imgs에 사진 넣기
         pixmap = QPixmap("no_image.png")
-        pixmap = pixmap.scaled(130,100)
+        pixmap = pixmap.scaled(130,122)
 
         for i in range(0,5,1):
     #리뷰 제목들 위치, 폰트, text 세팅
@@ -228,8 +228,8 @@ class Ui_MainWindow(QMainWindow):
             self.contents[i].setWordWrap(True)
             self.contents[i].setAlignment(QtCore.Qt.AlignTop)
     #리뷰 이미지, 별점들, 체크박스 위치 및 text 세팅, 체크박스 숨김
-            self.imgs[i].setGeometry(QtCore.QRect(10, 42+195*i, 130, 100))
-            self.no_imgs[i].setGeometry(QtCore.QRect(10, 42+195*i, 130, 100))
+            self.imgs[i].setGeometry(QtCore.QRect(10, 52+195*i, 130, 122))
+            self.no_imgs[i].setGeometry(QtCore.QRect(10, 52+195*i, 130, 122))
             self.no_imgs[i].setPixmap(pixmap)
 
             self.reviewPoints[i].setGeometry(QtCore.QRect(144, 44+195*i, 51, 17))
@@ -241,19 +241,19 @@ class Ui_MainWindow(QMainWindow):
             self.checkBoxes[i].hide()
             self.LandmarksName[i].setGeometry(QtCore.QRect(145, 64+195*i, 418, 16))
     #리뷰 내용들 처음엔 안보이게, 버튼도 비활성화
-        # for i in range(0,5,1):
-        #     self.names[i].hide()
-        #     self.contents[i].hide()
-        #     self.reviews[i].hide()
-        #     self.reviewPoints[i].hide()
-        #     self.reviewStars[i].hide()
-        #     self.imgs[i].hide()
-        #     self.no_imgs[i].hide()
-        #     self.LandmarksName[i].hide()
-        # self.optimize.hide()
-        # self.deleteButton.hide()
-        # self.changeButton.hide()
-        # self.PsContents.hide()
+        for i in range(0,5,1):
+            self.names[i].hide()
+            self.contents[i].hide()
+            self.reviews[i].hide()
+            self.reviewPoints[i].hide()
+            self.reviewStars[i].hide()
+            self.imgs[i].hide()
+            self.no_imgs[i].hide()
+            self.LandmarksName[i].hide()
+        self.optimize.hide()
+        self.deleteButton.hide()
+        self.changeButton.hide()
+        self.PsContents.hide()
 
     #별점은 중대사항: 디폴트 지정에 맞춰 별 갯수 노출 세팅
         for i in range(0,5,1):
@@ -596,7 +596,7 @@ class Ui_MainWindow(QMainWindow):
 
             self.names[i].setGeometry(QtCore.QRect(10, 8+195*i, 535, 31))
             self.contents[i].setGeometry(QtCore.QRect(145, 84+195*i, 418, 130))
-            self.imgs[i].setGeometry(QtCore.QRect(10, 42+195*i, 130, 100))
+            self.imgs[i].setGeometry(QtCore.QRect(10, 42+195*i, 130, 122))
             self.reviewPoints[i].setGeometry(QtCore.QRect(144, 44+195*i, 51, 17))
             self.reviews[i].setGeometry(QtCore.QRect(258, 44+195*i, 101, 16))
             self.LandmarksName[i].setGeometry(QtCore.QRect(145, 64+195*i, 418, 16))
