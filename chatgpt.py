@@ -206,6 +206,7 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
     query = f"```{topic} ```in English"
 
     messages = [
+        # {"role": "system", "content": systemsay},
         {"role": "system", "content": systemsay2},
     #    {"role": "user", "content": train_topic},
     #    {"role": "assistant", "content": prev2},
@@ -216,8 +217,8 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
 
     # 중복제거가 필요할 시, 추가 학습 진행
     if except_list != []:
-        except_destination = ", ".join(except_list)
-        systemsay2 = f"""
+        except_destination = ", ".join(except_list) # systemsay3가 위의 prev_query 성격도 가짐
+        systemsay3 = f"""
         in next answer, You must find Exactly {n} of travel destinations related to topic in English, And You should follow the following conditions wrapped in angle brackets too.
         < First, You must exclude the destinations wrapped in following double backticks. So, you must find the destinations that is not provided in following double backticks.
         ``{except_destination}``. this is Top priority requirement.
@@ -225,10 +226,12 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
         The rest of the instructions are the same as preliminary study.
         """
         messages = [
-            {"role": "system", "content": systemsay},
-            {"role": "user", "content": train_topic},
-            {"role": "assistant", "content": prev2},
-            {"role": "user", "content": systemsay2},
+            # {"role": "system", "content": systemsay},
+            {"role": "system", "content": systemsay2},
+            # {"role": "user", "content": train_topic},
+            # {"role": "assistant", "content": prev2},
+            {"role": "assistant", "content": prev3},
+            {"role": "user", "content": systemsay3},
             {"role": "user", "content": query}
         ]
 
