@@ -316,7 +316,7 @@ def search(input_search_locations=[], retry=0, z=0):
                                 if name is not None and rating is not None and reviews is not None:
                                     if rating >= min_rating:
                                         attractions.append((name, rating, reviews))
-
+                                    # response['results'][0] 의 response 부분 변수가 274번째 줄에 있는 변수 값에서 받아오는 걸로 변경되버려서 오류
                                 if('photos' in response['results'][0]):  # 'photos'가 아예없는 경우 제외
                                     #사진 요청
                                     photo_reference=response['results'][0]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
@@ -333,11 +333,11 @@ def search(input_search_locations=[], retry=0, z=0):
                                     destination.append(1)
                                     destination.append(locations) # 검색한 지역이름
                                     destination.extend(attractions)
-                                    except_list_name.append(data['results'][max_index]['name'])
+                                    except_list_name.append(data['results'][max_index]['name']) # 변수가 이상하게 수정되 있어서 res_lo -> data로 바꿈
 
                                 # 좌표
-                                search_location_lat=(data['results'][max_index]['geometry']['location']['lat'])
-                                search_location_lng=(data['results'][max_index]['geometry']['location']['lng'])
+                                search_location_lat=(data['results'][max_index]['geometry']['location']['lat']) # 변수가 이상하게 수정되 있어서 res_lo -> data로 바꿈
+                                search_location_lng=(data['results'][max_index]['geometry']['location']['lng']) # 변수가 이상하게 수정되 있어서 res_lo -> data로 바꿈
                                 destination.append(search_location_lat)
                                 destination.append(search_location_lng)
                             else:
