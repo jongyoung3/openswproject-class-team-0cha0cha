@@ -143,7 +143,7 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
     You are in the middle of a preliminary study to answer the following questions:
     Find me Exactly 10 of travel destinations related to the topic.
     In the following user query, topic will be provided wrapped in triple backticks.
-    Topic can be provided in a variety of languages. Translate the topic to English for you.
+    Topic can be provided in a variety of languages. But Internally, you should using this topic by translating to English for query.
     Provide the results in the following order :
     Step 0. Imagine yourself as an expert travel guide AI speaking English. Do not say any other languages.
     Step 1. Follow the following conditions wrapped in angle brackets and find 10 of travel destinations related to topic in English :
@@ -156,7 +156,7 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
      Similarize the way locations are written for each destination. > 
     Step 3. write 3 sentences of introductions to each destination.
     Step 4. lastly, write 2 sentences introductions to topic.
-    Step 5. provide the output that is 10 of travel destinations related to topic in English and only json format. The output must satisfy the conditions.
+    Step 5. provide the output that is 10 of travel destinations related to topic in English and only json format. The output must satisfy the conditions. 
     Your output should be in json format with two list and have the following fields in first list :
      'name', 'location', 'description'. first list key is "destinations".
     In second list, You should write only introduction about topic. Second list key is "topic_introduction".
@@ -260,19 +260,24 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
 
     ### 개수 점검기
 
-    if len(result['destinations']) > n:  # 요구 갯수보다 많이 탐색해온 경우
-        for i in range(len(result['destinations']) - n):
-            result['destinations'].pop()  # result에 len개만큼만 남기도록 하고 뒤로 넘김
-    elif len(result['destinations']) < n:  # 요구 갯수보다 적게 탐색해온 경우
-        new_except_list = except_list[:]
-        for i in result["destinations"]:
-            name_with_region = i['name'] + '(' + i['location'] + ')'
-            new_except_list.append(name_with_region)
-        new_n = n - len(result['destinations'])
-        result['destinations'].extend(gpt(topic, new_n, new_except_list, 0, 1))
+    try:
+        if len(result['destinations']) > n:  # 요구 갯수보다 많이 탐색해온 경우
+            for i in range(len(result['destinations']) - n):
+                result['destinations'].pop()  # result에 len개만큼만 남기도록 하고 뒤로 넘김
+        elif len(result['destinations']) < n:  # 요구 갯수보다 적게 탐색해온 경우
+            new_except_list = except_list[:]
+            for i in result["destinations"]:
+                name_with_region = i['name'] + '(' + i['location'] + ')'
+                new_except_list.append(name_with_region)
+            new_n = n - len(result['destinations'])
+            result['destinations'].extend(gpt(topic, new_n, new_except_list, 0, 1))
         # new_except_list에 현재 검색한 양만큼 추가 후, new_n 은 n-len으로 맞춘 후, gpt를 새로 호출해서 받아온 뒤, 진행중이던 곳에 추가하기.
         # 디폴트 인자로 해당케이스 속성값을 줘서, 얘에 추가하는 전용으로 영문값만 받아오는 케이스
-
+    except:
+        print("error in 개수 점검기\n\n")
+        print(answer)
+        retry += 1
+        return gpt(topic, n, except_list, retry)
     ### 추가용 gpt버전으로 들어왔는지 점검기
 
     if add == 1:  # 갯수 오류시 extend를 위한 체크 변수
