@@ -71,10 +71,99 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
         }
     ],
     "topic_introduction": [
-        "Tokyo is known for its unique shopping culture, offering everything from luxury brands to quirky accessories and traditional crafts. Whether you're looking for stylish boutiques or bustling street markets, Tokyo has something for every shopping enthusiast. Don't miss out on the chance to discover the latest trends and bring home one-of-a-kind souvenirs from this vibrant city."
+        "Tokyo is known for its unique shopping culture, offering everything from luxury brands to quirky accessories and traditional crafts. Don't miss out on the chance to discover the latest trends and bring home one-of-a-kind souvenirs from this vibrant city."
         ]
     }
     """
+
+    prev3 = """
+    {
+        "destinations": [
+        {
+            "name": "Eiffel Tower",
+            "location": "Paris, France",
+            "description": "The Eiffel Tower is an iconic landmark in Paris, France. Standing at 330 meters tall, it offers breathtaking views of the city and is a must-visit attraction for tourists from around the world."
+        },
+        {
+            "name": "Machu Picchu",
+            "location": "Cusco Region, Peru",
+            "description": "Machu Picchu is an ancient Incan citadel located in the Cusco Region of Peru. Surrounded by majestic mountains, it is known for its remarkable architecture and mystical atmosphere, attracting countless visitors each year."
+        },
+        {
+            "name": "Great Wall of China",
+            "location": "Beijing, China",
+            "description": "The Great Wall of China is an awe-inspiring fortification that stretches across the northern part of China. With a history spanning over 2,000 years, it is a UNESCO World Heritage site and a testament to human engineering and ingenuity."
+        },
+        {
+            "name": "Santorini",
+            "location": "Cyclades, Greece",
+            "description": "Santorini is a breathtaking island in the Cyclades archipelago of Greece. Famous for its stunning sunsets, whitewashed buildings, and blue-domed churches, it offers a romantic and picturesque setting that attracts travelers from all over."
+        },
+        {
+            "name": "Taj Mahal",
+            "location": "Agra, India",
+            "description": "The Taj Mahal is a magnificent mausoleum located in Agra, India. Built by Emperor Shah Jahan in memory of his beloved wife, it is regarded as one of the new Seven Wonders of the World and showcases exquisite Mughal architecture."
+        },
+        {
+            "name": "Grand Canyon",
+            "location": "Arizona, USA",
+            "description": "The Grand Canyon is a vast and awe-inspiring natural wonder situated in Arizona, USA. Carved by the Colorado River, its colorful rock formations and steep cliffs offer breathtaking vistas that leave visitors in awe of its grandeur."
+        },
+        {
+            "name": "Petra",
+            "location": "Ma'an Governorate, Jordan",
+            "description": "Petra is an ancient city nestled in the Ma'an Governorate of Jordan. Famous for its intricate rock-cut architecture and the iconic Treasury, it is a UNESCO World Heritage site and a symbol of Jordan's rich history and heritage."
+        },
+        {
+            "name": "Machu Picchu",
+            "location": "Cusco Region, Peru",
+            "description": "Machu Picchu is an ancient Incan citadel located in the Cusco Region of Peru. Surrounded by majestic mountains, it is known for its remarkable architecture and mystical atmosphere, attracting countless visitors each year."
+        },
+        {
+            "name": "Colosseum",
+            "location": "Rome, Italy",
+            "description": "The Colosseum is a magnificent amphitheater situated in the heart of Rome, Italy. Dating back to the Roman Empire, it is a testament to ancient engineering and hosts millions of tourists who come to admire its grandeur and historical significance."
+        },
+        {
+         "name": "Pyramids of Giza",
+        "location": "Giza Governorate, Egypt",
+        "description": "The Pyramids of Giza are ancient pyramid structures located in the Giza Governorate of Egypt. Constructed as tombs for pharaohs, they are an incredible testament to the Egyptian civilization's architectural prowess and continue to fascinate visitors."
+        }
+    ],
+    "topic_introduction": [
+        "Travel destinations offer incredible experiences and insights into different cultures and historical wonders. Whether you seek natural beauty, architectural marvels, or cultural landmarks, these destinations will captivate your senses and create unforgettable memories."
+        ]
+    }
+"""
+
+    # 로케이션 제공 요청.
+
+
+    systemsay2 = """
+    You are in the middle of a preliminary study to answer the following questions:
+    Find me Exactly 10 of travel destinations related to the topic.
+    In the following user query, topic will be provided wrapped in triple backticks.
+    Topic can be provided in a variety of languages. Translate the topic to English for you.
+    Provide the results in the following order :
+    Step 0. Imagine yourself as an expert travel guide AI speaking English. Do not say any other languages.
+    Step 1. Follow the following conditions wrapped in angle brackets and find 10 of travel destinations related to topic in English :
+    < You must only write places that can be cited and verified on Google Maps.
+    You should include places that are heavily visited and has high ratings by tourists. >
+    Step 2. Follow the following conditions wrapped in angle brackets and find location where the travel destinations belongs to.
+    < If the location is multiple, write the only one location that is most representative.
+     location data should be based on Google Maps data. 
+     Be specific the location so it can be searched on Google maps easily. 
+     Similarize the way locations are written for each destination. > 
+    Step 3. write 3 sentences of introductions to each destination.
+    Step 4. lastly, write 2 sentences introductions to topic.
+    Step 5. provide the output that is 10 of travel destinations related to topic in English and only json format. The output must satisfy the conditions.
+    Your output should be in json format with two list and have the following fields in first list :
+     'name', 'location', 'description'. first list key is "destinations".
+    In second list, You should write only introduction about topic. Second list key is "topic_introduction".
+    """
+
+
+
     # 사전학습 데이터
     systemsay = f"""
     You are in the middle of a preliminary study to answer the following questions:
@@ -85,24 +174,25 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
     Step 0. Imagine yourself as an expert travel guide AI speaking English. Do not say any other languages.
     Step 1. Follow the following conditions wrapped in angle brackets and find 10 of travel destinations related to topic in English :
     < You must only write places that can be cited and verified on Google Maps.
-    You must only write places you can drive to.
-    You should include places that are heavily visited and has high ratings by tourists.
-    You must write close destinations(destinations in same or close administrative region, district or area) back-to-back.
-    You must arrange the destinations order so that all destinations are visited in an optimal path. >
-    Step 2. Be sure to follow the precautions in Step 1 to ensure that condition is complete at all of each destination and if any of the conditions are not met, fix what you find.
-    Step 3. Follow the following conditions wrapped in angle brackets and find region name where the travel destinations belongs to.
-    < If the region is multiple, write the only one region that is most representative. >
-    Step 4. write 3 sentences introductions and to each destination.
-    Step 5. lastly, write 2 sentences introductions about topic.
-    Step 6. provide the output that is 10 of travel destinations related to topic in English and only json format. The order of the output must satisfy the conditions in Step 1.
+    You should include places that are heavily visited and has high ratings by tourists. >
+    Step 2. Follow the following conditions wrapped in angle brackets and find region where the travel destinations belongs to.
+    < If the region is multiple, write the only one region that is most representative.
+     Region data should be based on Google Maps data. 
+     Be specific the region so it can be searched on Google maps easily. 
+     Similarize the way locations are written for each destination. > 
+    Step 3. write 3 sentences of introductions to each destination.
+    Step 4. lastly, write 2 sentences introductions to topic.
+    Step 5. provide the output that is 10 of travel destinations related to topic in English and only json format. The output must satisfy the conditions.
     Your output should be in json format with two list and have the following fields in first list :
      'name', 'region', 'description'. first list key is "destinations".
     In second list, You should write only introduction about topic. Second list key is "topic_introduction".
     """
+    # 95,96번줄 추가
+    # 일부 무의미한 문장 제거
 
     # 아래 오류목록 참고해서, 확인 후 고쳐보고.
 
-    # 하시마 섬 등 드라이빙으로 경로를 알아낼 수 없는 경우. #############
+    # 하시마 섬 등 드라이빙으로 경로를 알아낼 수 없는 경우. ############# 해결불가. 가능한 한 그렇게 추천하지만, 말을 못 알아 들음.
 
     # 2. 먼거리 추천 에러 step1 요구사항 3,4,5번 라인  ###
 
@@ -116,9 +206,10 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
     query = f"```{topic} ```in English"
 
     messages = [
-        {"role": "system", "content": systemsay},
-        {"role": "user", "content": train_topic},
-        {"role": "assistant", "content": prev2},
+        {"role": "system", "content": systemsay2},
+    #    {"role": "user", "content": train_topic},
+    #    {"role": "assistant", "content": prev2},
+        {"role": "assistant", "content": prev3},
         {"role": "user", "content" : prev_query},
         {"role": "user", "content": query}
     ]
@@ -130,7 +221,7 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
         in next answer, You must find Exactly {n} of travel destinations related to topic in English, And You should follow the following conditions wrapped in angle brackets too.
         < First, You must exclude the destinations wrapped in following double backticks. So, you must find the destinations that is not provided in following double backticks.
         ``{except_destination}``. this is Top priority requirement.
-        Second, You don't need to write 2 sentences introductions about topic. Instead, Just write '0'. > 
+        Second, You don't need to write 2 sentences introductions to topic. Instead, Just write '0'. > 
         The rest of the instructions are the same as preliminary study.
         """
         messages = [
@@ -172,7 +263,7 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
     elif len(result['destinations']) < n:  # 요구 갯수보다 적게 탐색해온 경우
         new_except_list = except_list[:]
         for i in result["destinations"]:
-            name_with_region = i['name'] + '(' + i['region'] + ')'
+            name_with_region = i['name'] + '(' + i['location'] + ')'
             new_except_list.append(name_with_region)
         new_n = n - len(result['destinations'])
         result['destinations'].extend(gpt(topic, new_n, new_except_list, 0, 1))
@@ -189,14 +280,14 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
 
     eng_name = []
     for dest in result['destinations']:  # 장소명과 지역명 결합
-        eng_name.append(dest['name'] + '(' + dest['region'] + ')')
+        eng_name.append(dest['name'] + '(' + dest['location'] + ')')
 
     ### 번역을 위한 데이터 처리 부분
 
     text = ""
 
     for dest in result['destinations']:  # 통으로 번역하기 위해 모든 결과값 한 문자열로 통합
-        text = text + dest['name'] + ' :: ' + dest['region'] + ' :: ' + dest['description'] + '\n'
+        text = text + dest['name'] + ' :: ' + dest['location'] + ' :: ' + dest['description'] + '\n'
 
     if except_list == []:
         text += result['topic_introduction'][0]  # 같은 과정
