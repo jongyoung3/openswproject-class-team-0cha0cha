@@ -113,7 +113,7 @@ class Ui_MainWindow(QMainWindow):
     #최적화 버튼 크기 지정
         self.optimize = QtWidgets.QPushButton(self.centralwidget)
         self.optimize.setGeometry(QtCore.QRect(470, 17, 94, 28))
-
+        self.isOptimizeAble = bool(True)
 
     #메뉴바 관련
         MainWindow.setCentralWidget(self.centralwidget)
@@ -366,6 +366,10 @@ class Ui_MainWindow(QMainWindow):
             abs_map_path = abs_map_path.replace('\\', '/')
             self.Map.setUrl(QtCore.QUrl(abs_map_path))
             self.Map.show()
+            if self.isOptimizeAble == True:
+                self.optimize.setEnabled(True)
+            else:
+                self.optimize.setEnabled(False)
         self.SearchEnd = False
         self.SearchLoading.hide()
 
@@ -658,7 +662,6 @@ class Ui_MainWindow(QMainWindow):
 
 #ChatGPT에게 검색창에 나온 내용으로 검색 요청하기
     def process_call(self, process_topic, index_list=[], recall=0):
-
         global except_list
         global topic
         topic = process_topic ## 변수 낭비일수도 있는데, 귀찮아서 추가함.
@@ -803,17 +806,20 @@ class Ui_MainWindow(QMainWindow):
 
         # map 함수 호출
         # 좌표 데이터 가지고 map함수 call 부분 필요
+        self.optimize.setEnabled(False)
         mapchecker, opti_checker = map.MainFunc(self.point_list,self.place_names_list)
+        
+        if opti_checker == 0:
+            self.isOptimizeAble = True
+        else:
+            self.isOptimizeAble = False
+        
         if mapchecker == "-99":
             self.map_path = "map.html"
             self.errorHappened = True
         else:
             self.map_path = 'route.html'
 
-        if opti_checker == -1:
-            self.optimize.setEnabled(False)
-        elif opti_checker == 0:
-            self.optimize.setEnabled(True)
 
 
 
