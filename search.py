@@ -36,16 +36,43 @@ def search(input_search_locations=[], retry=0, z=0):
             
             for i, locations in enumerate(input_search_locations):
                 response = map_clinet.places(query=locations)
-                temp1, temp2 = locations.split('(')
+                temp1= locations.split('(')
+                response_sec = map_clinet.places(query=temp1[0])
                 if (response['status'] != 'ZERO_RESULTS'):
-                    chk = 0
+                    chk_1 = 0
                     for loc in response['results']:
-                        if loc['name'].lower() == temp1.lower():
-                        #if (temp1.lower() in loc['name'].lower()) :
-                            chk = 1
+                        #if loc['name'].lower() == temp1[0].lower():
+                        if(loc['name'].lower() in temp1[0].lower()) : # 정확도 검사 방법을 고침
+                            chk_1 = 1
                             break
-                    if chk == 0:
-                        input_search_locations[i] = temp1
+                    if (response_sec['status'] == 'ZERO_RESULTS'):
+                        pass
+                    else:
+                        for loc in response_sec['results']: # 괄호를 떼면, 정확히 일치하는 장소명이 있고, 거기가 지역이라 현 검색어가 지역일 가능성이 높은 경우
+                            if loc['name'].lower() == temp1[0].lower():
+                                if 'rating' not in loc:
+                                    input_search_locations[i] = temp1[0]
+                                    continue
+                    if chk_1 == 0:
+                        response_sec = map_clinet.places(query=temp1[0])
+                        chk_2 = 1  # 완벽히 일치하는 장소를 찾지는 못했지만, 모든 검색 결과가 장소라서 장소일 가능성이 높은 검색어
+                        for loc in response['results']:
+                            if 'rating' not in loc:
+                                chk_2 = 0
+                                break
+                        if chk_2 == 0:
+                            input_search_locations[i] = temp1[0]
+                            continue
+                        # if (response_sec['status'] == 'ZERO_RESULTS'):
+                        #     pass
+                        # else:
+                        #     for loc in response_sec['results']: # 괄호를 떼면, 지역이 나와서 지역일 가능성이 갑자기 높아진 검색어
+                        #         if 'rating' not in loc:
+                        #             chk_2 = 0
+                        #             break
+                        #     if chk_2 == 0:
+                        #         input_search_locations[i] = temp1[0]
+                        #         continue
 
 
             return search(input_search_locations, retry, z=1)
@@ -57,7 +84,21 @@ def search(input_search_locations=[], retry=0, z=0):
 
                 if(response['status'] !='ZERO_RESULTS'): #검색데이터 결과가 빈 리스트로 오는 경우(=검색결과가 없을때)를 걸러줌                    
                     # 밑에 부분 조건 and len(response['results'])==1 추가함
-                    if('rating' in response['results'][0] and len(response['results'])==1): # 인덱스 번호에 따라 영업점 나오는 듯. 기준으로만 일단 만듬
+                    temp1 = locations.split('(')
+                    chk = 0
+                    for index, loc in enumerate(response['results']):
+                        if loc['name'].lower() == temp1[0].lower():
+                            chk = 1
+                            response['results'][0], response['results'][index] = response['results'][index], response['results'][0]
+                            break
+                    chk_2 = 1
+                    if chk == 0: # 완벽히 일치하는 장소를 찾지는 못했지만, 모든 검색 결과가 장소라서 장소일 가능성이 높은 검색어
+                        for loc in response['results']:
+                            if 'rating' not in loc:
+                                chk_2 = 0
+                                break
+
+                    if(('rating' in response['results'][0] and chk == 1) or ('rating' in response['results'][0] and chk_2 == 1)): # 인덱스 번호에 따라 영업점 나오는 듯. 기준으로만 일단 만듬
                         if('business_status' in response['results'][0]): #'business_status'가 없는 경우 분류
                             if(response['results'][0]['business_status']!='CLOSED_PERMANENTLY'): #폐업인 경우 제외
                                 # '0'->지역 외의 장소, 평점이 있는 것
@@ -615,14 +656,14 @@ def search(input_search_locations=[], retry=0, z=0):
     except: # 예외 처리
         retry+=1
         print("error in search")
-        return search(input_search_locations, retry)
+        return search(input_search_locations, retry, z)
 
 #TEST
 # ['Taj Mahal(Agra, Uttar Pradesh, India)', 'Golden Temple(Amritsar, Punjab, India)', 'Hampi(Hampi, Karnataka, India)', 'Jaipur(Rajasthan, India)', 'Varanasi(Uttar Pradesh, India)']
-res_sol=search(['Nagoya(Chubu region of Japan)'])
-#res_sol=search(chatgpt.gpt(input(),5))
-# #
-print(res_sol)
+#res_sol=search(['Lake District (Cumbria, England, United Kingdom)'])
+# # # # #res_sol=search(chatgpt.gpt(input(),5))
+# # # # # # #
+#print(res_sol)
 #print(result_list)
 #['Tokyo(Kanto Region, Japan)', 'Kyoto(Kansai Region, Japan)', 'Osaka(Kansai Region, Japan)', 'Hiroshima(Chugoku Region, Japan)', 'Nara(Kansai Region, Japan)']
 #['New York City(New York, United States)', 'Miami Beach(Florida, United States)', 'Grand Canyon National Park(Arizona, United States)', 'Las Vegas(Nevada, United States)', 'Hawaii(United States)']
