@@ -41,8 +41,8 @@ def search(input_search_locations=[], retry=0, z=0):
                 if (response['status'] != 'ZERO_RESULTS'):
                     chk_1 = 0
                     for loc in response['results']:
-                        #if loc['name'].lower() == temp1[0].lower():
-                        if(loc['name'].lower() in temp1[0].lower()) : # 정확도 검사 방법을 고침
+                        if loc['name'].lower() == temp1[0].lower():
+                        #if(loc['name'].lower() in temp1[0].lower()) : # 정확도 검사 방법을 고침
                             chk_1 = 1
                             break
                     if (response_sec['status'] == 'ZERO_RESULTS'):
