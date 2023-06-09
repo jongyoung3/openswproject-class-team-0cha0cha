@@ -882,22 +882,35 @@ class Ui_MainWindow(QMainWindow):
             return
 
         ## 받아온거 바탕으로 리스트 교환하기(재정렬)
-        dicts = dict(zip(self.place_names_list, waypoint_array))
-        self.place_names_list.sort(key=lambda x: dicts[x])
-        dicts = dict(zip(self.names, waypoint_array))
-        self.names.sort(key=lambda x: dicts[x])
-        dicts = dict(zip(self.contents, waypoint_array))
-        self.contents.sort(key=lambda x: dicts[x])
-        dicts = dict(zip(self.imgs, waypoint_array))
-        self.imgs.sort(key=lambda x: dicts[x])
-        dicts = dict(zip(self.reviewPoints, waypoint_array))
-        self.reviewPoints.sort(key=lambda x: dicts[x])
-        dicts = dict(zip(self.reviews, waypoint_array))
-        self.reviews.sort(key=lambda x: dicts[x])
-        dicts = dict(zip(self.point_list, waypoint_array))
-        self.point_list.sort(key=lambda x: dicts[x])
-        dicts = dict(zip(self.LandmarksName, waypoint_array))
-        self.LandmarksName.sort(key=lambda x: dicts[x])
+        temp = []
+        for i in waypoint_array:
+            temp.append(self.names[i])
+        self.names = temp[:]
+        temp.clear()
+        for i in waypoint_array:
+            temp.append(self.contents[i])
+        self.contents = temp[:]
+        temp.clear()
+        for i in waypoint_array:
+            temp.append(self.imgs[i])
+        self.imgs = temp[:]
+        temp.clear()
+        for i in waypoint_array:
+            temp.append(self.reviewPoints[i])
+        self.reviewPoints = temp[:]
+        temp.clear()
+        for i in waypoint_array:
+            temp.append(self.reviews[i])
+        self.reviews = temp[:]
+        temp.clear()
+        for i in waypoint_array:
+            temp.append(self.point_list[i])
+        self.point_list = temp[:]
+        temp.clear()
+        for i in waypoint_array:
+            temp.append(self.LandmarksName[i])
+        self.LandmarksName = temp[:]
+        temp.clear()
 
         # 단순히 insert만 해서는 내용 갱신이 안 돼서 다시 setText, setUrl, 위치 변경
         for i in range(0, 5, 1):
