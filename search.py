@@ -41,8 +41,8 @@ def search(input_search_locations=[], retry=0, z=0):
                 if (response['status'] != 'ZERO_RESULTS'):
                     chk_1 = 0
                     for loc in response['results']:
-                        if loc['name'].lower() == temp1[0].lower():
-                        #if (temp1.lower() in loc['name'].lower()) :
+                        #if loc['name'].lower() == temp1[0].lower():
+                        if(loc['name'].lower() in temp1[0].lower()) : # 정확도 검사 방법을 고침
                             chk_1 = 1
                             break
                     if (response_sec['status'] == 'ZERO_RESULTS'):
@@ -660,10 +660,10 @@ def search(input_search_locations=[], retry=0, z=0):
 
 #TEST
 # ['Taj Mahal(Agra, Uttar Pradesh, India)', 'Golden Temple(Amritsar, Punjab, India)', 'Hampi(Hampi, Karnataka, India)', 'Jaipur(Rajasthan, India)', 'Varanasi(Uttar Pradesh, India)']
-# res_sol=search(['Don Quijote Shibuya', 'Don Quijote Osaka', 'Don Quijote Akihabara(Chiyoda City, Tokyo, Japan)', 'Don Quijote Hakata', 'Don Quijote Namba'])
+#res_sol=search(['Lake District (Cumbria, England, United Kingdom)'])
 # # # # #res_sol=search(chatgpt.gpt(input(),5))
 # # # # # # #
-# print(res_sol)
+#print(res_sol)
 #print(result_list)
 #['Tokyo(Kanto Region, Japan)', 'Kyoto(Kansai Region, Japan)', 'Osaka(Kansai Region, Japan)', 'Hiroshima(Chugoku Region, Japan)', 'Nara(Kansai Region, Japan)']
 #['New York City(New York, United States)', 'Miami Beach(Florida, United States)', 'Grand Canyon National Park(Arizona, United States)', 'Las Vegas(Nevada, United States)', 'Hawaii(United States)']
