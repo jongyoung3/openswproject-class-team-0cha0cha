@@ -633,6 +633,9 @@ class Ui_MainWindow(QMainWindow):
 
         if opti_checker == -1:
             self.optimize.setEnabled(False)
+        elif opti_checker == 0:
+            self.optimize.setEnabled(True)
+
         # 체인지 함수에서 에러
         if (self.errorHappened == True):
             self.ErrorOpen()
@@ -809,6 +812,8 @@ class Ui_MainWindow(QMainWindow):
 
         if opti_checker == -1:
             self.optimize.setEnabled(False)
+        elif opti_checker == 0:
+            self.optimize.setEnabled(True)
 
 
 
