@@ -105,9 +105,20 @@ def DrawDirec(origin,destination,locations,gmaps,map,opt,n):
                 end = (step['end_location']['lat'], step['end_location']['lng'])
                 points.extend([start, end])
 
-
-
+            # for i in range(len(points)-1):
+            #     if (i==0):
+            #         locate.append(points[0])#0
+            #     locate.append(((points[i][0]+points[i+1][0])/2,(points[i][1]+points[i+1][1])/2)) #2
+            #     locate.append(points[i+1])#3
+            #
+            #
+            # if (len(locate) <= 100):
+            #     snapped_points = gmaps.snap_to_roads(locate, interpolate=True)
+            #     locate = [(point['location']['latitude'], point['location']['longitude']) for point in snapped_points]
+            # folium.PolyLine(locate, color='blue', weight=5).add_to(map)
             folium.PolyLine(points, color='blue', weight=5).add_to(map)
+
+
 
         if opt == 1: ##### 디렉션 리스폰스에서, 정렬된 데이터 관련 응답. 단, 웨이포인트 오더로 인한 갯수 오류가 있을지 우려됨
             return directions_response[0]['waypoint_order']
