@@ -53,6 +53,47 @@ from geopy.distance import geodesic
 #         point.append([lat[i], lon[i]])
 #     return point
 
+def decode_polyline(polyline):
+    """Decodes a Polyline string into a list of lat/lng dicts.
+
+    See the developer docs for a detailed description of this encoding:
+    https://developers.google.com/maps/documentation/utilities/polylinealgorithm
+
+    :param polyline: An encoded polyline
+    :type polyline: string
+
+    :rtype: list of dicts with lat/lng keys
+    """
+    pointse = []
+    index = lat = lng = 0
+
+    while index < len(polyline):
+        result = 1
+        shift = 0
+        while True:
+            b = ord(polyline[index]) - 63 - 1
+            index += 1
+            result += b << shift
+            shift += 5
+            if b < 0x1f:
+                break
+        lat += (~result >> 1) if (result & 1) != 0 else (result >> 1)
+
+        result = 1
+        shift = 0
+        while True:
+            b = ord(polyline[index]) - 63 - 1
+            index += 1
+            result += b << shift
+            shift += 5
+            if b < 0x1f:
+                break
+        lng += ~(result >> 1) if (result & 1) != 0 else (result >> 1)
+
+        pointse.append({"lat": lat * 1e-5, "lng": lng * 1e-5})
+
+    return pointse
+
 #시작점, 도착점 설정 및 경유지 리스트 생성
 def FindOriDes(point,n):
     loong=0
@@ -100,22 +141,18 @@ def DrawDirec(origin,destination,locations,gmaps,map,opt,n):
             route = directions_response[0]['legs'][i]
 
             points = []
-            for step in route['steps']:
-                start = (step['start_location']['lat'], step['start_location']['lng'])
-                end = (step['end_location']['lat'], step['end_location']['lng'])
-                points.extend([start, end])
 
-            # for i in range(len(points)-1):
-            #     if (i==0):
-            #         locate.append(points[0])#0
-            #     locate.append(((points[i][0]+points[i+1][0])/2,(points[i][1]+points[i+1][1])/2)) #2
-            #     locate.append(points[i+1])#3
-            #
-            #
-            # if (len(locate) <= 100):
-            #     snapped_points = gmaps.snap_to_roads(locate, interpolate=True)
-            #     locate = [(point['location']['latitude'], point['location']['longitude']) for point in snapped_points]
-            # folium.PolyLine(locate, color='blue', weight=5).add_to(map)
+
+
+            for step in route['steps']:
+                temp = decode_polyline(step['polyline']['points'])
+                for pointed in temp:
+                    points.append((pointed['lat'],pointed['lng']))
+                # start = (step['start_location']['lat'], step['start_location']['lng'])
+                # end = (step['end_location']['lat'], step['end_location']['lng'])
+
+
+
             folium.PolyLine(points, color='blue', weight=5).add_to(map)
 
 
