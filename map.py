@@ -153,7 +153,7 @@ def DrawDirec(origin,destination,locations,gmaps,map,opt,n):
 
 
 
-            folium.PolyLine(points, color='blue', weight=5).add_to(map)
+            folium.PolyLine(points, color='blue', weight=4).add_to(map)
 
 
 

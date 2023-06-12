@@ -623,6 +623,7 @@ class Ui_MainWindow(QMainWindow):
         #바뀐 별점에 따라 별 갯수 노출도 변화
             a = float(self.reviewPoints[i].text().replace(',','')) * 14.12
             self.reviewStars[i].setGeometry(QtCore.QRect(175, 44+195*i, 1+int(a), 15))
+
         # 맵 다시 띄우기
         mapchecker, opti_checker = map.MainFunc(self.point_list,self.place_names_list)
         if mapchecker == "-99":
@@ -808,12 +809,12 @@ class Ui_MainWindow(QMainWindow):
         # 좌표 데이터 가지고 map함수 call 부분 필요
         self.optimize.setEnabled(False)
         mapchecker, opti_checker = map.MainFunc(self.point_list,self.place_names_list)
-        
+
         if opti_checker == 0:
             self.isOptimizeAble = True
         else:
             self.isOptimizeAble = False
-        
+
         if mapchecker == "-99":
             self.map_path = "map.html"
             self.errorHappened = True
@@ -921,6 +922,10 @@ class Ui_MainWindow(QMainWindow):
         for i in waypoint_array:
             temp.append(self.LandmarksName[i])
         self.LandmarksName = temp[:]
+        temp.clear()
+        for i in waypoint_array:
+            temp.append(self.place_names_list[i])
+        self.place_names_list = temp[:]
         temp.clear()
 
         # 단순히 insert만 해서는 내용 갱신이 안 돼서 다시 setText, setUrl, 위치 변경
