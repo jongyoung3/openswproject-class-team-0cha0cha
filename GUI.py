@@ -947,6 +947,7 @@ class Ui_MainWindow(QMainWindow):
             # 바뀐 별점에 따라 별 갯수 노출도 변화
             a = float(self.reviewPoints[i].text().replace(',', '')) * 14.12
             self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 195 * i, 1 + int(a), 15))
+            self.cancelChange()
 
 
 
