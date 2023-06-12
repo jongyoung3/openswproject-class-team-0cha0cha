@@ -479,10 +479,31 @@ class Ui_MainWindow(QMainWindow):
 #ChangeBtn 눌렀을 때 이벤트: 리뷰들 위치 교환할 창 열림
     def changeOpen(self):
     #change창 크기 지정, 왼쪽에 나타나게 함
+        self.num = 0
         self.changeOpened = True
         self.Form.resize(392, 500)
         self.Form.move(500, 200)
-        
+
+
+        for i in range(0, 5, 1):
+            self.names[i].setText(self.names[i].text())
+            self.contents[i].setText(self.contents[i].text())
+            self.imgs[i].setUrl(QtCore.QUrl(self.imgs[i].url().toString()))
+            self.reviewPoints[i].setText(self.reviewPoints[i].text())
+            self.reviews[i].setText(self.reviews[i].text())
+            self.LandmarksName[i].setText(self.LandmarksName[i].text())
+
+            self.names[i].setGeometry(QtCore.QRect(10, 8 + 195 * i, 535, 31))
+            self.contents[i].setGeometry(QtCore.QRect(145, 84 + 195 * i, 418, 130))
+            self.imgs[i].setGeometry(QtCore.QRect(10, 42 + 195 * i, 130, 122))
+            self.reviewPoints[i].setGeometry(QtCore.QRect(144, 44 + 195 * i, 51, 17))
+            self.reviews[i].setGeometry(QtCore.QRect(258, 44 + 195 * i, 101, 16))
+            self.LandmarksName[i].setGeometry(QtCore.QRect(145, 64 + 195 * i, 418, 16))
+
+            # 바뀐 별점에 따라 별 갯수 노출도 변화
+            a = float(self.reviewPoints[i].text().replace(',', '')) * 14.12
+            self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 195 * i, 1 + int(a), 15))
+
     #시작하면 나오는 1~10번 리뷰들 제목 있는 버튼들
         self.LabelBtns = [QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),]
     #라벨버튼 눌렀을 때 나오는 1~10번 제목 라벨들
@@ -539,9 +560,10 @@ class Ui_MainWindow(QMainWindow):
 
 
 #위치 교환 창에서 1~10번 제목버튼 눌렀을 때 이벤트: 라벨로 전환되고 이동 버튼들 나옴
-    def LabelSelect(self,num):
+    def LabelSelect(self,zzzz):
+        self.num = zzzz
     #눌린 번호 위치의 비활성화 버튼이 나타남
-        self.disableLabelBtns[num].show()
+        self.disableLabelBtns[self.num].show()
     #취소 눌렀다가 다시 실행해도 글자 안 겹치게 LabelBtns 글자 없앰.. 근데 두 번째 실행부턴 LabelBtns가 안 사라져요
         for i in range(0,5,1):
             self.LabelBtns[i].hide()
@@ -553,15 +575,15 @@ class Ui_MainWindow(QMainWindow):
         self.changeBtns[5].show()
     
     #눌린 버튼 위아래에는 이동 버튼 안 나타나게
-        self.changeBtns[num].hide()
-        self.changeBtns[num+1].hide()
+        self.changeBtns[self.num].hide()
+        self.changeBtns[self.num+1].hide()
     #역시 for문으로는 맨 뒤에꺼만 돼서 개별처리
-        self.changeBtns[0].clicked.connect(lambda: self.changeSelect(num,0))
-        self.changeBtns[1].clicked.connect(lambda: self.changeSelect(num,1))
-        self.changeBtns[2].clicked.connect(lambda: self.changeSelect(num,2))
-        self.changeBtns[3].clicked.connect(lambda: self.changeSelect(num,3))
-        self.changeBtns[4].clicked.connect(lambda: self.changeSelect(num,4))
-        self.changeBtns[5].clicked.connect(lambda: self.changeSelect(num,5))
+        self.changeBtns[0].clicked.connect(lambda: self.changeSelect(0))
+        self.changeBtns[1].clicked.connect(lambda: self.changeSelect(1))
+        self.changeBtns[2].clicked.connect(lambda: self.changeSelect(2))
+        self.changeBtns[3].clicked.connect(lambda: self.changeSelect(3))
+        self.changeBtns[4].clicked.connect(lambda: self.changeSelect(4))
+        self.changeBtns[5].clicked.connect(lambda: self.changeSelect(5))
         
         
 #cancelChangeBtn 눌렀을 때 이벤트: 누르면 다시 버튼으로 돌아감
@@ -579,22 +601,48 @@ class Ui_MainWindow(QMainWindow):
 
 
 #첫번째 지정된 리뷰 자리를 두번째 지정된 리뷰 자리로 끌어올리고 창 닫기
-    def changeSelect(self,first_num,second_num):
+    def changeSelect(self,second_num):
     #이게 생각해보니까 아래에서 위로 가는 거랑 위에서 아래로 가는 거랑 따로 생각해야 하더라고요
-        if first_num < second_num:
+        if self.num < second_num:
             second_num-=1
         
     #pop할 내용 임시 저장
-        self.temps = [self.names.pop(first_num),self.contents.pop(first_num),self.imgs.pop(first_num),self.reviewPoints.pop(first_num),self.reviews.pop(first_num),self.point_list.pop(first_num),self.LandmarksName.pop(first_num),self.place_names_list.pop(first_num)]
-    
-        self.names.insert(second_num,self.temps[0])
-        self.contents.insert(second_num,self.temps[1])
-        self.imgs.insert(second_num,self.temps[2])
-        self.reviewPoints.insert(second_num,self.temps[3])
-        self.reviews.insert(second_num,self.temps[4])
-        self.point_list.insert(second_num,self.temps[5])
-        self.LandmarksName.insert(second_num,self.temps[6])
-        self.place_names_list.insert(second_num,self.temps[7])
+        waypoint_array = [0,1,2,3,4]
+        t = waypoint_array.pop(self.num)
+        waypoint_array.insert(second_num,t)
+        temp = []
+        for i in waypoint_array:
+            temp.append(self.names[i])
+        self.names = temp[:]
+        temp.clear()
+        for i in waypoint_array:
+            temp.append(self.contents[i])
+        self.contents = temp[:]
+        temp.clear()
+        for i in waypoint_array:
+            temp.append(self.imgs[i])
+        self.imgs = temp[:]
+        temp.clear()
+        for i in waypoint_array:
+            temp.append(self.reviewPoints[i])
+        self.reviewPoints = temp[:]
+        temp.clear()
+        for i in waypoint_array:
+            temp.append(self.reviews[i])
+        self.reviews = temp[:]
+        temp.clear()
+        for i in waypoint_array:
+            temp.append(self.point_list[i])
+        self.point_list = temp[:]
+        temp.clear()
+        for i in waypoint_array:
+            temp.append(self.LandmarksName[i])
+        self.LandmarksName = temp[:]
+        temp.clear()
+        for i in waypoint_array:
+            temp.append(self.place_names_list[i])
+        self.place_names_list = temp[:]
+        temp.clear()
 
         for i in range(0,5,1):
             self.changeLabels[i].clear()
