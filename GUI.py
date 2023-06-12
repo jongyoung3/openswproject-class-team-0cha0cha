@@ -91,6 +91,7 @@ class Ui_MainWindow(QMainWindow):
         self.changeButton = QtWidgets.QPushButton(self.centralwidget)
         self.changeButton.setGeometry(QtCore.QRect(590, 65, 112, 30))
         self.changeButton.setText("위치 변경")
+        self.changeOpened = bool(False)
     #변경버튼 아이콘 지정
         icon1 = QtGui.QIcon()
         icon1.addPixmap(QtGui.QPixmap("./change.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
@@ -478,6 +479,7 @@ class Ui_MainWindow(QMainWindow):
 #ChangeBtn 눌렀을 때 이벤트: 리뷰들 위치 교환할 창 열림
     def changeOpen(self):
     #change창 크기 지정, 왼쪽에 나타나게 함
+        self.changeOpened = True
         self.Form.resize(392, 500)
         self.Form.move(500, 200)
         
@@ -947,6 +949,7 @@ class Ui_MainWindow(QMainWindow):
             # 바뀐 별점에 따라 별 갯수 노출도 변화
             a = float(self.reviewPoints[i].text().replace(',', '')) * 14.12
             self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 195 * i, 1 + int(a), 15))
+        if self.changeOpened == True:
             self.cancelChange()
 
 
