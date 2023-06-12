@@ -271,15 +271,15 @@ def search(input_search_locations=[], retry=0, z=0):
                         #검색데이터 결과가 빈 리스트로 오는 경우(=검색결과가 없을때) 텍스트 검색으로 다시 찾기
                         else: 
                             url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query={text_lo}&key={api_key}"
-                            response = requests.get(url)
-                            data = response.json()
+                            response_b = requests.get(url)
+                            data = response_b.json()
 
                             attractions = []
 
                             max_reviewer = -1
                             max_index = -1
 
-                            for i in range(len(res_lo['results'])):
+                            for i in range(len(data['results'])):
                                 # 리뷰 수가 높은 순으로 정렬 필요
                                 #print(i)
                                 # 지역 중복방지
@@ -316,7 +316,7 @@ def search(input_search_locations=[], retry=0, z=0):
                                 if name is not None and rating is not None and reviews is not None:
                                     if rating >= min_rating:
                                         attractions.append((name, rating, reviews))
-
+                                    # response['results'][0] 의 response 부분 변수가 274번째 줄에 있는 변수 값에서 받아오는 걸로 변경되버려서 오류
                                 if('photos' in response['results'][0]):  # 'photos'가 아예없는 경우 제외
                                     #사진 요청
                                     photo_reference=response['results'][0]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
@@ -333,11 +333,11 @@ def search(input_search_locations=[], retry=0, z=0):
                                     destination.append(1)
                                     destination.append(locations) # 검색한 지역이름
                                     destination.extend(attractions)
-                                    except_list_name.append(res_lo['results'][max_index]['name'])
+                                    except_list_name.append(data['results'][max_index]['name']) # 변수가 이상하게 수정되 있어서 res_lo -> data로 바꿈
 
                                 # 좌표
-                                search_location_lat=(res_lo['results'][max_index]['geometry']['location']['lat'])
-                                search_location_lng=(res_lo['results'][max_index]['geometry']['location']['lng'])
+                                search_location_lat=(data['results'][max_index]['geometry']['location']['lat']) # 변수가 이상하게 수정되 있어서 res_lo -> data로 바꿈
+                                search_location_lng=(data['results'][max_index]['geometry']['location']['lng']) # 변수가 이상하게 수정되 있어서 res_lo -> data로 바꿈
                                 destination.append(search_location_lat)
                                 destination.append(search_location_lng)
                             else:
@@ -660,7 +660,7 @@ def search(input_search_locations=[], retry=0, z=0):
 
 #TEST
 # ['Taj Mahal(Agra, Uttar Pradesh, India)', 'Golden Temple(Amritsar, Punjab, India)', 'Hampi(Hampi, Karnataka, India)', 'Jaipur(Rajasthan, India)', 'Varanasi(Uttar Pradesh, India)']
-#res_sol=search(['Lake District (Cumbria, England, United Kingdom)'])
+#res_sol=search(['Patagonia(Argentina/Chile, South America)'])
 # # # # #res_sol=search(chatgpt.gpt(input(),5))
 # # # # # # #
 #print(res_sol)
