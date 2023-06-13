@@ -484,7 +484,6 @@ class Ui_MainWindow(QMainWindow):
         self.changeOpened = True
         self.changeOnce = bool(True)
         self.Form.resize(392, 500)
-        self.Form.move(500, 200)
         
     #시작하면 나오는 1~10번 리뷰들 제목 있는 버튼들
         self.LabelBtns = [QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),]
@@ -538,7 +537,6 @@ class Ui_MainWindow(QMainWindow):
         if self.changeOpened ==False:
             self.changeOption()
         self.Form.resize(392, 500)
-        self.Form.move(500, 200)
         
         for i in range(0,5,1):
         #각 changeLables, disalbeLabelBtns, LabelBtns 위치 지정 및 글자 내용 세팅
