@@ -224,7 +224,6 @@ class Ui_MainWindow(QMainWindow):
             self.names[i].setFont(font)
             self.names[i].setText(("%s번째") % str(i+1))
     #리뷰 제목들 위치, text, 줄바꿈 세팅
-        for i in range(0,5,1): 
             self.contents[i].setGeometry(QtCore.QRect(145, 84+195*i, 418, 130))
             self.contents[i].setText(("%s번째 내용물") % str(i+1))
             self.contents[i].setWordWrap(True)
@@ -267,13 +266,11 @@ class Ui_MainWindow(QMainWindow):
     def aboutOpen(self):
     #창 크기 지정
         self.Dialog.resize(400, 300)
-        self.Dialog.setMinimumSize(QtCore.QSize(400, 300))
-        self.Dialog.setMaximumSize(QtCore.QSize(400, 300))
     #강의명, 팀명, "팀원: "적힌 라벨 정의 및 위치 세팅
         self.lectureName = QtWidgets.QLabel(self.Dialog)
         self.lectureName.setGeometry(QtCore.QRect(10, 10, 231, 16))
         self.teamName = QtWidgets.QLabel(self.Dialog)
-        self.teamName.setGeometry(QtCore.QRect(10, 30, 80, 15))
+        self.teamName.setGeometry(QtCore.QRect(10, 30, 64, 15))
         self.label = QtWidgets.QLabel(self.Dialog)
         self.label.setGeometry(QtCore.QRect(13, 130, 64, 15))
     #우리 팀장님이랑 팀원들 이름 적힌 라벨 정의 및 위치 세팅
@@ -298,11 +295,11 @@ class Ui_MainWindow(QMainWindow):
         font = QtGui.QFont()
         font.setFamily("굴림")
     #강의명, 팀명은 글자 크기 8
-        font.setPointSize(9)
+        font.setPointSize(8)
         self.lectureName.setFont(font)
         self.teamName.setFont(font)
-        self.teamMem.setFont(font)
-        self.label.setFont(font)
+    #우리 팀장님은 글자 크기 10
+        font.setPointSize(9)
         self.teamLeader.setFont(font)
     #세팅되는 text들
         Dialog.setWindowTitle("About")
@@ -458,6 +455,7 @@ class Ui_MainWindow(QMainWindow):
             self.deleteButton.hide()
             self.changeButton.hide()
             self.PsContents.hide()
+            self.SearchButton.setEnabled(True)
             self.errorHappened = False
             self.map_path = "map.html"
             abs_map_path = os.path.abspath(self.map_path)
@@ -613,18 +611,19 @@ class Ui_MainWindow(QMainWindow):
             
         #pop할 내용 임시 저장
             print("first_num:%d, second_num: %d"%(first_num,second_num))
-            self.temps = [self.names.pop(first_num),self.contents.pop(first_num),self.imgs.pop(first_num),self.reviewPoints.pop(first_num),self.reviews.pop(first_num),self.point_list.pop(first_num),self.LandmarksName.pop(first_num),self.place_names_list.pop(first_num)]
+            self.temps = [self.names.pop(first_num),self.contents.pop(first_num),self.saveUrls.pop(first_num),self.reviewPoints.pop(first_num),self.reviews.pop(first_num),self.point_list.pop(first_num),self.LandmarksName.pop(first_num),self.place_names_list.pop(first_num)]
         
             self.names.insert(second_num,self.temps.pop(0))
             self.contents.insert(second_num,self.temps.pop(0))
-            self.imgs.insert(second_num,self.temps.pop(0))
+            self.saveUrls.insert(second_num,self.temps.pop(0))
             self.reviewPoints.insert(second_num,self.temps.pop(0))
             self.reviews.insert(second_num,self.temps.pop(0))
             self.point_list.insert(second_num,self.temps.pop(0))
             self.LandmarksName.insert(second_num,self.temps.pop(0))
             self.place_names_list.insert(second_num,self.temps.pop(0))
 
-            for i in range(0,5,1):
+            for i in range(0, 5, 1):
+                self.imgs[i].setUrl(QUrl("%s" % self.saveUrls[i]))
                 self.changeLabels[i].clear()
                 self.disableLabelBtns[i].hide()
                 self.changeBtns[i].hide()
@@ -638,7 +637,7 @@ class Ui_MainWindow(QMainWindow):
             for i in range(0,5,1):
                 self.names[i].setText(self.names[i].text())
                 self.contents[i].setText(self.contents[i].text())
-                self.imgs[i].setUrl(QtCore.QUrl(self.imgs[i].url().toString()))
+                self.imgs[i].setUrl(QtCore.QUrl(self.saveUrls[i]))
                 self.reviewPoints[i].setText(self.reviewPoints[i].text())
                 self.reviews[i].setText(self.reviews[i].text())
                 self.LandmarksName[i].setText(self.LandmarksName[i].text())
