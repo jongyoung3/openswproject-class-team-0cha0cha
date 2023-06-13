@@ -224,7 +224,6 @@ class Ui_MainWindow(QMainWindow):
             self.names[i].setFont(font)
             self.names[i].setText(("%s번째") % str(i+1))
     #리뷰 제목들 위치, text, 줄바꿈 세팅
-        for i in range(0,5,1): 
             self.contents[i].setGeometry(QtCore.QRect(145, 84+195*i, 418, 130))
             self.contents[i].setText(("%s번째 내용물") % str(i+1))
             self.contents[i].setWordWrap(True)
@@ -267,13 +266,11 @@ class Ui_MainWindow(QMainWindow):
     def aboutOpen(self):
     #창 크기 지정
         self.Dialog.resize(400, 300)
-        self.Dialog.setMinimumSize(QtCore.QSize(400, 300))
-        self.Dialog.setMaximumSize(QtCore.QSize(400, 300))
     #강의명, 팀명, "팀원: "적힌 라벨 정의 및 위치 세팅
         self.lectureName = QtWidgets.QLabel(self.Dialog)
         self.lectureName.setGeometry(QtCore.QRect(10, 10, 231, 16))
         self.teamName = QtWidgets.QLabel(self.Dialog)
-        self.teamName.setGeometry(QtCore.QRect(10, 30, 80, 15))
+        self.teamName.setGeometry(QtCore.QRect(10, 30, 64, 15))
         self.label = QtWidgets.QLabel(self.Dialog)
         self.label.setGeometry(QtCore.QRect(13, 130, 64, 15))
     #우리 팀장님이랑 팀원들 이름 적힌 라벨 정의 및 위치 세팅
@@ -298,11 +295,11 @@ class Ui_MainWindow(QMainWindow):
         font = QtGui.QFont()
         font.setFamily("굴림")
     #강의명, 팀명은 글자 크기 8
-        font.setPointSize(9)
+        font.setPointSize(8)
         self.lectureName.setFont(font)
         self.teamName.setFont(font)
-        self.teamMem.setFont(font)
-        self.label.setFont(font)
+    #우리 팀장님은 글자 크기 10
+        font.setPointSize(9)
         self.teamLeader.setFont(font)
     #세팅되는 text들
         Dialog.setWindowTitle("About")
@@ -458,6 +455,7 @@ class Ui_MainWindow(QMainWindow):
             self.deleteButton.hide()
             self.changeButton.hide()
             self.PsContents.hide()
+            self.SearchButton.setEnabled(True)
             self.errorHappened = False
             self.map_path = "map.html"
             abs_map_path = os.path.abspath(self.map_path)
@@ -483,32 +481,10 @@ class Ui_MainWindow(QMainWindow):
     def changeOption(self):
         self.fir_num = 0
     #change창 크기 지정, 왼쪽에 나타나게 함
-        self.num = 0
         self.changeOpened = True
         self.changeOnce = bool(True)
         self.Form.resize(392, 500)
-        self.Form.move(500, 200)
-
-
-        for i in range(0, 5, 1):
-            self.names[i].setText(self.names[i].text())
-            self.contents[i].setText(self.contents[i].text())
-            self.imgs[i].setUrl(QtCore.QUrl(self.imgs[i].url().toString()))
-            self.reviewPoints[i].setText(self.reviewPoints[i].text())
-            self.reviews[i].setText(self.reviews[i].text())
-            self.LandmarksName[i].setText(self.LandmarksName[i].text())
-
-            self.names[i].setGeometry(QtCore.QRect(10, 8 + 195 * i, 535, 31))
-            self.contents[i].setGeometry(QtCore.QRect(145, 84 + 195 * i, 418, 130))
-            self.imgs[i].setGeometry(QtCore.QRect(10, 42 + 195 * i, 130, 122))
-            self.reviewPoints[i].setGeometry(QtCore.QRect(144, 44 + 195 * i, 51, 17))
-            self.reviews[i].setGeometry(QtCore.QRect(258, 44 + 195 * i, 101, 16))
-            self.LandmarksName[i].setGeometry(QtCore.QRect(145, 64 + 195 * i, 418, 16))
-
-            # 바뀐 별점에 따라 별 갯수 노출도 변화
-            a = float(self.reviewPoints[i].text().replace(',', '')) * 14.12
-            self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 195 * i, 1 + int(a), 15))
-
+        
     #시작하면 나오는 1~10번 리뷰들 제목 있는 버튼들
         self.LabelBtns = [QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),]
     #라벨버튼 눌렀을 때 나오는 1~10번 제목 라벨들
@@ -561,7 +537,6 @@ class Ui_MainWindow(QMainWindow):
         if self.changeOpened ==False:
             self.changeOption()
         self.Form.resize(392, 500)
-        self.Form.move(500, 200)
         
         for i in range(0,5,1):
         #각 changeLables, disalbeLabelBtns, LabelBtns 위치 지정 및 글자 내용 세팅
@@ -589,14 +564,27 @@ class Ui_MainWindow(QMainWindow):
 
 
 #위치 교환 창에서 1~10번 제목버튼 눌렀을 때 이벤트: 라벨로 전환되고 이동 버튼들 나옴
-    def LabelSelect(self,zzzz):
-        self.num = zzzz
+    def LabelSelect(self,num):
     #눌린 번호 위치의 비활성화 버튼이 나타남
-
         self.fir_num = num
         self.disableLabelBtns[num].show()
-
+    #취소 눌렀다가 다시 실행해도 글자 안 겹치게 LabelBtns 글자 없앰.. 근데 두 번째 실행부턴 LabelBtns가 안 사라져요
+        for i in range(0,5,1):            
+            self.LabelBtns[i].hide()
+            self.LabelBtns[i].setText("")
+            self.changeBtns[i].show()
+            self.changeLabels[i].setText(self.names[i].text())
+            self.changeLabels[i].show()
+            self.cancelChangeBtn.show()
+    #changeBtns는 혼자만 원소 하나 더 있어서 따로 처리
+        self.changeBtns[5].show()
+    
+    #눌린 버튼 위아래에는 이동 버튼 안 나타나게
+        self.changeBtns[num].hide()
+        self.changeBtns[num+1].hide()
+    #역시 for문으로는 맨 뒤에꺼만 돼서 개별처리
         print("num: %d"%(num))
+        
         
 #cancelChangeBtn 눌렀을 때 이벤트: 누르면 다시 버튼으로 돌아감
     def cancelChange(self):
@@ -613,7 +601,6 @@ class Ui_MainWindow(QMainWindow):
 
 
 #첫번째 지정된 리뷰 자리를 두번째 지정된 리뷰 자리로 끌어올리고 창 닫기
-
     def changeSelect(self,first_num,second_num):
         if (self.changeOnce == True):
     #이게 생각해보니까 아래에서 위로 가는 거랑 위에서 아래로 가는 거랑 따로 생각해야 하더라고요
@@ -622,18 +609,19 @@ class Ui_MainWindow(QMainWindow):
             
         #pop할 내용 임시 저장
             print("first_num:%d, second_num: %d"%(first_num,second_num))
-            self.temps = [self.names.pop(first_num),self.contents.pop(first_num),self.imgs.pop(first_num),self.reviewPoints.pop(first_num),self.reviews.pop(first_num),self.point_list.pop(first_num),self.LandmarksName.pop(first_num),self.place_names_list.pop(first_num)]
+            self.temps = [self.names.pop(first_num),self.contents.pop(first_num),self.saveUrls.pop(first_num),self.reviewPoints.pop(first_num),self.reviews.pop(first_num),self.point_list.pop(first_num),self.LandmarksName.pop(first_num),self.place_names_list.pop(first_num)]
         
             self.names.insert(second_num,self.temps.pop(0))
             self.contents.insert(second_num,self.temps.pop(0))
-            self.imgs.insert(second_num,self.temps.pop(0))
+            self.saveUrls.insert(second_num,self.temps.pop(0))
             self.reviewPoints.insert(second_num,self.temps.pop(0))
             self.reviews.insert(second_num,self.temps.pop(0))
             self.point_list.insert(second_num,self.temps.pop(0))
             self.LandmarksName.insert(second_num,self.temps.pop(0))
             self.place_names_list.insert(second_num,self.temps.pop(0))
 
-            for i in range(0,5,1):
+            for i in range(0, 5, 1):
+                self.imgs[i].setUrl(QUrl("%s" % self.saveUrls[i]))
                 self.changeLabels[i].clear()
                 self.disableLabelBtns[i].hide()
                 self.changeBtns[i].hide()
@@ -647,7 +635,7 @@ class Ui_MainWindow(QMainWindow):
             for i in range(0,5,1):
                 self.names[i].setText(self.names[i].text())
                 self.contents[i].setText(self.contents[i].text())
-                self.imgs[i].setUrl(QtCore.QUrl(self.imgs[i].url().toString()))
+                self.imgs[i].setUrl(QtCore.QUrl(self.saveUrls[i]))
                 self.reviewPoints[i].setText(self.reviewPoints[i].text())
                 self.reviews[i].setText(self.reviews[i].text())
                 self.LandmarksName[i].setText(self.LandmarksName[i].text())
@@ -973,7 +961,7 @@ class Ui_MainWindow(QMainWindow):
         for i in range(0, 5, 1):
             self.names[i].setText(self.names[i].text())
             self.contents[i].setText(self.contents[i].text())
-            self.imgs[i].setUrl(QtCore.QUrl(self.imgs[i].url().toString()))
+            self.imgs[i].setUrl(QtCore.QUrl(self.saveUrls))
             self.reviewPoints[i].setText(self.reviewPoints[i].text())
             self.reviews[i].setText(self.reviews[i].text())
             self.LandmarksName[i].setText(self.LandmarksName[i].text())
