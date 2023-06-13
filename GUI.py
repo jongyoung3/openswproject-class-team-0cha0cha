@@ -963,7 +963,7 @@ class Ui_MainWindow(QMainWindow):
         for i in range(0, 5, 1):
             self.names[i].setText(self.names[i].text())
             self.contents[i].setText(self.contents[i].text())
-            self.imgs[i].setUrl(QtCore.QUrl(self.imgs[i].url().toString()))
+            self.imgs[i].setUrl(QtCore.QUrl(self.saveUrls))
             self.reviewPoints[i].setText(self.reviewPoints[i].text())
             self.reviews[i].setText(self.reviews[i].text())
             self.LandmarksName[i].setText(self.LandmarksName[i].text())
