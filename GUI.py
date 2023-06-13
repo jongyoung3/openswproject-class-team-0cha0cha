@@ -272,12 +272,13 @@ class Ui_MainWindow(QMainWindow):
         self.teamName = QtWidgets.QLabel(self.Dialog)
         self.teamName.setGeometry(QtCore.QRect(10, 30, 64, 15))
         self.label = QtWidgets.QLabel(self.Dialog)
-        self.label.setGeometry(QtCore.QRect(60, 130, 64, 15))
+        self.label.setGeometry(QtCore.QRect(13, 130, 64, 15))
     #우리 팀장님이랑 팀원들 이름 적힌 라벨 정의 및 위치 세팅
         self.teamLeader = QtWidgets.QLabel(self.Dialog)
-        self.teamLeader.setGeometry(QtCore.QRect(10, 70, 381, 71))
+        self.teamLeader.setGeometry(QtCore.QRect(4, 70, 400, 71))
         self.teamMem = QtWidgets.QLabel(self.Dialog)
-        self.teamMem.setGeometry(QtCore.QRect(100, 130, 231, 81))
+        #self.teamMem.setAlignment(QtCore.Qt.AlignCenter)    
+        self.teamMem.setGeometry(QtCore.QRect(57, 130, 400, 81))
     #닫기 버튼 정의 및 위치 세팅    
         self.CloseButton = QtWidgets.QPushButton(self.Dialog)
         self.CloseButton.setGeometry(QtCore.QRect(280, 240, 93, 28))
@@ -298,15 +299,15 @@ class Ui_MainWindow(QMainWindow):
         self.lectureName.setFont(font)
         self.teamName.setFont(font)
     #우리 팀장님은 글자 크기 10
-        font.setPointSize(10)
+        font.setPointSize(9)
         self.teamLeader.setFont(font)
     #세팅되는 text들
         Dialog.setWindowTitle("About")
         self.lectureName.setText("23-1학기 오픈소스 기초프로젝트")
         self.teamName.setText("3팀 0차0차")
-        self.teamLeader.setText("<html><head/><body><p align=\"center\">★팀장: 2022041062 최상영 - 크롤링 및 총괄 담당★</p></body></html>")
+        self.teamLeader.setText("★팀장: 2022041062 최상영 - ChatGPT API 및 총괄 담당★")
         self.label.setText("팀원:")
-        self.teamMem.setText("<html><head/><body><p>2020039070 전종영 - 크롤링 담당</p><p>2022041081 홍준석 - API 담당</p><p>2022041056 윤정아 - GUI 담당</p><p><br/></p></body></html>")
+        self.teamMem.setText("<html><head/><body><p>2020039070 전종영 - 구글 맵 플레이스 API 담당</p><p>2022041081 홍준석 - 구글 맵 디렉션 API 담당</p><p>2022041056 윤정아 - GUI 담당</p><p><br/></p></body></html>")
         self.CloseButton.setText("닫기")
 
 
@@ -525,6 +526,9 @@ class Ui_MainWindow(QMainWindow):
         self.changeBtns[3].clicked.connect(lambda: self.changeSelect(self.fir_num,3))
         self.changeBtns[4].clicked.connect(lambda: self.changeSelect(self.fir_num,4))
         self.changeBtns[5].clicked.connect(lambda: self.changeSelect(self.fir_num,5))
+        
+        
+        
         
 #ChangeBtn 눌렀을 때 이벤트: 리뷰들 위치 교환할 창 열림
     def changeOpen(self):
