@@ -224,10 +224,15 @@ class Ui_MainWindow(QMainWindow):
             self.names[i].setFont(font)
             self.names[i].setText(("%s번째") % str(i+1))
     #리뷰 제목들 위치, text, 줄바꿈 세팅
+        font = QtGui.QFont()
+        font.setFamily("나눔고딕")
+        font.setWeight(50)
+        for i in range(0,5,1): 
             self.contents[i].setGeometry(QtCore.QRect(145, 84+195*i, 418, 130))
             self.contents[i].setText(("%s번째 내용물") % str(i+1))
             self.contents[i].setWordWrap(True)
             self.contents[i].setAlignment(QtCore.Qt.AlignTop)
+            self.contents[i].setFont(font)
     #리뷰 이미지, 별점들, 체크박스 위치 및 text 세팅, 체크박스 숨김
             self.imgs[i].setGeometry(QtCore.QRect(10, 52+195*i, 130, 122))
             self.no_imgs[i].setGeometry(QtCore.QRect(10, 52+195*i, 130, 122))
@@ -266,11 +271,13 @@ class Ui_MainWindow(QMainWindow):
     def aboutOpen(self):
     #창 크기 지정
         self.Dialog.resize(400, 300)
+        self.Dialog.setMinimumSize(QtCore.QSize(400, 300))
+        self.Dialog.setMaximumSize(QtCore.QSize(400, 300))
     #강의명, 팀명, "팀원: "적힌 라벨 정의 및 위치 세팅
         self.lectureName = QtWidgets.QLabel(self.Dialog)
         self.lectureName.setGeometry(QtCore.QRect(10, 10, 231, 16))
         self.teamName = QtWidgets.QLabel(self.Dialog)
-        self.teamName.setGeometry(QtCore.QRect(10, 30, 64, 15))
+        self.teamName.setGeometry(QtCore.QRect(10, 30, 80, 15))
         self.label = QtWidgets.QLabel(self.Dialog)
         self.label.setGeometry(QtCore.QRect(13, 130, 64, 15))
     #우리 팀장님이랑 팀원들 이름 적힌 라벨 정의 및 위치 세팅
@@ -293,13 +300,13 @@ class Ui_MainWindow(QMainWindow):
     def aboutSetTexts(self, Dialog):
     #폰트 지정
         font = QtGui.QFont()
-        font.setFamily("굴림")
+        font.setFamily("나눔고딕")
     #강의명, 팀명은 글자 크기 8
-        font.setPointSize(8)
+        font.setPointSize(9)
         self.lectureName.setFont(font)
         self.teamName.setFont(font)
-    #우리 팀장님은 글자 크기 10
-        font.setPointSize(9)
+        self.teamMem.setFont(font)
+        self.label.setFont(font)
         self.teamLeader.setFont(font)
     #세팅되는 text들
         Dialog.setWindowTitle("About")
