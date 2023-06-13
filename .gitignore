@@ -109,9 +109,3 @@ fabric.properties
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,pycharm+all
-
-
-apikey.py
-기타 필기용.md
-
-__pycache__/*
