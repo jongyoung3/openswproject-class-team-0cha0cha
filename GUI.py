@@ -933,8 +933,8 @@ class Ui_MainWindow(QMainWindow):
         self.contents = temp[:]
         temp.clear()
         for i in waypoint_array:
-            temp.append(self.imgs[i])
-        self.imgs = temp[:]
+            temp.append(self.saveUrls[i])
+        self.saveUrls = temp[:]
         temp.clear()
         for i in waypoint_array:
             temp.append(self.reviewPoints[i])
@@ -961,7 +961,7 @@ class Ui_MainWindow(QMainWindow):
         for i in range(0, 5, 1):
             self.names[i].setText(self.names[i].text())
             self.contents[i].setText(self.contents[i].text())
-            self.imgs[i].setUrl(QtCore.QUrl(self.saveUrls))
+            self.imgs[i].setUrl(QtCore.QUrl(self.saveUrls[i]))
             self.reviewPoints[i].setText(self.reviewPoints[i].text())
             self.reviews[i].setText(self.reviews[i].text())
             self.LandmarksName[i].setText(self.LandmarksName[i].text())
