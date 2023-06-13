@@ -483,11 +483,32 @@ class Ui_MainWindow(QMainWindow):
     def changeOption(self):
         self.fir_num = 0
     #change창 크기 지정, 왼쪽에 나타나게 함
+        self.num = 0
         self.changeOpened = True
         self.changeOnce = bool(True)
         self.Form.resize(392, 500)
         self.Form.move(500, 200)
-        
+
+
+        for i in range(0, 5, 1):
+            self.names[i].setText(self.names[i].text())
+            self.contents[i].setText(self.contents[i].text())
+            self.imgs[i].setUrl(QtCore.QUrl(self.imgs[i].url().toString()))
+            self.reviewPoints[i].setText(self.reviewPoints[i].text())
+            self.reviews[i].setText(self.reviews[i].text())
+            self.LandmarksName[i].setText(self.LandmarksName[i].text())
+
+            self.names[i].setGeometry(QtCore.QRect(10, 8 + 195 * i, 535, 31))
+            self.contents[i].setGeometry(QtCore.QRect(145, 84 + 195 * i, 418, 130))
+            self.imgs[i].setGeometry(QtCore.QRect(10, 42 + 195 * i, 130, 122))
+            self.reviewPoints[i].setGeometry(QtCore.QRect(144, 44 + 195 * i, 51, 17))
+            self.reviews[i].setGeometry(QtCore.QRect(258, 44 + 195 * i, 101, 16))
+            self.LandmarksName[i].setGeometry(QtCore.QRect(145, 64 + 195 * i, 418, 16))
+
+            # 바뀐 별점에 따라 별 갯수 노출도 변화
+            a = float(self.reviewPoints[i].text().replace(',', '')) * 14.12
+            self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 195 * i, 1 + int(a), 15))
+
     #시작하면 나오는 1~10번 리뷰들 제목 있는 버튼들
         self.LabelBtns = [QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),QtWidgets.QPushButton(self.Form),]
     #라벨버튼 눌렀을 때 나오는 1~10번 제목 라벨들
@@ -568,27 +589,14 @@ class Ui_MainWindow(QMainWindow):
 
 
 #위치 교환 창에서 1~10번 제목버튼 눌렀을 때 이벤트: 라벨로 전환되고 이동 버튼들 나옴
-    def LabelSelect(self,num):
+    def LabelSelect(self,zzzz):
+        self.num = zzzz
     #눌린 번호 위치의 비활성화 버튼이 나타남
+
         self.fir_num = num
         self.disableLabelBtns[num].show()
-    #취소 눌렀다가 다시 실행해도 글자 안 겹치게 LabelBtns 글자 없앰.. 근데 두 번째 실행부턴 LabelBtns가 안 사라져요
-        for i in range(0,5,1):            
-            self.LabelBtns[i].hide()
-            self.LabelBtns[i].setText("")
-            self.changeBtns[i].show()
-            self.changeLabels[i].setText(self.names[i].text())
-            self.changeLabels[i].show()
-            self.cancelChangeBtn.show()
-    #changeBtns는 혼자만 원소 하나 더 있어서 따로 처리
-        self.changeBtns[5].show()
-    
-    #눌린 버튼 위아래에는 이동 버튼 안 나타나게
-        self.changeBtns[num].hide()
-        self.changeBtns[num+1].hide()
-    #역시 for문으로는 맨 뒤에꺼만 돼서 개별처리
+
         print("num: %d"%(num))
-        
         
 #cancelChangeBtn 눌렀을 때 이벤트: 누르면 다시 버튼으로 돌아감
     def cancelChange(self):
@@ -605,6 +613,7 @@ class Ui_MainWindow(QMainWindow):
 
 
 #첫번째 지정된 리뷰 자리를 두번째 지정된 리뷰 자리로 끌어올리고 창 닫기
+
     def changeSelect(self,first_num,second_num):
         if (self.changeOnce == True):
     #이게 생각해보니까 아래에서 위로 가는 거랑 위에서 아래로 가는 거랑 따로 생각해야 하더라고요
