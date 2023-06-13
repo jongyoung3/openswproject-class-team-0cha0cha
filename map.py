@@ -5,53 +5,6 @@ import requests
 from apikey import GoogleMap_API_KEY
 from geopy.distance import geodesic
 
-#lat,lon구하기
-# def FindLatLon(site):
-#     lat=[]
-#     lon=[]
-#
-#     #지점 개수
-#     n=len(site)
-#
-#
-#     # Geocoding API 엔드포인트
-#     geocode_url = 'https://maps.googleapis.com/maps/api/geocode/json'
-#
-#     #site 별 좌표 찾기
-#     for i in range(n):
-#
-#         wanted=site[i]
-#
-#         # 요청 파라미터
-#         params = {
-#             'address': wanted,
-#             'key': GoogleMap_API_KEY,
-#         }
-#
-#         # geocode API 요청 보내기
-#         response = requests.get(geocode_url, params=params)
-#
-#         # 응답 처리, 좌표 구하기
-#         if response.status_code == 200:
-#             data = response.json()
-#             if data['status'] == 'OK':
-#                 # 첫 번째 결과의 좌표 얻기
-#                 location = data['results'][0]['geometry']['location']
-#                 lat.append(location['lat'])
-#                 lon.append(location['lng'])
-#             else:
-#                 print('장소를 찾을 수 없습니다.')
-#         else:
-#             print('API 요청 실패')
-#
-#     return lat,lon,gmaps,n
-
-# 지점 저장
-# def ReturnPoint(lat,lon,n):
-#     point = []
-#     for i in range(n):
-#         point.append([lat[i], lon[i]])
-#     return point
 
 def decode_polyline(polyline):
     """Decodes a Polyline string into a list of lat/lng dicts.
@@ -157,7 +110,7 @@ def DrawDirec(origin,destination,locations,gmaps,map,opt,n):
 
 
 
-        if opt == 1: ##### 디렉션 리스폰스에서, 정렬된 데이터 관련 응답. 단, 웨이포인트 오더로 인한 갯수 오류가 있을지 우려됨
+        if opt == 1:
             return directions_response[0]['waypoint_order']
         return 0
 
@@ -173,8 +126,8 @@ def ReturnHTML(map):
     return 'route.html'
 
 # 생성된 HTML 파일 열기
-def OpenMap(html):
-    webbrowser.open(html)
+# def OpenMap(html):
+#     webbrowser.open(html)
 
 # 총괄 함수
 def MainFunc(point,names, opt=0,retry = 0):
@@ -193,11 +146,6 @@ def MainFunc(point,names, opt=0,retry = 0):
             for i in range(1,n-1):
                 locations.append(point[i])
 
-        # 맵 시작지점과 비율 관련 조절 관련 생각######
-        # zoom = int(geodesic(origin, destination).meters / 50000)
-        # mid_x = (origin[0] + destination[0]) / 2 # mid 대신 다른걸 찾는 방법 생각해봐야함
-        # mid_y = (origin[1] + destination[1]) / 2
-        # mid = (mid_x,mid_y)
         map=CreateMap(origin)
 
         #마커 찍기 함수

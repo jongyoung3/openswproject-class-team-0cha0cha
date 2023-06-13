@@ -411,7 +411,6 @@ class Ui_MainWindow(QMainWindow):
         self.changeButton.setEnabled(False)
         self.optimize.setEnabled(False)
 
-        ###################### 일부 장소는 주제를 바꿔서 탐색할수도 있게 해도 괜찮을 듯, 고려 필요.
         for i in range(0,5,1):
             if (self.checkBoxes[i].isChecked()):
                 self.index_list.append(i)
@@ -775,9 +774,6 @@ class Ui_MainWindow(QMainWindow):
                 self.names[i].setText(kor_name[i])
                 self.contents[i].setText(kor_introduce[i])
 
-                # a = float(self.reviewPoints[0].text()) * 14.1
-                # self.reviewStars[0].setGeometry(QtCore.QRect(175, 44 + 175 * 0, 2 + int(a), 15))
-
                 if search_list[i][0] == 0:  # 0, 즉 장소일때
                     self.reviewPoints[i].setText(str("%.1f"%search_list[i][2]))
                     self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 195 * i, 1 + int(search_list[i][2]*14.12), 15))
@@ -791,7 +787,6 @@ class Ui_MainWindow(QMainWindow):
                         self.saveUrls[i] = "no_image.png"
 
                 else:  # 1, 즉 지역일때
-                    ########### 리뷰 대신, 추천지역 관련 변수 추가로 요구됨 (search_list[i][2][1])
                     self.reviewPoints[i].setText(str("%.1f"%search_list[i][2][1]))
                     self.reviewStars[i].setGeometry(QtCore.QRect(175, 44 + 195 * i, 1 + int(search_list[i][2][1]*14.12), 15))
                     self.reviews[i].setText(str(format(search_list[i][2][2], ',')))
@@ -822,7 +817,6 @@ class Ui_MainWindow(QMainWindow):
                         self.saveUrls[index] = "no_image.png"
 
                 else:  # 1, 즉 지역일때
-                    # 리뷰 대신, 추천지역 관련 변수 추가로 요구됨 (search_list[i][2][1])
                     self.reviewPoints[index].setText(str("%.1f"%(search_list[i][2][1])))
                     self.reviewStars[index].setGeometry(QtCore.QRect(175, 44 + 195 * index, 1 + int(search_list[i][2][1]*14.12), 15))
                     self.reviews[index].setText(str(format(search_list[i][2][2], ',')))
@@ -835,7 +829,7 @@ class Ui_MainWindow(QMainWindow):
                         self.saveUrls[index] = "no_image.png"
 
         # map 함수 호출
-        # 좌표 데이터 가지고 map함수 call 부분 필요
+        # 좌표 데이터 가지고 map함수 call
         self.optimize.setEnabled(False)
         mapchecker, opti_checker = map.MainFunc(self.point_list,self.place_names_list)
 
@@ -849,9 +843,6 @@ class Ui_MainWindow(QMainWindow):
             self.errorHappened = True
         else:
             self.map_path = 'route.html'
-
-
-
 
     # [0 ,'검색한 장소=검색한 결과의 장소','평점','리뷰 수','사진링크','lat','lng']
     # [1 ,'검색한 장소',('검색한 결과의 장소','평점','리뷰 수'),'사진링크','lat','lng']
