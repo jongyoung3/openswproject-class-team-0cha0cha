@@ -224,15 +224,11 @@ class Ui_MainWindow(QMainWindow):
             self.names[i].setFont(font)
             self.names[i].setText(("%s번째") % str(i+1))
     #리뷰 제목들 위치, text, 줄바꿈 세팅
-        font = QtGui.QFont()
-        font.setFamily("나눔고딕")
-        font.setWeight(50)
         for i in range(0,5,1): 
             self.contents[i].setGeometry(QtCore.QRect(145, 84+195*i, 418, 130))
             self.contents[i].setText(("%s번째 내용물") % str(i+1))
             self.contents[i].setWordWrap(True)
             self.contents[i].setAlignment(QtCore.Qt.AlignTop)
-            self.contents[i].setFont(font)
     #리뷰 이미지, 별점들, 체크박스 위치 및 text 세팅, 체크박스 숨김
             self.imgs[i].setGeometry(QtCore.QRect(10, 52+195*i, 130, 122))
             self.no_imgs[i].setGeometry(QtCore.QRect(10, 52+195*i, 130, 122))
@@ -300,7 +296,7 @@ class Ui_MainWindow(QMainWindow):
     def aboutSetTexts(self, Dialog):
     #폰트 지정
         font = QtGui.QFont()
-        font.setFamily("나눔고딕")
+        font.setFamily("굴림")
     #강의명, 팀명은 글자 크기 8
         font.setPointSize(9)
         self.lectureName.setFont(font)
