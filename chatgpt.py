@@ -104,6 +104,8 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
     in next answer, You must find Exactly {n} of travel destinations related to topic in English. 
     So, your output has {n} of travel destinations related to topic.
     The rest of the instructions are the same as preliminary study.
+    In the following user query, topic will be provided wrapped in triple backticks.
+    Topic can be provided in a variety of languages. But Internally, you should using this topic by translating to English for query.
     """
 
     query = f"```{topic} ```in English"
@@ -119,9 +121,9 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
     if except_list != []:
         except_destination = ", ".join(except_list) # systemsay3가 위의 prev_query 성격도 가짐
         systemsay3 = f"""
-        in next answer, You must find Exactly {n} of travel destinations related to topic in English, And You should follow the following conditions wrapped in angle brackets too.
-        < First, You must exclude the destinations wrapped in following double backticks. So, you must find the destinations that is not provided in following double backticks.
-        ``{except_destination}``. this is Top priority requirement.
+        in next answer, You must find Exactly {n} of travel destinations related to topic, And You should follow the following conditions wrapped in angle brackets too.
+        < First, You must exclude the destinations wrapped in following triple dashes. So, you must find the destinations that is not provided in following triple dashes.
+        ---{except_destination}---. this is Top priority requirement.
         Second, You don't need to write 2 sentences introductions to topic. Instead, Just write '0'. > 
         The rest of the instructions are the same as preliminary study.
         """
@@ -260,18 +262,3 @@ def gpt(topic, n=10, except_list=[], retry=0, add=0):
         print('answer :: \n', answer, sep='')
         print('translated_text :: \n', translated_text, sep='')
         return gpt(topic, n, except_list, retry)
-
-
-# # ! 테스팅
-# topic = input()
-# # ans, res = gpt(topic)
-# eng_name, name, introduce, PS = gpt(topic)
-# print(eng_name)
-# print(name)
-# print(introduce)
-# print(PS)
-
-# print("제외후 재 테스트\n")
-# a, b, c, d = gpt(topic, 1, eng_name)
-# print(a, b, c, d, sep="\n")
-# # print(gpt(topic, 1, ans))

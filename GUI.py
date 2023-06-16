@@ -693,11 +693,11 @@ class Ui_MainWindow(QMainWindow):
     def process_call(self, process_topic, index_list=[], recall=0):
         global except_list
         global topic
-        topic = process_topic ## 변수 낭비일수도 있는데, 귀찮아서 추가함.
+        topic = process_topic
         n = 5
         eng_list, kor_name, kor_introduce, ps = [], [], [], ''
 
-        def search_error_index(process_topic, error_count):  #### 서치 데이터 -1 관련 함수
+        def search_error_index(process_topic, error_count):  #### 서치 데이터 -1 나오는 경우 관련 함수
             global except_list
             nonlocal search_list
             nonlocal eng_list

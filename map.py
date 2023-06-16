@@ -81,7 +81,7 @@ def CreateMap(origin):
 #마커찍기
 def mark(map,point,names, n):
     for i in range(n):
-        folium.Marker([point[i][0],point[i][1]],popup=names[i]).add_to(map) # popup= 으로 위에 글 띄우기 가능
+        folium.Marker([point[i][0],point[i][1]],popup=names[i]).add_to(map)
 
 #경로 그리기
 def DrawDirec(origin,destination,locations,gmaps,map,opt,n):
@@ -101,8 +101,6 @@ def DrawDirec(origin,destination,locations,gmaps,map,opt,n):
                 temp = decode_polyline(step['polyline']['points'])
                 for pointed in temp:
                     points.append((pointed['lat'],pointed['lng']))
-                # start = (step['start_location']['lat'], step['start_location']['lng'])
-                # end = (step['end_location']['lat'], step['end_location']['lng'])
 
 
 
@@ -125,9 +123,6 @@ def ReturnHTML(map):
 
     return 'route.html'
 
-# 생성된 HTML 파일 열기
-# def OpenMap(html):
-#     webbrowser.open(html)
 
 # 총괄 함수
 def MainFunc(point,names, opt=0,retry = 0):
@@ -180,7 +175,6 @@ def MainFunc(point,names, opt=0,retry = 0):
         else:
             opti_checker = DrawDirec(origin, destination, locations, gmaps, map, opt, n)
             html=ReturnHTML(map)
-            # OpenMap(html)
             return [html, opti_checker]
     except:
         retry += 1

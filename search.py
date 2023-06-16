@@ -31,7 +31,7 @@ def search(input_search_locations=[], retry=0, z=0):
         return [-99]
     
     try:
-    # 지도에 데이터 보낼 때 좌표로 보내는 걸로 코드 바꾸기(원한다면)
+    # 지도에 데이터 보낼 때 좌표로 보내는 걸로 코드 변경함
         if z == 0:
             
             for i, locations in enumerate(input_search_locations):
@@ -42,7 +42,6 @@ def search(input_search_locations=[], retry=0, z=0):
                     chk_1 = 0
                     for loc in response['results']:
                         if loc['name'].lower() == temp1[0].lower():
-                        #if(loc['name'].lower() in temp1[0].lower()) : # 정확도 검사 방법을 고침
                             chk_1 = 1
                             break
                     if (response_sec['status'] == 'ZERO_RESULTS'):
@@ -63,16 +62,6 @@ def search(input_search_locations=[], retry=0, z=0):
                         if chk_2 == 0:
                             input_search_locations[i] = temp1[0]
                             continue
-                        # if (response_sec['status'] == 'ZERO_RESULTS'):
-                        #     pass
-                        # else:
-                        #     for loc in response_sec['results']: # 괄호를 떼면, 지역이 나와서 지역일 가능성이 갑자기 높아진 검색어
-                        #         if 'rating' not in loc:
-                        #             chk_2 = 0
-                        #             break
-                        #     if chk_2 == 0:
-                        #         input_search_locations[i] = temp1[0]
-                        #         continue
 
 
             return search(input_search_locations, retry, z=1)
@@ -82,8 +71,7 @@ def search(input_search_locations=[], retry=0, z=0):
                 destination = [] 
 
 
-                if(response['status'] !='ZERO_RESULTS'): #검색데이터 결과가 빈 리스트로 오는 경우(=검색결과가 없을때)를 걸러줌                    
-                    # 밑에 부분 조건 and len(response['results'])==1 추가함
+                if(response['status'] !='ZERO_RESULTS'): #검색데이터 결과가 빈 리스트로 오는 경우(=검색결과가 없을때)를 걸러줌
                     temp1 = locations.split('(')
                     chk = 0
                     for index, loc in enumerate(response['results']):
@@ -179,14 +167,10 @@ def search(input_search_locations=[], retry=0, z=0):
                         text_lo=locations_blank_text_one[0]
                         response_blank_one = map_clinet.places(query=text_lo) # 데이터를 api로 보냄
 
-                        # if(response_blank_one['status'] =='ZERO_RESULTS'):
-                        #     response_blank_one = map_clinet.places(query=locations) # 데이터를 api로 보냄
 
                         # 장소 '1'에 해당되는 장소의 좌표값
                         location_lat=response['results'][0]['geometry']['location']['lat']
                         location_lng=response['results'][0]['geometry']['location']['lng']
-                        # location_lat=response_blank_one['results'][0]['geometry']['location']['lat']
-                        # location_lng=response_blank_one['results'][0]['geometry']['location']['lng']
                         radius=15000 # 반경 15,000m
 
                         # 장소 세부요청 (전달받은 위치의 반경 15000m에 있는 관광명소 탐색)
@@ -281,7 +265,6 @@ def search(input_search_locations=[], retry=0, z=0):
 
                             for i in range(len(data['results'])):
                                 # 리뷰 수가 높은 순으로 정렬 필요
-                                #print(i)
                                 # 지역 중복방지
                                 pro_chk = 0
                                 for k in except_list_name:
@@ -316,7 +299,6 @@ def search(input_search_locations=[], retry=0, z=0):
                                 if name is not None and rating is not None and reviews is not None:
                                     if rating >= min_rating:
                                         attractions.append((name, rating, reviews))
-                                    # response['results'][0] 의 response 부분 변수가 274번째 줄에 있는 변수 값에서 받아오는 걸로 변경되버려서 오류
                                 if('photos' in response['results'][0]):  # 'photos'가 아예없는 경우 제외
                                     #사진 요청
                                     photo_reference=response['results'][0]['photos'][0]['photo_reference'] #'photos'중 첫번째꺼
@@ -333,11 +315,11 @@ def search(input_search_locations=[], retry=0, z=0):
                                     destination.append(1)
                                     destination.append(locations) # 검색한 지역이름
                                     destination.extend(attractions)
-                                    except_list_name.append(data['results'][max_index]['name']) # 변수가 이상하게 수정되 있어서 res_lo -> data로 바꿈
+                                    except_list_name.append(data['results'][max_index]['name'])
 
                                 # 좌표
-                                search_location_lat=(data['results'][max_index]['geometry']['location']['lat']) # 변수가 이상하게 수정되 있어서 res_lo -> data로 바꿈
-                                search_location_lng=(data['results'][max_index]['geometry']['location']['lng']) # 변수가 이상하게 수정되 있어서 res_lo -> data로 바꿈
+                                search_location_lat=(data['results'][max_index]['geometry']['location']['lat'])
+                                search_location_lng=(data['results'][max_index]['geometry']['location']['lng'])
                                 destination.append(search_location_lat)
                                 destination.append(search_location_lng)
                             else:
@@ -347,9 +329,6 @@ def search(input_search_locations=[], retry=0, z=0):
 
 
                 else: #검색데이터 결과가 빈 리스트로 오는 경우(=검색결과가 없을때) 텍스트 검색으로 다시 찾기
-                    #locations_blank_text_one=locations.split("(")
-
-                    #text_lo=locations_blank_text_one[0]
                     url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query={locations}&key={api_key}"
                     response = requests.get(url)
                     data = response.json()
@@ -361,7 +340,6 @@ def search(input_search_locations=[], retry=0, z=0):
 
                         for i in range(len(data['results'])):
                             # 리뷰 수가 높은 순으로 정렬 필요
-                            #print(i)
                             # 지역 중복방지
                             pro_chk = 0
                             for k in except_list_name:
@@ -513,7 +491,6 @@ def search(input_search_locations=[], retry=0, z=0):
                                     max_index = -1
                                     for i in range(len(res_lo['results'])):
                                         # 리뷰 수가 높은 순으로 정렬 필요
-                                        #print(i)
                                         # 지역 중복방지
                                         pro_chk = 0
                                         for k in except_list_name:
@@ -585,7 +562,6 @@ def search(input_search_locations=[], retry=0, z=0):
                                     max_index = -1
                                     for i in range(len(res_lo['results'])):
                                         # 리뷰 수가 높은 순으로 정렬 필요
-                                        #print(i)
                                         # 지역 중복방지
                                         pro_chk = 0
                                         for k in except_list_name:
@@ -657,14 +633,3 @@ def search(input_search_locations=[], retry=0, z=0):
         retry+=1
         print("error in search")
         return search(input_search_locations, retry, z)
-
-#TEST
-# ['Taj Mahal(Agra, Uttar Pradesh, India)', 'Golden Temple(Amritsar, Punjab, India)', 'Hampi(Hampi, Karnataka, India)', 'Jaipur(Rajasthan, India)', 'Varanasi(Uttar Pradesh, India)']
-#res_sol=search(['Patagonia(Argentina/Chile, South America)'])
-# # # # #res_sol=search(chatgpt.gpt(input(),5))
-# # # # # # #
-#print(res_sol)
-#print(result_list)
-#['Tokyo(Kanto Region, Japan)', 'Kyoto(Kansai Region, Japan)', 'Osaka(Kansai Region, Japan)', 'Hiroshima(Chugoku Region, Japan)', 'Nara(Kansai Region, Japan)']
-#['New York City(New York, United States)', 'Miami Beach(Florida, United States)', 'Grand Canyon National Park(Arizona, United States)', 'Las Vegas(Nevada, United States)', 'Hawaii(United States)']
-#['Sydney Opera House(Sydney, New South Wales, Australia)', 'Great Barrier Reef(Queensland, Australia)', 'Uluru-Kata Tjuta National Park(Northern Territory, Australia)', 'Port Douglas(Queensland, Australia)', 'Melbourne(Victoria, Australia)']
